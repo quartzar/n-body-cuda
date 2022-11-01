@@ -1,0 +1,13 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <codeStyleSettings language="ObjectiveC">
+      <option name="LINE_COMMENT_AT_FIRST_COLUMN" value="false" />
+      <option name="BLOCK_COMMENT_AT_FIRST_COLUMN" value="false" />
+      <option name="LINE_COMMENT_ADD_SPACE" value="true" />
+      <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
+      <indentOptions>
+        <option name="KEEP_INDENTS_ON_EMPTY_LINES" value="true" />
+      </indentOptions>
+    </codeStyleSettings>
+  </code_scheme>
+</component>
