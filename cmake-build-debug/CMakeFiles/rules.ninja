@@ -61,7 +61,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /home/quartzar/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/222.4345.21/bin/cmake/linux/bin/cmake --regenerate-during-build -S"/home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6" -B"/home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6/cmake-build-debug"
+  command = /home/quartzar/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/222.4345.21/bin/cmake/linux/bin/cmake --regenerate-during-build -S/home/quartzar/Documents/repos/n-body-cuda -B/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug
   description = Re-running CMake...
   generator = 1
 

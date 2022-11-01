@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6/cmake-build-debug"
+			"value" : "/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -571,7 +571,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6"
+			"value" : "/home/quartzar/Documents/repos/n-body-cuda"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1094,42 +1094,6 @@
 			"value" : "FALSE"
 		},
 		{
-			"name" : "orbiterv5_BINARY_DIR",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "/home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6/cmake-build-debug"
-		},
-		{
-			"name" : "orbiterv5_IS_TOP_LEVEL",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "ON"
-		},
-		{
-			"name" : "orbiterv5_SOURCE_DIR",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "/home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6"
-		},
-		{
 			"name" : "orbiterv6_BINARY_DIR",
 			"properties" : 
 			[
@@ -1139,7 +1103,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6/cmake-build-debug"
+			"value" : "/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug"
 		},
 		{
 			"name" : "orbiterv6_IS_TOP_LEVEL",
@@ -1163,7 +1127,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6"
+			"value" : "/home/quartzar/Documents/repos/n-body-cuda"
 		}
 	],
 	"kind" : "cache",

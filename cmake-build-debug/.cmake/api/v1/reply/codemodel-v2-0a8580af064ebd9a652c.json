@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6/cmake-build-debug",
-		"source" : "/home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6"
+		"build" : "/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug",
+		"source" : "/home/quartzar/Documents/repos/n-body-cuda"
 	},
 	"version" : 
 	{

@@ -1,4 +1,4 @@
-# Install script for directory: /home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6
+# Install script for directory: /home/quartzar/Documents/repos/n-body-cuda
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/quartzar/Documents/astrophysics/Year 3/n-body-model-simulation-project/_prototypes/orbiterv6/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
