@@ -21,7 +21,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CONSTANTS.h" beforeDir="false" afterPath="$PROJECT_DIR$/CONSTANTS.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cu" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cuh" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cuh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PYnalaysis.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/PYnalaysis.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
@@ -133,7 +132,7 @@
       <workItem from="1667083991196" duration="3226000" />
       <workItem from="1667248716241" duration="7159000" />
       <workItem from="1667321592009" duration="171000" />
-      <workItem from="1667403583543" duration="5190000" />
+      <workItem from="1667403583543" duration="8532000" />
     </task>
     <servers />
   </component>
