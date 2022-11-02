@@ -18,7 +18,8 @@ computeOrbitalForces(float4 orbPos, float4* positions, int N,
 
 __global__ void
 integrateNOrbitals(float4* oldPos, float4* newPos,
-                   float4* oldVel, float4* newVel, float4* curForce,
+                   float4* oldVel, float4* newVel,
+                   float4* oldForce, float4* newForce,
                    float deltaTime, int N, bool multiThreaded);
 
 #endif //ORBITERV6_NBKERNEL_N2_CUH

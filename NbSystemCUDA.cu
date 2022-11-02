@@ -203,6 +203,11 @@ int main(int argc, char** argv)
     // END TIMER
     runTimer(start,  N_orbitals,false);
     
+    // DELETE ARRAYS
+    finalise(m_hPos, m_dPos,
+             m_hVel, m_dVel,
+             m_hForce, m_dForce);
+    
     // TERMINATE SUCCESSFULLY
     glfwTerminate();
     exit(EXIT_SUCCESS);
@@ -834,7 +839,8 @@ void simulate(float4* m_hPos, float4* m_dPos[2],
     // Do the thing
     deployToGPU(m_dPos[m_currentRead], m_dPos[m_currentWrite],
                 m_dVel[m_currentRead], m_dVel[m_currentWrite],
-                m_dForce[m_currentWrite], deltaTime, N, m_p, m_q);
+                m_dForce[m_currentRead], m_dForce[m_currentWrite],
+                deltaTime, N, m_p, m_q);
     // Swap read and write
     std::swap(m_currentRead, m_currentWrite);
 
@@ -863,13 +869,15 @@ void getCUDAError()
 
 // Finalise & delete arrays TODO: reimplement this
 //---------------------------------------
-void finalise(float4* m_hPos[2], float4* m_hVel[2],
-              float4* m_dPos[2], float4* m_dVel[2])
+void finalise(float4* m_hPos, float4* m_dPos[2],
+              float4* m_hVel, float4* m_dVel[2],
+              float4* m_hForce, float4* m_dForce[2])
 {
     delete [] m_hPos;
     delete [] m_hVel;
+    delete [] m_hForce;
     
-    // deleteNOrbitalArrays(m_dPos, m_dVel);
+    deleteNOrbitalArrays(m_dPos, m_dVel, m_dForce);
 }
 //---------------------------------------
 
@@ -1102,8 +1110,8 @@ void copyDataToHost(float4* host, const float4* device, int N)
 //---------------------------------------
 void deployToGPU(float4* oldPos, float4* newPos,
                  float4* oldVel, float4* newVel,
-                 float4* curForce, float deltaTime, int N,
-                 uint p, uint q)
+                 float4* oldForce, float4* newForce,
+                 float deltaTime, int N, uint p, uint q)
 {
     uint shMemSize = p * q * sizeof(float4);
     
@@ -1118,12 +1126,12 @@ void deployToGPU(float4* oldPos, float4* newPos,
     if (grid.y == 1)
     {
         integrateNOrbitals<<<grid, threads, shMemSize
-        >>>(oldPos, newPos, oldVel, newVel, curForce, deltaTime, N, false);
+        >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N, false);
     }
     else
     {
         integrateNOrbitals<<<grid, threads, shMemSize
-        >>>(oldPos, newPos, oldVel, newVel, curForce, deltaTime, N, true);
+        >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N, true);
     }
 }
 //---------------------------------------

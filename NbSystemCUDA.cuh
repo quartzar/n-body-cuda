@@ -52,8 +52,9 @@ void simulate(float4* m_hPos, float4* m_dPos[2],
               uint m_currentRead, uint m_currentWrite,
               float deltaTime, int N, uint m_p, uint m_q);
 void getCUDAError();
-void finalise(float4* m_hPos[2], float4* m_hVel[2],
-              float4* m_dPos[2], float4* m_dVel[2]);
+void finalise(float4* m_hPos, float4* m_dPos[2],
+              float4* m_hVel, float4* m_dVel[2],
+              float4* m_hForce, float4* m_dForce[2]);
 float normalise(float3& vector);
 float3 cross(float3 v0, float3 v1);
 float dot(float3 v0, float3 v1);
@@ -86,8 +87,8 @@ void copyDataToDevice(float4* device, const float4* host, int N);
 void copyDataToHost(float4* host, const float4* device, int N);
 void deployToGPU(float4* oldPos, float4* newPos,
                  float4* oldVel, float4* newVel,
-                 float4* curForce, float deltaTime, int N,
-                 uint p, uint q);
+                 float4* oldForce, float4* newForce,
+                 float deltaTime, int N, uint p, uint q);
 
 }
 //---------------------------------------

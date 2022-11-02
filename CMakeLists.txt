@@ -6,7 +6,7 @@ set(OpenGlLinkers -lglfw -lGLU -lGL -lglut -lGLEW)
 
 
 set(PROJECT_SOURCES
-        NbKernel_N2.cu NbodyRenderer.cpp NbSystemCUDA.cu )
+        NbKernel_N2.cu NbodyRenderer.cpp NbSystemCUDA.cu NbKernel_N2_Verlet.cu NbKernel_N2_Verlet.cuh)
 
 set(PROJECT_HEADERS
         CONSTANTS.h

@@ -1,16 +1,4 @@
 /home/quartzar/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/222.4345.21/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/quartzar/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/222.4345.21/bin/ninja/linux/ninja -G Ninja -S /home/quartzar/Documents/repos/n-body-cuda -B /home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug
--- The CUDA compiler identification is NVIDIA 11.8.89
--- The CXX compiler identification is GNU 11.3.0
--- Detecting CUDA compiler ABI info
--- Detecting CUDA compiler ABI info - done
--- Check for working CUDA compiler: /usr/local/cuda/bin/nvcc - skipped
--- Detecting CUDA compile features
--- Detecting CUDA compile features - done
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Check for working CXX compiler: /usr/bin/c++ - skipped
--- Detecting CXX compile features
--- Detecting CXX compile features - done
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug

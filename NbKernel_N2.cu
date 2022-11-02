@@ -33,7 +33,8 @@ __constant__ float big_G;
 //============================================================//
 __global__ void
 integrateNOrbitals(float4* oldPos, float4* newPos,
-                   float4* oldVel, float4* newVel, float4* curForce,
+                   float4* oldVel, float4* newVel,
+                   float4* oldForce, float4* newForce,
                    float deltaTime, int N, bool multiThreaded)
 /*   where:  */
 // |-> new[Pos/Vel] is calculated here, in kernel/device,
@@ -76,9 +77,9 @@ integrateNOrbitals(float4* oldPos, float4* newPos,
     newPos[id] = curPos;
     newVel[id] = curVel;
     // store force as well
-    curForce[id].x = force.x;
-    curForce[id].y = force.y;
-    curForce[id].z = force.z;
+    newForce[id].x = force.x;
+    newForce[id].y = force.y;
+    newForce[id].z = force.z;
 }
 
 //============================================================//
