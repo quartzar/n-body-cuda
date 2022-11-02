@@ -31,11 +31,11 @@ NbodyRenderer::RenderMode renderMode = NbodyRenderer::POINTS;
 NBodyICConfig sysConfig = NORB_CONFIG_SOLAR;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = true;
+bool displayEnabled = false;
 bool glxyCollision = true;
 bool colourMode = false;
 bool trailMode = true;
-bool outputEnabled = false;
+bool outputEnabled = true;
 bool rotateCam = false;
 //---------------------------------------q
 
@@ -130,7 +130,8 @@ int main(int argc, char** argv)
         std::ofstream outputFile(outputFName);
         for (int orbital = 0; orbital < N_orbitals; orbital++)
         {
-            outputFile << orbital << "," << orbital << "," << orbital << ","
+            outputFile << orbital << ","
+                       << orbital << "," << orbital << "," << orbital << ","
                        << orbital << "," << orbital << "," << orbital << ","
                        << orbital << "," << orbital << "," << orbital;
             if (orbital != N_orbitals - 1) outputFile << ",";
@@ -138,7 +139,8 @@ int main(int argc, char** argv)
         outputFile << std::endl;
         for (int orbital = 0; orbital < N_orbitals; orbital++)
         {
-            outputFile << "x"  << "," << "y"  << "," << "z"  << ","
+            outputFile << "M" << ","
+                       <<"x"  << "," << "y"  << "," << "z"  << ","
                        << "vx" << "," << "vy" << "," << "vz" << ","
                        << "fx" << "," << "fy" << "," << "fz";
             if (orbital != N_orbitals - 1) outputFile << ",";
@@ -147,9 +149,10 @@ int main(int argc, char** argv)
         outputFile.close();
     }
     
-    // RANDOMISE ORBITALS
+    // Randomise Orbitals
     randomiseOrbitals(sysConfig, m_hPos, m_hVel, N_orbitals);
-    // delay();
+    // Set Initial Forces
+    initialiseForces(m_hPos, m_hForce, N_orbitals);
     
     //---------------------------------------
     // MAIN UPDATE LOOP
@@ -176,6 +179,10 @@ int main(int argc, char** argv)
             if (glfwWindowShouldClose(window))
             {
                 std::cout << "\nPROGRAM TERMINATED BY USER\nEXITING AT STEP " << iteration;
+                runTimer(start,  N_orbitals,false);
+                finalise(m_hPos, m_dPos,
+                         m_hVel, m_dVel,
+                         m_hForce, m_dForce);
                 glfwTerminate();
                 exit(EXIT_SUCCESS);
             }
@@ -215,87 +222,6 @@ int main(int argc, char** argv)
 //---------------------------------------
 
 
-// Timer, very simple
-//---------------------------------------
-void runTimer(std::chrono::system_clock::time_point start,
-              int N_orbitals, bool init)
-{
-    if (init)
-    {
-        start = std::chrono::system_clock::now();
-        std::time_t start_time = std::chrono::system_clock::to_time_t(start);
-        std::cout << "Starting Simulation at ->> " << std::ctime(&start_time)
-                  << "For N == " << N_orbitals << " || Iterations == " << ITERATIONS;
-    }
-    else // end
-    {
-        auto end = std::chrono::system_clock::now();
-        std::chrono::duration<double> elapsed_seconds = end-start;
-        std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-        std::cout << "\nFinished Computation at ->> " << std::ctime(&end_time)
-                  << "Elapsed Time : " << elapsed_seconds.count() << "s"
-                  << " for N = " << N_orbitals << std::endl;
-    }
-}
-//---------------------------------------
-
-
-// Initialise OpenGL for particle rendering
-//---------------------------------------
-GLFWwindow* initGL(GLFWwindow *window)
-{
-    if(!glewInit())
-    {
-        std::cout << "\nCritical OpenGL error ::\nFailed to initialise GLEW\nTERMINATING";
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-    if (!glfwInit())
-    {   // SAFETY CHECK
-        std::cout << "\nCritical OpenGL error ::\nFailed to initialise GLFW\nTERMINATING";
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-    
-    // CREATE WINDOW IN WINDOWED MODE
-    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-    window = glfwCreateWindow(WIDTH, HEIGHT, "orbiterV6", nullptr, nullptr);
-    
-    if (!window)
-    {   // SAFETY CHECK
-        std::cout << "\n Critical OpenGL error ::\nFailed to open GLFW window\nTERMINATING";
-        glfwTerminate();
-        exit (EXIT_FAILURE);
-    }
-    // CALLBACKS
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); // -> viewport
-    glfwSetKeyCallback(window, key_callback); // -> key input
-    glfwSetScrollCallback(window, scroll_callback); // -> scroll input
-    
-    // set window context | synchronise to refresh rate with swapinterval
-    glfwMakeContextCurrent(window);
-    
-    // SET THE VIEWPORT
-    glViewport(0, 0, WIDTH, HEIGHT);
-    // SET THE PROJECTION TRANSFORM
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(FOV, (GLfloat)WIDTH/(GLfloat)HEIGHT, 0, V_FAR); // TODO: rename to Z_FAR
-    
-    // PREPARE WINDOW
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL); // experimental
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    
-    // PREPARE RENDERER
-    renderer = new NbodyRenderer;
-    
-    // TODO: add GL error check here
-    return window;
-}
-//---------------------------------------
-
-
 // Print to file
 //---------------------------------------
 void printToFile(const std::string& outputFName, int step, int N, float4* pos, float4* vel, float4* force)
@@ -303,9 +229,10 @@ void printToFile(const std::string& outputFName, int step, int N, float4* pos, f
     std::ofstream outputFile;
     outputFile.open(outputFName, std::ios::app); // open file
     
-    float xPos, yPos, zPos, xVel, yVel, zVel, xFrc, yFrc, zFrc;
+    float mass, xPos, yPos, zPos, xVel, yVel, zVel, xFrc, yFrc, zFrc;
     for (int orbital = 0; orbital < N; orbital++)
     {
+        mass = pos[orbital].w;
         xPos = pos[orbital].x;
         yPos = pos[orbital].y;
         zPos = pos[orbital].z;
@@ -316,7 +243,8 @@ void printToFile(const std::string& outputFName, int step, int N, float4* pos, f
         yFrc = force[orbital].y;
         zFrc = force[orbital].z;
     
-        outputFile << xPos << "," << yPos << "," << zPos << ","
+        outputFile << mass << ","
+                   << xPos << "," << yPos << "," << zPos << ","
                    << xVel << "," << yVel << "," << zVel << ","
                    << xFrc << "," << yFrc << "," << zFrc;
         if (orbital != N - 1) outputFile << ",";
@@ -779,37 +707,37 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
         case NORB_CONFIG_SOLAR:
         {
             // sun
-            m_hPos[0].x = 0.0;
-            m_hPos[0].y = 0.0;
-            m_hPos[0].z = 0.0;
-            m_hPos[0].w = 1.0f;
+            m_hPos[0].x = 0.f;
+            m_hPos[0].y = 0.f;
+            m_hPos[0].z = 0.f;
+            m_hPos[0].w = 1.f;
             
-            m_hVel[0].x = 0.0;
-            m_hVel[0].y = 0.0;
-            m_hVel[0].z = 0.0;
-            m_hVel[0].w = 1.0f;
+            m_hVel[0].x = 0.f;
+            m_hVel[0].y = 0.f;
+            m_hVel[0].z = 0.f;
+            m_hVel[0].w = 1.f;
             
             // earth
-            m_hPos[1].x = 1.0f;
-            m_hPos[1].y = 0.0;
-            m_hPos[1].z = 0.0;
-            m_hPos[1].w = 2.9861e-6f;
+            m_hPos[1].x = 1.f;
+            m_hPos[1].y = 0.f;
+            m_hPos[1].z = 0.f;
+            m_hPos[1].w = 3.00273e-6f;// 2.9861e-6f;
 
-            m_hVel[1].x = 0.0f;
+            m_hVel[1].x = 0.f;
             m_hVel[1].y = 29.78f / (float)KMS_TO_AUD;
-            m_hVel[1].z = 0.0;
-            m_hVel[1].w = 2.9861e-6f;
+            m_hVel[1].z = 0.f;
+            m_hVel[1].w = 3.00273e-6f;
     
             // venus
-            // m_hPos[2].y = 0.0;
-            // m_hPos[2].x = 0.723f;
-            // m_hPos[2].z = 0.0;
-            // m_hPos[2].w = 2.447e-6f;
-            //
-            // m_hVel[2].y = 35.02f / (float)KMS_TO_AUD;
-            // m_hVel[2].x = 0.0f;
-            // m_hVel[2].z = 0.0;
-            // m_hVel[2].w = 2.447e-6f;
+            m_hPos[2].y = 0.f;
+            m_hPos[2].x = 0.723f;
+            m_hPos[2].z = 0.f;
+            m_hPos[2].w = 2.447e-6f;
+
+            m_hVel[2].y = 35.02f / (float)KMS_TO_AUD;
+            m_hVel[2].x = 0.f;
+            m_hVel[2].z = 0.f;
+            m_hVel[2].w = 2.447e-6f;
             
         }
             break;
@@ -817,6 +745,46 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
     std::cout << "\nTOTAL MASS ->> " << totalMass;
 }
 //---------------------------------------
+
+
+// Print to file
+//---------------------------------------
+void initialiseForces(float4* pos, float4* force, int N)
+{
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            if (i == j)
+                continue;
+            
+            float3 r;
+    
+            // r_ij -> AU [distance]
+            r.x = pos[i].x - pos[j].x;
+            r.y = pos[i].y - pos[j].y;
+            r.z = pos[i].z - pos[j].z;
+    
+            // distance squared == dot(r_ij, r_ij) + softening^2
+            float distSqr = r.x * r.x + r.y * r.y + r.z * r.z;
+            distSqr += SOFTENING * SOFTENING;
+    
+            // inverse distance cubed == 1 / distSqr^(3/2) [fastest method]
+            float distSixth = distSqr * distSqr * distSqr;
+            float invDistCube = 1.0f / sqrtf(distSixth);
+    
+            // force = mass_j * inverse distance cube
+            float f = pos[j].w * invDistCube;
+    
+            // acceleration = acceleration_i + force * r_ij
+            force[i].x += r.x * f * (float)BIG_G;
+            force[i].y += r.y * f * (float)BIG_G;
+            force[i].z += r.z * f * (float)BIG_G;
+        }
+    }
+}
+//---------------------------------------
+
 
 
 //---------------------------------------
@@ -833,7 +801,7 @@ void simulate(float4* m_hPos, float4* m_dPos[2],
     // Send data to device first
     copyDataToDevice(m_dPos[m_currentRead], m_hPos, N);
     copyDataToDevice(m_dVel[m_currentRead], m_hVel, N);
-    copyDataToDevice(m_dForce[m_currentRead], m_hForce, N); // don't need to send this, TODO: improve force extaction
+    copyDataToDevice(m_dForce[m_currentRead], m_hForce, N);
 
 
     // Do the thing
@@ -894,6 +862,203 @@ float normalise(float3& vector)
         vector.z /= dist;
     }
     return dist;
+}
+//---------------------------------------
+
+
+
+//////////////////////////////////////////////////////
+// █▀▀ █▀█ █░█   █▀▀ █░█ █▄░█ █▀▀ ▀█▀ █ █▀█ █▄░█ █▀ //
+// █▄█ █▀▀ █▄█   █▀░ █▄█ █░▀█ █▄▄ ░█░ █ █▄█ █░▀█ ▄█ //
+//////////////////////////////////////////////////////
+
+extern "C"
+{
+
+// Send softening_sqr value to device
+//---------------------------------------
+void setDeviceSoftening(float softening)
+{
+    float softeningSq = softening * softening;
+    
+    cudaMemcpyToSymbol(softeningSqr, &softeningSq, sizeof(float),0);
+}
+//---------------------------------------
+
+
+// Send gravitational constant to device
+//---------------------------------------
+void setDeviceBigG(float G)
+{
+    cudaMemcpyToSymbol(big_G, &G, sizeof(float),0);
+}
+//---------------------------------------
+
+
+// Allocate device memory for variables
+//---------------------------------------
+void allocateNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2],  int N)
+{
+    // memory size for device allocation
+    uint memSize = sizeof(float4) * N;
+    // uint fMemSize = sizeof(float3) * N;
+    
+    cudaMalloc((void**)&pos[0], memSize);
+    cudaMalloc((void**)&pos[1], memSize);
+    cudaMalloc((void**)&vel[0], memSize);
+    cudaMalloc((void**)&vel[1], memSize);
+    cudaMalloc((void**)&force[0], memSize);
+    cudaMalloc((void**)&force[1], memSize);
+}
+//---------------------------------------
+
+
+// De-allocate device memory variables
+//---------------------------------------
+void deleteNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2])
+{
+    cudaFree((void**)pos[0]);
+    cudaFree((void**)pos[1]);
+    cudaFree((void**)vel[0]);
+    cudaFree((void**)vel[1]);
+    cudaFree((void**)force[0]);
+    cudaFree((void**)force[1]);
+}
+//---------------------------------------
+
+
+// Copy data from host[CPU] ->> device[GPU]
+//---------------------------------------
+void copyDataToDevice(float4* device, const float4* host, int N)
+{
+    uint memSize = sizeof(float4) * N;
+    cudaMemcpy(device, host, memSize, cudaMemcpyHostToDevice);
+    getCUDAError();
+}
+//---------------------------------------
+
+
+// Copy data from device[GPU] ->> host[CPU]
+//---------------------------------------
+void copyDataToHost(float4* host, const float4* device, int N)
+{
+    uint memSize = sizeof(float4) * N;
+    cudaMemcpy(host, device, memSize, cudaMemcpyDeviceToHost);
+    getCUDAError();
+}
+//---------------------------------------
+
+
+// Initiates GPU kernel computations every iteration
+//---------------------------------------
+void deployToGPU(float4* oldPos, float4* newPos,
+                 float4* oldVel, float4* newVel,
+                 float4* oldForce, float4* newForce,
+                 float deltaTime, int N, uint p, uint q)
+{
+    uint shMemSize = p * q * sizeof(float4);
+    
+    // thread and grid time :D
+    dim3 threads(p, q, 1);
+    dim3 grid(N / p, 1, 1);
+    
+    // DEPLOY
+    /*If multithreading is enabled (i.e. q>1 | multiple threads per
+     * body) then the more complicated code is executed (using bool template
+     * over in the kernel), and if it is not, then the simpler code is executed*/
+    if (grid.y == 1)
+    {
+        integrateNOrbitals<<<grid, threads, shMemSize
+        >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N, false);
+    }
+    else
+    {
+        integrateNOrbitals<<<grid, threads, shMemSize
+        >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N, true);
+    }
+}
+//---------------------------------------
+}
+
+// MISC FUNCTIONS
+
+// Timer, very simple
+//---------------------------------------
+void runTimer(std::chrono::system_clock::time_point start,
+              int N_orbitals, bool init)
+{
+    if (init)
+    {
+        start = std::chrono::system_clock::now();
+        std::time_t start_time = std::chrono::system_clock::to_time_t(start);
+        std::cout << "Starting Simulation at ->> " << std::ctime(&start_time)
+                  << "For N == " << N_orbitals << " || Iterations == " << ITERATIONS;
+    }
+    else // end
+    {
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end-start;
+        std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+        std::cout << "\nFinished Computation at ->> " << std::ctime(&end_time)
+                  << "Elapsed Time : " << elapsed_seconds.count() << "s"
+                  << " for N = " << N_orbitals << std::endl;
+    }
+}
+//---------------------------------------
+
+
+// Initialise OpenGL for particle rendering
+//---------------------------------------
+GLFWwindow* initGL(GLFWwindow *window)
+{
+    if(!glewInit())
+    {
+        std::cout << "\nCritical OpenGL error ::\nFailed to initialise GLEW\nTERMINATING";
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+    if (!glfwInit())
+    {   // SAFETY CHECK
+        std::cout << "\nCritical OpenGL error ::\nFailed to initialise GLFW\nTERMINATING";
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+    
+    // CREATE WINDOW IN WINDOWED MODE
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "orbiterV6", nullptr, nullptr);
+    
+    if (!window)
+    {   // SAFETY CHECK
+        std::cout << "\n Critical OpenGL error ::\nFailed to open GLFW window\nTERMINATING";
+        glfwTerminate();
+        exit (EXIT_FAILURE);
+    }
+    // CALLBACKS
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); // -> viewport
+    glfwSetKeyCallback(window, key_callback); // -> key input
+    glfwSetScrollCallback(window, scroll_callback); // -> scroll input
+    
+    // set window context | synchronise to refresh rate with swapinterval
+    glfwMakeContextCurrent(window);
+    
+    // SET THE VIEWPORT
+    glViewport(0, 0, WIDTH, HEIGHT);
+    // SET THE PROJECTION TRANSFORM
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(FOV, (GLfloat)WIDTH/(GLfloat)HEIGHT, 0, V_FAR); // TODO: rename to Z_FAR
+    
+    // PREPARE WINDOW
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL); // experimental
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    
+    // PREPARE RENDERER
+    renderer = new NbodyRenderer;
+    
+    // TODO: add GL error check here
+    return window;
 }
 //---------------------------------------
 
@@ -1023,133 +1188,5 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 //---------------------------------------
 
-
-//////////////////////////////////////////////////////
-// █▀▀ █▀█ █░█   █▀▀ █░█ █▄░█ █▀▀ ▀█▀ █ █▀█ █▄░█ █▀ //
-// █▄█ █▀▀ █▄█   █▀░ █▄█ █░▀█ █▄▄ ░█░ █ █▄█ █░▀█ ▄█ //
-//////////////////////////////////////////////////////
-
-extern "C"
-{
-
-// Send softening_sqr value to device
-//---------------------------------------
-void setDeviceSoftening(float softening)
-{
-    float softeningSq = softening * softening;
-    
-    cudaMemcpyToSymbol(softeningSqr, &softeningSq, sizeof(float),0);
-}
-//---------------------------------------
-
-
-// Send gravitational constant to device
-//---------------------------------------
-void setDeviceBigG(float G)
-{
-    cudaMemcpyToSymbol(big_G, &G, sizeof(float),0);
-}
-//---------------------------------------
-
-
-// Allocate device memory for variables
-//---------------------------------------
-void allocateNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2],  int N)
-{
-    // memory size for device allocation
-    uint memSize = sizeof(float4) * N;
-    // uint fMemSize = sizeof(float3) * N;
-    
-    cudaMalloc((void**)&pos[0], memSize);
-    cudaMalloc((void**)&pos[1], memSize);
-    cudaMalloc((void**)&vel[0], memSize);
-    cudaMalloc((void**)&vel[1], memSize);
-    cudaMalloc((void**)&force[0], memSize);
-    cudaMalloc((void**)&force[1], memSize);
-}
-//---------------------------------------
-
-
-// De-allocate device memory variables
-//---------------------------------------
-void deleteNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2])
-{
-    cudaFree((void**)pos[0]);
-    cudaFree((void**)pos[1]);
-    cudaFree((void**)vel[0]);
-    cudaFree((void**)vel[1]);
-    cudaFree((void**)force[0]);
-    cudaFree((void**)force[1]);
-}
-//---------------------------------------
-
-
-// Copy data from host[CPU] ->> device[GPU]
-//---------------------------------------
-void copyDataToDevice(float4* device, const float4* host, int N)
-{
-    uint memSize = sizeof(float4) * N;
-    cudaMemcpy(device, host, memSize, cudaMemcpyHostToDevice);
-    getCUDAError();
-}
-//---------------------------------------
-
-
-// Copy data from device[GPU] ->> host[CPU]
-//---------------------------------------
-void copyDataToHost(float4* host, const float4* device, int N)
-{
-    uint memSize = sizeof(float4) * N;
-    cudaMemcpy(host, device, memSize, cudaMemcpyDeviceToHost);
-    getCUDAError();
-}
-//---------------------------------------
-
-
-// Initiates GPU kernel computations every iteration
-//---------------------------------------
-void deployToGPU(float4* oldPos, float4* newPos,
-                 float4* oldVel, float4* newVel,
-                 float4* oldForce, float4* newForce,
-                 float deltaTime, int N, uint p, uint q)
-{
-    uint shMemSize = p * q * sizeof(float4);
-    
-    // thread and grid time :D
-    dim3 threads(p, q, 1);
-    dim3 grid(N / p, 1, 1);
-    
-    // DEPLOY
-    /*If multithreading is enabled (i.e. q>1 | multiple threads per
-     * body) then the more complicated code is executed (using bool template
-     * over in the kernel), and if it is not, then the simpler code is executed*/
-    if (grid.y == 1)
-    {
-        integrateNOrbitals<<<grid, threads, shMemSize
-        >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N, false);
-    }
-    else
-    {
-        integrateNOrbitals<<<grid, threads, shMemSize
-        >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N, true);
-    }
-}
-//---------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}
 
 
