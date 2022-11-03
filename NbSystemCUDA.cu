@@ -31,11 +31,11 @@ NbodyRenderer::RenderMode renderMode = NbodyRenderer::POINTS;
 NBodyICConfig sysConfig = NORB_CONFIG_SOLAR;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = true;
+bool displayEnabled = false;
 bool glxyCollision = true;
 bool colourMode = false;
 bool trailMode = true;
-bool outputEnabled = false;
+bool outputEnabled = true;
 bool rotateCam = false;
 //---------------------------------------q
 
@@ -260,7 +260,7 @@ void printToFile(const std::string& outputFName, int step, int N, float4* pos, f
 
 // IC generator
 //---------------------------------------
-void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int N)
+void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
 {
     using std::uniform_real_distribution;
     std::default_random_engine gen(SEED); // NOLINT(cert-msc51-cpp)
@@ -293,19 +293,19 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
                     massClamped = std::clamp(mass, (float)INIT_M_LOWER, (float)INIT_M_HIGHER);
                 
                 // random position assignment
-                m_hPos[i].x = randXPos(gen);
-                m_hPos[i].y = randYPos(gen);
-                m_hPos[i].z = randHeight(gen);
-                m_hPos[i].w = massClamped;
+                pos[i].x = randXPos(gen);
+                pos[i].y = randYPos(gen);
+                pos[i].z = randHeight(gen);
+                pos[i].w = massClamped;
     
                 // random velocity assignment
-                float r = sqrtf(m_hPos[i].x * m_hPos[i].x + m_hPos[i].y * m_hPos[i].y + m_hPos[i].z * m_hPos[i].z);
-                m_hVel[i].x = randVel(gen) * (r/m_hPos[i].x);//0.001f;
-                m_hVel[i].y = randVel(gen) * (r/m_hPos[i].y);//0.001f;
-                m_hVel[i].z = 0.0f;
-                m_hVel[i].w = m_hPos[i].w;
+                float r = sqrtf(pos[i].x * pos[i].x + pos[i].y * pos[i].y + pos[i].z * pos[i].z);
+                vel[i].x = randVel(gen) * (r / pos[i].x);//0.001f;
+                vel[i].y = randVel(gen) * (r / pos[i].y);//0.001f;
+                vel[i].z = 0.0f;
+                vel[i].w = pos[i].w;
         
-                totalMass += m_hPos[i].w;
+                totalMass += pos[i].w;
             }
         }
             break;
@@ -327,15 +327,15 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
             float inner = 2.5f * scale;
             float outer = 4.0f * scale;
     
-            m_hPos[0].x = 0.0;
-            m_hPos[0].y = 0.0;
-            m_hPos[0].z = 0.0;
-            m_hPos[0].w = CENTRE_STAR_M;
+            pos[0].x = 0.0;
+            pos[0].y = 0.0;
+            pos[0].z = 0.0;
+            pos[0].w = CENTRE_STAR_M;
     
-            m_hVel[0].x = 0.0;
-            m_hVel[0].y = 0.0;
-            m_hVel[0].z = 0.0;
-            m_hVel[0].w = CENTRE_STAR_M;
+            vel[0].x = 0.0;
+            vel[0].y = 0.0;
+            vel[0].z = 0.0;
+            vel[0].w = CENTRE_STAR_M;
     
     
             int i = 1;
@@ -349,11 +349,11 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
                 float len = normalise(point);
                 if (len > 1)
                     continue;
-        
-                m_hPos[i].x = point.x * (inner + (outer - inner) * randF(gen) / (float) RAND_MAX);
-                m_hPos[i].y = point.x * (inner + (outer - inner) * randF(gen) / (float) RAND_MAX);
-                m_hPos[i].z = point.x * (inner + (outer - inner) * randF(gen) / (float) RAND_MAX);
-                m_hPos[i].w = randMass(gen);
+    
+                pos[i].x = point.x * (inner + (outer - inner) * randF(gen) / (float) RAND_MAX);
+                pos[i].y = point.x * (inner + (outer - inner) * randF(gen) / (float) RAND_MAX);
+                pos[i].z = point.x * (inner + (outer - inner) * randF(gen) / (float) RAND_MAX);
+                pos[i].w = randMass(gen);
                 
         
                 x = 0.0f;
@@ -368,12 +368,12 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
                     axis.y = point.x;
                     normalise(axis);
                 }
-                float3 vv = {m_hPos[i].x, m_hPos[i].y, m_hPos[i].z};
+                float3 vv = {pos[i].x, pos[i].y, pos[i].z};
                 vv = cross(vv, axis);
-                m_hVel[i].x = vv.x * vScale;
-                m_hVel[i].y = vv.y * vScale;
-                m_hVel[i].z = vv.z * vScale;
-                m_hVel[i].w = m_hPos[i].w;
+                vel[i].x = vv.x * vScale;
+                vel[i].y = vv.y * vScale;
+                vel[i].z = vv.z * vScale;
+                vel[i].w = pos[i].w;
         
                 i++;
             }
@@ -397,15 +397,15 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
                 float lengthSq = dot(point, point);
                 if (lengthSq > 1)
                     continue;
-                
-                m_hPos[i].x = point.x * scale;
-                m_hPos[i].y = point.y * scale;
-                m_hPos[i].z = point.z * scale;
-                m_hPos[i].w = randMass(gen);
-                m_hVel[i].x = point.x * vScale; //* float(PI)/180 * lengthSq;
-                m_hVel[i].y = point.y * vScale;
-                m_hVel[i].z = point.z * vScale;
-                m_hVel[i].w = m_hPos[i].w;
+    
+                pos[i].x = point.x * scale;
+                pos[i].y = point.y * scale;
+                pos[i].z = point.z * scale;
+                pos[i].w = randMass(gen);
+                vel[i].x = point.x * vScale; //* float(PI)/180 * lengthSq;
+                vel[i].y = point.y * vScale;
+                vel[i].z = point.z * vScale;
+                vel[i].w = pos[i].w;
                 
                 i++;
             }
@@ -419,15 +419,15 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
             uniform_real_distribution<float> randMassInner(ADVD_M_INNER_MIN, ADVD_M_INNER_MAX);
             // uniform_real_distribution<float> randMassOuter(INIT_M_LOWER, INIT_M_HIGHER);
             
-            m_hPos[0].x = 0.0;
-            m_hPos[0].y = 0.0;
-            m_hPos[0].z = 0.0;
-            m_hPos[0].w = ADVD_CENTRE_M;
+            pos[0].x = 0.0;
+            pos[0].y = 0.0;
+            pos[0].z = 0.0;
+            pos[0].w = ADVD_CENTRE_M;
     
-            m_hVel[0].x = 0.0;
-            m_hVel[0].y = 0.0;
-            m_hVel[0].z = 0.0;
-            m_hVel[0].w = ADVD_CENTRE_M;
+            vel[0].x = 0.0;
+            vel[0].y = 0.0;
+            vel[0].z = 0.0;
+            vel[0].w = ADVD_CENTRE_M;
     
             float c      = ADVD_C_INNER; // flatness
             float mass   = randMassInner(gen);
@@ -437,15 +437,15 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
             int start;
             if (glxyCollision)
             {
-                m_hPos[1].x = 1000.0;
-                m_hPos[1].y = 500.0;
-                m_hPos[1].z = -10000.0;
-                m_hPos[1].w = ADVD_G2_MASS;
+                pos[1].x = 1000.0;
+                pos[1].y = 500.0;
+                pos[1].z = -10000.0;
+                pos[1].w = ADVD_G2_MASS;
     
-                m_hVel[1].x = -0.1;
-                m_hVel[1].y = 0.0;
-                m_hVel[1].z = 1.0;
-                m_hVel[1].w = ADVD_G2_MASS;
+                vel[1].x = -0.1;
+                vel[1].y = 0.0;
+                vel[1].z = 1.0;
+                vel[1].w = ADVD_G2_MASS;
                 start = 2;
             }
             else
@@ -459,67 +459,67 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
                     radius = ADVD_R_OUTER;
                 }
                 
-                float3 pos;
+                float3 position;
                 while (true)
                 {
-                    pos.x = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
-                    pos.y = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
+                    position.x = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
+                    position.y = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
                     
-                    if (pos.y >= -1.0f * sqrtf(1.0f - powf(pos.x, 2.0f))
-                    && pos.y <= sqrtf(1.0f - powf(pos.x, 2.0f)))
+                    if (position.y >= -1.0f * sqrtf(1.0f - powf(position.x, 2.0f))
+                        && position.y <= sqrtf(1.0f - powf(position.x, 2.0f)))
                         break;
                 }
                 
-                float zPosMax = sqrtf(c * (1.0f - powf(pos.x, 2.0f)
-                        -powf(pos.y, 2.0f)));
+                float zPosMax = sqrtf(c * (1.0f - powf(position.x, 2.0f)
+                        -powf(position.y, 2.0f)));
                 float zPosMin = -1.0f * zPosMax;
                 float zPosRand = rand() / (float) RAND_MAX;
-                pos.z = (zPosMax - zPosMin) * zPosRand + zPosMin;
-
-                pos.x *= radius;
-                pos.y *= radius;
-                pos.z *= radius;
+                position.z = (zPosMax - zPosMin) * zPosRand + zPosMin;
+    
+                position.x *= radius;
+                position.y *= radius;
+                position.z *= radius;
                 
-                float m = pos.y / pos.x;
+                float m = position.y / position.x;
                 m = -1.0f / m;
-                float b = pos.y - pos.x * m;
+                float b = position.y - position.x * m;
                 
-                float3 vel;
+                float3 velocity;
                 // float vel_m = sqrtf(((float)BIG_G * (1e6f + mass * 1.2e-6f)) /
-                //                     sqrtf(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z));
+                //                     sqrtf(position.x*position.x + position.y*position.y + position.z*position.z));
                 float vel_m = sqrtf(((float)BIG_G * (ADVD_CENTRE_M + mass * 1.2e2f)) /
-                                    sqrtf(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z));
+                                    sqrtf(position.x * position.x + position.y * position.y + position.z * position.z));
                 
-                if (pos.y > 0)
+                if (position.y > 0)
                 {
-                    vel = {-1.0f * (radius/2.0f), (pos.x - radius/2.0f) * m + b - pos.y, 0};
-                    vel_m /= sqrtf(vel.x*vel.x + vel.y*vel.y + vel.z*vel.z);
-                    vel.x *= vel_m;
-                    vel.y *= vel_m;
-                    vel.z *= vel_m;
+                    velocity = {-1.0f * (radius / 2.0f), (position.x - radius / 2.0f) * m + b - position.y, 0};
+                    vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
+                    velocity.x *= vel_m;
+                    velocity.y *= vel_m;
+                    velocity.z *= vel_m;
                     
                 }
                 else
                 {
-                    vel = {(radius/2.0f), (pos.x + radius/2.0f) * m + b - pos.y, 0};
-                    vel_m /= sqrtf(vel.x*vel.x + vel.y*vel.y + vel.z*vel.z);
-                    vel.x *= vel_m;
-                    vel.y *= vel_m;
-                    vel.z *= vel_m;
+                    velocity = {(radius / 2.0f), (position.x + radius / 2.0f) * m + b - position.y, 0};
+                    vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
+                    velocity.x *= vel_m;
+                    velocity.y *= vel_m;
+                    velocity.z *= vel_m;
                 }
                 
                 float pScale = 1.0f;
-                m_hPos[i].x = pos.x * pScale;
-                m_hPos[i].y = pos.y * pScale;
-                m_hPos[i].z = pos.z * pScale;
-                m_hPos[i].w = mass;
+                pos[i].x = position.x * pScale;
+                pos[i].y = position.y * pScale;
+                pos[i].z = position.z * pScale;
+                pos[i].w = mass;
+    
+                vel[i].x = velocity.x;
+                vel[i].y = velocity.y;
+                vel[i].z = velocity.z;
+                vel[i].w = mass;
                 
-                m_hVel[i].x = vel.x;
-                m_hVel[i].y = vel.y;
-                m_hVel[i].z = vel.z;
-                m_hVel[i].w = mass;
-                
-                // std::cout << "\n " << m_hVel[i].x << " " << m_hVel[i].y << " " << m_hVel[i].z;
+                // std::cout << "\n " << velocity[i].x << " " << velocity[i].y << " " << velocity[i].z;
     
             }
         }
@@ -529,25 +529,25 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
             // hi
             uniform_real_distribution<float> randMassInner(ADVD_M_INNER_MIN, ADVD_M_INNER_MAX);
     
-            m_hPos[0].x = 0.0;
-            m_hPos[0].y = 0.0;
-            m_hPos[0].z = 0.0;
-            m_hPos[0].w = ADVD_CENTRE_M;
+            pos[0].x = 0.0;
+            pos[0].y = 0.0;
+            pos[0].z = 0.0;
+            pos[0].w = ADVD_CENTRE_M;
     
-            m_hVel[0].x = 0.0;
-            m_hVel[0].y = 0.0;
-            m_hVel[0].z = 0.0;
-            m_hVel[0].w = ADVD_CENTRE_M;
+            vel[0].x = 0.0;
+            vel[0].y = 0.0;
+            vel[0].z = 0.0;
+            vel[0].w = ADVD_CENTRE_M;
     
-            m_hPos[N/2].x = ADVD_G2_X;
-            m_hPos[N/2].y = ADVD_G2_Y;
-            m_hPos[N/2].z = ADVD_G2_Z;
-            m_hPos[N/2].w = ADVD_CENTRE_M;
+            pos[N / 2].x = ADVD_G2_X;
+            pos[N / 2].y = ADVD_G2_Y;
+            pos[N / 2].z = ADVD_G2_Z;
+            pos[N / 2].w = ADVD_CENTRE_M;
     
-            m_hVel[N/2].x = -1.f * ADVD_G2_VX;
-            m_hVel[N/2].y = -1.f * ADVD_G2_VY;
-            m_hVel[N/2].z = -1.f * ADVD_G2_VZ;
-            m_hVel[N/2].w = ADVD_CENTRE_M;
+            vel[N / 2].x = -1.f * ADVD_G2_VX;
+            vel[N / 2].y = -1.f * ADVD_G2_VY;
+            vel[N / 2].z = -1.f * ADVD_G2_VZ;
+            vel[N / 2].w = ADVD_CENTRE_M;
     
             float c      = ADVD_C_INNER; // flatness
             float mass;//   = randMassInner(gen);
@@ -565,65 +565,65 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
                     radius = ADVD_R_OUTER;
                 }
         
-                float3 pos;
+                float3 position;
                 while (true)
                 {
-                    pos.x = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
-                    pos.y = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
+                    position.x = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
+                    position.y = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
             
-                    if (pos.y >= -1.0f * sqrtf(1.0f - powf(pos.x, 2.0f))
-                        && pos.y <= sqrtf(1.0f - powf(pos.x, 2.0f)))
+                    if (position.y >= -1.0f * sqrtf(1.0f - powf(position.x, 2.0f))
+                        && position.y <= sqrtf(1.0f - powf(position.x, 2.0f)))
                         break;
                 }
         
-                float zPosMax = sqrtf(c * (1.0f - powf(pos.x, 2.0f)
-                                           -powf(pos.y, 2.0f)));
+                float zPosMax = sqrtf(c * (1.0f - powf(position.x, 2.0f)
+                                           -powf(position.y, 2.0f)));
                 float zPosMin = -1.0f * zPosMax;
                 float zPosRand = rand() / (float) RAND_MAX;
-                pos.z = (zPosMax - zPosMin) * zPosRand + zPosMin;
+                position.z = (zPosMax - zPosMin) * zPosRand + zPosMin;
+    
+                position.x *= radius;
+                position.y *= radius;
+                position.z *= radius;
         
-                pos.x *= radius;
-                pos.y *= radius;
-                pos.z *= radius;
-        
-                float m = pos.y / pos.x;
+                float m = position.y / position.x;
                 m = -1.0f / m;
-                float b = pos.y - pos.x * m;
+                float b = position.y - position.x * m;
         
-                float3 vel;
+                float3 velocity;
                 // float vel_m = sqrtf(((float)BIG_G * (1e6f + mass * 1.2e-6f)) /
-                //                     sqrtf(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z));
+                //                     sqrtf(position.x*position.x + position.y*position.y + position.z*position.z));
                 float vel_m = sqrtf(((float)BIG_G * (ADVD_CENTRE_M + mass * 1.2e2f)) /
-                                    sqrtf(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z));
+                                    sqrtf(position.x * position.x + position.y * position.y + position.z * position.z));
         
-                if (pos.y > 0)
+                if (position.y > 0)
                 {
-                    vel = {-1.0f * (radius/2.0f), (pos.x - radius/2.0f) * m + b - pos.y, 0};
-                    vel_m /= sqrtf(vel.x*vel.x + vel.y*vel.y + vel.z*vel.z);
-                    vel.x *= vel_m;
-                    vel.y *= vel_m;
-                    vel.z *= vel_m;
+                    velocity = {-1.0f * (radius / 2.0f), (position.x - radius / 2.0f) * m + b - position.y, 0};
+                    vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
+                    velocity.x *= vel_m;
+                    velocity.y *= vel_m;
+                    velocity.z *= vel_m;
             
                 }
                 else
                 {
-                    vel = {(radius/2.0f), (pos.x + radius/2.0f) * m + b - pos.y, 0};
-                    vel_m /= sqrtf(vel.x*vel.x + vel.y*vel.y + vel.z*vel.z);
-                    vel.x *= vel_m;
-                    vel.y *= vel_m;
-                    vel.z *= vel_m;
+                    velocity = {(radius / 2.0f), (position.x + radius / 2.0f) * m + b - position.y, 0};
+                    vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
+                    velocity.x *= vel_m;
+                    velocity.y *= vel_m;
+                    velocity.z *= vel_m;
                 }
         
                 float pScale = 1.0f;
-                m_hPos[i].x = pos.x * pScale;
-                m_hPos[i].y = pos.y * pScale;
-                m_hPos[i].z = pos.z * pScale;
-                m_hPos[i].w = mass;
-        
-                m_hVel[i].x = vel.x;
-                m_hVel[i].y = vel.y;
-                m_hVel[i].z = vel.z;
-                m_hVel[i].w = mass;
+                pos[i].x = position.x * pScale;
+                pos[i].y = position.y * pScale;
+                pos[i].z = position.z * pScale;
+                pos[i].w = mass;
+    
+                vel[i].x = velocity.x;
+                vel[i].y = velocity.y;
+                vel[i].z = velocity.z;
+                vel[i].w = mass;
                 }
     
             c      = ADVD_C_INNER; // flatness
@@ -641,103 +641,111 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
                     radius = ADVD_R_OUTER;
                 }
         
-                float3 pos;
+                float3 position;
                 while (true)
                 {
-                    pos.x = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
-                    pos.y = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
+                    position.x = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
+                    position.y = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
             
-                    if (pos.y >= -1.0f * sqrtf(1.0f - powf(pos.x, 2.0f))
-                        && pos.y <= sqrtf(1.0f - powf(pos.x, 2.0f)))
+                    if (position.y >= -1.0f * sqrtf(1.0f - powf(position.x, 2.0f))
+                        && position.y <= sqrtf(1.0f - powf(position.x, 2.0f)))
                         break;
                 }
         
-                float zPosMax = sqrtf(c * (1.0f - powf(pos.x, 2.0f)
-                                           -powf(pos.y, 2.0f)));
+                float zPosMax = sqrtf(c * (1.0f - powf(position.x, 2.0f)
+                                           -powf(position.y, 2.0f)));
                 float zPosMin = -1.0f * zPosMax;
                 float zPosRand = rand() / (float) RAND_MAX;
-                pos.z = (zPosMax - zPosMin) * zPosRand + zPosMin;
+                position.z = (zPosMax - zPosMin) * zPosRand + zPosMin;
+    
+                position.x *= radius;
+                position.y *= radius;
+                position.z *= radius;
         
-                pos.x *= radius;
-                pos.y *= radius;
-                pos.z *= radius;
-        
-                float m = pos.y / pos.x;
+                float m = position.y / position.x;
                 m = -1.0f / m;
-                float b = pos.y - pos.x * m;
+                float b = position.y - position.x * m;
         
-                float3 vel;
+                float3 velocity;
                 // float vel_m = sqrtf(((float)BIG_G * (1e6f + mass * 1.2e-6f)) /
-                //                     sqrtf(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z));
+                //                     sqrtf(position.x*position.x + position.y*position.y + position.z*position.z));
                 float vel_m = sqrtf(((float)BIG_G * (ADVD_CENTRE_M + mass * 1.2e2f)) /
-                                    sqrtf(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z));
+                                    sqrtf(position.x * position.x + position.y * position.y + position.z * position.z));
         
-                if (pos.y > 0)
+                if (position.y > 0)
                 {
-                    vel = {-1.0f * (radius/2.0f), (pos.x - radius/2.0f) * m + b - pos.y, 0};
-                    vel_m /= sqrtf(vel.x*vel.x + vel.y*vel.y + vel.z*vel.z);
-                    vel.x *= vel_m;
-                    vel.y *= vel_m;
-                    vel.z *= vel_m;
+                    velocity = {-1.0f * (radius / 2.0f), (position.x - radius / 2.0f) * m + b - position.y, 0};
+                    vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
+                    velocity.x *= vel_m;
+                    velocity.y *= vel_m;
+                    velocity.z *= vel_m;
             
                 }
                 else
                 {
-                    vel = {(radius/2.0f), (pos.x + radius/2.0f) * m + b - pos.y, 0};
-                    vel_m /= sqrtf(vel.x*vel.x + vel.y*vel.y + vel.z*vel.z);
-                    vel.x *= vel_m;
-                    vel.y *= vel_m;
-                    vel.z *= vel_m;
+                    velocity = {(radius / 2.0f), (position.x + radius / 2.0f) * m + b - position.y, 0};
+                    vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
+                    velocity.x *= vel_m;
+                    velocity.y *= vel_m;
+                    velocity.z *= vel_m;
                 }
-        
-
-                m_hPos[i].x = pos.z + (float)ADVD_G2_X;
-                m_hPos[i].y = pos.y + (float)ADVD_G2_Y;
-                m_hPos[i].z = pos.x + (float)ADVD_G2_Z;
-                m_hPos[i].w = mass;
-        
-                m_hVel[i].x = vel.z - (float)ADVD_G2_VX;
-                m_hVel[i].y = vel.y - (float)ADVD_G2_VY;
-                m_hVel[i].z = vel.x - (float)ADVD_G2_VZ;
-                m_hVel[i].w = mass;
+    
+    
+                pos[i].x = position.z + (float)ADVD_G2_X;
+                pos[i].y = position.y + (float)ADVD_G2_Y;
+                pos[i].z = position.x + (float)ADVD_G2_Z;
+                pos[i].w = mass;
+    
+                vel[i].x = velocity.z - (float)ADVD_G2_VX;
+                vel[i].y = velocity.y - (float)ADVD_G2_VY;
+                vel[i].z = velocity.x - (float)ADVD_G2_VZ;
+                vel[i].w = mass;
             }
             
         }
             break;
         case NORB_CONFIG_SOLAR:
         {
-            // sun
-            m_hPos[0].x = 0.f;
-            m_hPos[0].y = 0.f;
-            m_hPos[0].z = 0.f;
-            m_hPos[0].w = 1.f;
-            
-            m_hVel[0].x = 0.f;
-            m_hVel[0].y = 0.f;
-            m_hVel[0].z = 0.f;
-            m_hVel[0].w = 1.f;
-            
-            // earth
-            m_hPos[1].x = 1.f;
-            m_hPos[1].y = 0.f;
-            m_hPos[1].z = 0.f;
-            m_hPos[1].w = 3.00273e-6f;// 2.9861e-6f;
-
-            m_hVel[1].x = 0.f;
-            m_hVel[1].y = 29.78f / (float)KMS_TO_AUD;//29.78f / (float)KMS_TO_AUD;
-            m_hVel[1].z = 0.f;
-            m_hVel[1].w = 3.00273e-6f;
+            int i = 0;
+            // The Sun
+            pos[i].x = pos[i].y = pos[i].z = 0.f;
+            pos[i].w = 1.f;
     
-            // venus
-            m_hPos[2].x = 0.723f;
-            m_hPos[2].y = 0.f;
-            m_hPos[2].z = 0.f;
-            m_hPos[2].w = 2.447e-6f;
+            vel[i].x = vel[i].y = vel[i].z = 0.f;
+            vel[i].w = 1.f;
+    
+            // Mercury
+            pos[++i] = {.387f, 0.f, 0.f, 1.651e-7f};
+            vel[i]   = {0.f, 47.36f/KMS_TO_AUD, 0.f, 1.651e-7f};
+    
+            // Venus
+            pos[++i].x = 0.723f;
+            pos[i].y = 0.f;
+            pos[i].z = 0.f;
+            pos[i].w = 2.447e-6f;
+    
+            vel[i].x = 0.f;
+            vel[i].y = 35.02f / KMS_TO_AUD;
+            vel[i].z = 0.f;
+            vel[i].w = 2.447e-6f;
+            
+            // Earth
+            pos[++i].x = 1.f;
+            pos[i].y = 0.f;
+            pos[i].z = 0.f;
+            pos[i].w = 3.00273e-6f;// 2.9861e-6f;
 
-            m_hVel[2].x = 0.f;
-            m_hVel[2].y = 35.02f / (float)KMS_TO_AUD;
-            m_hVel[2].z = 0.f;
-            m_hVel[2].w = 2.447e-6f;
+            vel[i].x = 0.f;
+            vel[i].y = 29.78f / KMS_TO_AUD;//29.78f / (float)KMS_TO_AUD;
+            vel[i].z = 0.f;
+            vel[i].w = 3.00273e-6f;
+    
+            // Mars
+            pos[++i] = {1.524f, 0.f, 0.f, 3.213e-7f};
+            vel[i]   = {0.f, 24.07f/KMS_TO_AUD, 0.f, 3.213e-7f};
+            
+            
+            
             
         }
             break;
