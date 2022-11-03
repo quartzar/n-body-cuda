@@ -724,18 +724,18 @@ void randomiseOrbitals(NBodyICConfig config, float4* m_hPos, float4* m_hVel, int
             m_hPos[1].w = 3.00273e-6f;// 2.9861e-6f;
 
             m_hVel[1].x = 0.f;
-            m_hVel[1].y = 29.78f / (float)KMS_TO_AUD;
+            m_hVel[1].y = 29.78f / (float)KMS_TO_AUD;//29.78f / (float)KMS_TO_AUD;
             m_hVel[1].z = 0.f;
             m_hVel[1].w = 3.00273e-6f;
     
             // venus
-            m_hPos[2].y = 0.f;
             m_hPos[2].x = 0.723f;
+            m_hPos[2].y = 0.f;
             m_hPos[2].z = 0.f;
             m_hPos[2].w = 2.447e-6f;
 
-            m_hVel[2].y = 35.02f / (float)KMS_TO_AUD;
             m_hVel[2].x = 0.f;
+            m_hVel[2].y = 35.02f / (float)KMS_TO_AUD;
             m_hVel[2].z = 0.f;
             m_hVel[2].w = 2.447e-6f;
             
