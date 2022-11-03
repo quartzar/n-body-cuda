@@ -18,14 +18,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2c626faf-f666-476d-8d36-903ca7087f6f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CONSTANTS.h" beforeDir="false" afterPath="$PROJECT_DIR$/CONSTANTS.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cu" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PYnalaysis.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/PYnalaysis.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" afterDir="false" />
@@ -132,7 +128,7 @@
       <workItem from="1667083991196" duration="3226000" />
       <workItem from="1667248716241" duration="7159000" />
       <workItem from="1667321592009" duration="171000" />
-      <workItem from="1667403583543" duration="10877000" />
+      <workItem from="1667403583543" duration="11616000" />
     </task>
     <servers />
   </component>
