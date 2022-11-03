@@ -31,7 +31,7 @@ NbodyRenderer::RenderMode renderMode = NbodyRenderer::POINTS;
 NBodyICConfig sysConfig = NORB_CONFIG_SOLAR;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = false;
+bool displayEnabled = true;
 bool glxyCollision = true;
 bool colourMode = false;
 bool trailMode = true;
@@ -714,38 +714,35 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             vel[i].x = vel[i].y = vel[i].z = 0.f;
             vel[i].w = 1.f;
     
-            // Mercury
-            pos[++i] = {.387f, 0.f, 0.f, 1.651e-7f};
-            vel[i]   = {0.f, 47.36f/KMS_TO_AUD, 0.f, 1.651e-7f};
-    
-            // Venus
-            pos[++i].x = 0.723f;
-            pos[i].y = 0.f;
-            pos[i].z = 0.f;
-            pos[i].w = 2.447e-6f;
-    
-            vel[i].x = 0.f;
-            vel[i].y = 35.02f / KMS_TO_AUD;
-            vel[i].z = 0.f;
-            vel[i].w = 2.447e-6f;
-            
             // Earth
             pos[++i].x = 1.f;
             pos[i].y = 0.f;
             pos[i].z = 0.f;
             pos[i].w = 3.00273e-6f;// 2.9861e-6f;
-
+    
             vel[i].x = 0.f;
-            vel[i].y = 29.78f / KMS_TO_AUD;//29.78f / (float)KMS_TO_AUD;
+            vel[i].y = 29.795f / KMS_TO_AUD;//29.78f / (float)KMS_TO_AUD;
             vel[i].z = 0.f;
             vel[i].w = 3.00273e-6f;
     
-            // Mars
-            pos[++i] = {1.524f, 0.f, 0.f, 3.213e-7f};
-            vel[i]   = {0.f, 24.07f/KMS_TO_AUD, 0.f, 3.213e-7f};
-            
-            
-            
+            // Mercury
+            // pos[++i] = {.387f, 0.f, 0.f, 1.651e-7f};
+            // vel[i]   = {0.f, 47.36f/KMS_TO_AUD, 0.f, 1.651e-7f};
+            //
+            // // Venus
+            // pos[++i].x = 0.723f;
+            // pos[i].y = 0.f;
+            // pos[i].z = 0.f;
+            // pos[i].w = 2.447e-6f;
+            //
+            // vel[i].x = 0.f;
+            // vel[i].y = 35.02f / KMS_TO_AUD;
+            // vel[i].z = 0.f;
+            // vel[i].w = 2.447e-6f;
+            //
+            // // Mars
+            // pos[++i] = {1.524f, 0.f, 0.f, 3.213e-7f};
+            // vel[i]   = {0.f, 24.07f/KMS_TO_AUD, 0.f, 3.213e-7f};
             
         }
             break;

@@ -52,22 +52,17 @@ integrateNOrbitals(float4* oldPos, float4* newPos,
     float4 curVel = oldVel[id];
     
     // Leapfrog-Verlet integrator (1967)
+    
     // v(t + dt/2) = v(t - dt/2) + dt * a(t)
-    // curVel.x = clamp
-    // curVel.x = min(curVel.x + force.x * deltaTime, (float)LIGHT_SPEED);
-    // curVel.y = min(curVel.y + force.y * deltaTime, (float)LIGHT_SPEED);
-    // curVel.z = min(curVel.z + force.z * deltaTime, (float)LIGHT_SPEED);
-    /**/
     curVel.x += force.x * deltaTime;
     curVel.y += force.y * deltaTime;
     curVel.z += force.z * deltaTime;
+    
+    // Clamping to speed of light
     curVel.x = max(-1.f * (float)LIGHT_SPEED, min(curVel.x, (float)LIGHT_SPEED));
     curVel.y = max(-1.f * (float)LIGHT_SPEED, min(curVel.y, (float)LIGHT_SPEED));
     curVel.z = max(-1.f * (float)LIGHT_SPEED, min(curVel.z, (float)LIGHT_SPEED));
-    // curVel.x = min(curVel.x, (float)LIGHT_SPEED);
-    // curVel.x = min(curVel.x, (float)LIGHT_SPEED);
-    // curVel.x = min(curVel.x, (float)LIGHT_SPEED);
-    /**/
+    
     // r(t + dt) = r(t) + dt * v(t + dt/2)
     curPos.x += curVel.x * deltaTime;
     curPos.y += curVel.y * deltaTime;

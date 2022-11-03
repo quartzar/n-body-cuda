@@ -19,11 +19,11 @@
 // Simulation parameters
 #define SEED 5 // seed for IC generator
 #define N_B_MULTIPLIER 1 // for thread calculation -> 960/12 = 80 [SM's on RTX 3080ti]
-#define N_BODIES (5 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
+#define N_BODIES (2 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
 #define TIME_STEP 0.1 // time between integration steps in days
-#define ITERATIONS 10000 // iterations before finishing simulation
+#define ITERATIONS 1000000 // iterations before finishing simulation
 #define Q 1 // rows of ->  [[threads per body]]
-#define P 5 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
+#define P 2 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
 // Q=8 threads p/b & P = 80 ->> PxQ==640 (50*NB_M /640)==80
 // At N=10*NB_M, P=128 & Q=8 give enormous performance boosts
 // solar system=>1 | cluster => 64? | fogr N=50*multi, P=640 means all 80 SMP's used
