@@ -20,6 +20,14 @@ enum NBodyICConfig
     NORB_CONFIG_SOLAR
 };
 
+// Integrator Options
+enum NbodyIntegrator
+{
+    LEAPFROG_VERLET,
+    KICK_DRIFT_VERLET
+};
+
+
 // Memory copy/retrieve options
 // enum OrbitalArray
 // {

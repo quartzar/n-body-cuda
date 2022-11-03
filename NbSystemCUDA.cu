@@ -15,6 +15,7 @@
 #include <GLFW/glfw3.h>
 
 #include "NbKernel_N2.cuh"
+// #include "NbKernel_N2_Verlet.cuh"
 #include "CONSTANTS.h"
 #include "NbSystemCUDA.cuh"
 
@@ -28,14 +29,15 @@ extern __constant__ float big_G;
 
 //------------PARAMETERS---------------//
 NbodyRenderer::RenderMode renderMode = NbodyRenderer::POINTS;
-NBodyICConfig sysConfig = NORB_CONFIG_SOLAR;
+NBodyICConfig sysConfig = NORB_CONFIG_ADV_DISK_COLLSION;
+NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
 bool displayEnabled = true;
 bool glxyCollision = true;
-bool colourMode = false;
-bool trailMode = true;
-bool outputEnabled = true;
+bool colourMode = true;
+bool trailMode = false;
+bool outputEnabled = false;
 bool rotateCam = false;
 //---------------------------------------q
 
@@ -151,8 +153,9 @@ int main(int argc, char** argv)
     
     // Randomise Orbitals
     randomiseOrbitals(sysConfig, m_hPos, m_hVel, N_orbitals);
-    // Set Initial Forces
-    initialiseForces(m_hPos, m_hForce, N_orbitals);
+    // Set Initial Forces [only run for solar system, HUGE performance hit]
+    if (sysConfig == NORB_CONFIG_SOLAR)
+        initialiseForces(m_hPos, m_hForce, N_orbitals);
     
     //---------------------------------------
     // MAIN UPDATE LOOP
@@ -967,19 +970,29 @@ void deployToGPU(float4* oldPos, float4* newPos,
     dim3 threads(p, q, 1);
     dim3 grid(N / p, 1, 1);
     
-    // DEPLOY
+    // DEPLOY TODO: removed feature
     /*If multithreading is enabled (i.e. q>1 | multiple threads per
      * body) then the more complicated code is executed (using bool template
      * over in the kernel), and if it is not, then the simpler code is executed*/
-    if (grid.y == 1)
+
+    switch(integrator)
     {
-        integrateNOrbitals<<<grid, threads, shMemSize
-        >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N, false);
-    }
-    else
-    {
-        integrateNOrbitals<<<grid, threads, shMemSize
-        >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N, true);
+        case LEAPFROG_VERLET:
+        default:
+        {
+            integrateNOrbitals<<<grid, threads, shMemSize
+            >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N);
+        }
+        break;
+        case KICK_DRIFT_VERLET:
+        {
+            initHalfKickForces<<<grid, threads, shMemSize
+            >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N);
+            cudaDeviceSynchronize();
+            fullKickForces<<<grid, threads, shMemSize
+            >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N);
+        }
+        break;
     }
 }
 //---------------------------------------

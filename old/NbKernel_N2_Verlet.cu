@@ -1,12 +1,12 @@
 //
-// Created by quartzar on 24/10/22.
+// Created by quartzar on 02/11/22.
 //
 
-#ifndef ORBITERV6_NBKERNEL_N2_H
-#define ORBITERV6_NBKERNEL_N2_H
+#ifndef ORBITERV6_NBKERNEL_N2_VERLET_H
+#define ORBITERV6_NBKERNEL_N2_VERLET_H
 
-#include <cmath>
-#include "NbKernel_N2.cuh"
+#include "NbKernel_N2_Verlet.cuh"
+
 
 /* This is a clamping parameter to limit the max velocity of a body.*/
 #define LIGHT_SPEED 173.265 // theoretical max V of stars in our galaxy
@@ -26,17 +26,13 @@ __constant__ float big_G;
  * independant of one another, along with being able to adjust it
  * based upon the size of N, and the configuration of p & q. */
 #define SH_M(i) shPositions[i + blockDim.x * threadIdx.y]
-/* If multithreading is enabled, this macro is used instead in order
- * to allocate the right num. of threads per body per tile calculation*/
-#define SH_M_SUM(i, j) shPositions[i + blockDim.x * j]
-
 
 //============================================================//
 __global__ void
 initHalfKickForces(float4* oldPos, float4* newPos,
-                   float4* oldVel, float4* newVel,
-                   float4* oldForce, float4* newForce,
-                   float deltaTime, int N)
+                     float4* oldVel, float4* newVel,
+                     float4* oldForce, float4* newForce,
+                     float deltaTime, int N)
 {
     uint id = blockIdx.x * blockDim.x + threadIdx.x;
     
@@ -65,9 +61,9 @@ initHalfKickForces(float4* oldPos, float4* newPos,
 //============================================================//
 __global__ void
 fullKickForces(float4* oldPos, float4* newPos,
-               float4* oldVel, float4* newVel,
-               float4* oldForce, float4* newForce,
-               float deltaTime, int N)
+                   float4* oldVel, float4* newVel,
+                   float4* oldForce, float4* newForce,
+                   float deltaTime, int N)
 {
     uint id = blockIdx.x * blockDim.x + threadIdx.x;
     
@@ -92,51 +88,51 @@ fullKickForces(float4* oldPos, float4* newPos,
 
 
 //============================================================//
-__global__ void
-integrateNOrbitals(float4* oldPos, float4* newPos,
-                   float4* oldVel, float4* newVel,
-                   float4* oldForce, float4* newForce,
-                   float deltaTime, int N)
-/*   where:  */
-// |-> new[Pos/Vel] is calculated here, in kernel/device,
-// |-> old[Pos/Vel] is previous calculation, held on host,
-// |-> deltaTime is the current time-step/iteration,
-// |-> N_orbitals is just N-bodies (moving away from using #DEFINE's)
-{
-    // fused-multiply-add [previously __mul24(a,b)+c]
-    uint id = blockIdx.x * blockDim.x + threadIdx.x;
-    
-    float4 curPos = oldPos[id];
-    
-    float3 force = computeOrbitalForces(curPos, oldPos, N);
-    
-    float4 curVel = oldVel[id];
-    
-    // Leapfrog-Verlet integrator (1967)
-    
-    // v(t + dt/2) = v(t - dt/2) + dt * a(t)
-    curVel.x += force.x * deltaTime;
-    curVel.y += force.y * deltaTime;
-    curVel.z += force.z * deltaTime;
-    
-    // Clamping to speed of light
-    curVel.x = max(-1.f * (float)LIGHT_SPEED, min(curVel.x, (float)LIGHT_SPEED));
-    curVel.y = max(-1.f * (float)LIGHT_SPEED, min(curVel.y, (float)LIGHT_SPEED));
-    curVel.z = max(-1.f * (float)LIGHT_SPEED, min(curVel.z, (float)LIGHT_SPEED));
-    
-    // r(t + dt) = r(t) + dt * v(t + dt/2)
-    curPos.x += curVel.x * deltaTime;
-    curPos.y += curVel.y * deltaTime;
-    curPos.z += curVel.z * deltaTime;
-    
-    // complete by storing updated position and velocity
-    newPos[id] = curPos;
-    newVel[id] = curVel;
-    // store force as well
-    newForce[id].x = force.x;
-    newForce[id].y = force.y;
-    newForce[id].z = force.z;
-}
+// __global__ void
+// integrateNOrbitals(float4* oldPos, float4* newPos,
+//                    float4* oldVel, float4* newVel,
+//                    float4* oldForce, float4* newForce,
+//                    float deltaTime, int N)
+// /*   where:  */
+// // |-> new[Pos/Vel] is calculated here, in kernel/device,
+// // |-> old[Pos/Vel] is previous calculation, held on host,
+// // |-> deltaTime is the current time-step/iteration,
+// // |-> N_orbitals is just N-bodies (moving away from using #DEFINE's)
+// {
+//     // fused-multiply-add [previously __mul24(a,b)+c]
+//     uint id = blockIdx.x * blockDim.x + threadIdx.x;
+//
+//     float4 curPos = oldPos[id];
+//
+//     float3 force = computeOrbitalForces(curPos, oldPos, N);
+//
+//     float4 curVel = oldVel[id];
+//
+//     // Leapfrog-Verlet integrator (1967)
+//
+//     // v(t + dt/2) = v(t - dt/2) + dt * a(t)
+//     curVel.x += force.x * deltaTime;
+//     curVel.y += force.y * deltaTime;
+//     curVel.z += force.z * deltaTime;
+//
+//     // Clamping to speed of light
+//     curVel.x = max(-1.f * (float)LIGHT_SPEED, min(curVel.x, (float)LIGHT_SPEED));
+//     curVel.y = max(-1.f * (float)LIGHT_SPEED, min(curVel.y, (float)LIGHT_SPEED));
+//     curVel.z = max(-1.f * (float)LIGHT_SPEED, min(curVel.z, (float)LIGHT_SPEED));
+//
+//     // r(t + dt) = r(t) + dt * v(t + dt/2)
+//     curPos.x += curVel.x * deltaTime;
+//     curPos.y += curVel.y * deltaTime;
+//     curPos.z += curVel.z * deltaTime;
+//
+//     // complete by storing updated position and velocity
+//     newPos[id] = curPos;
+//     newVel[id] = curVel;
+//     // store force as well
+//     newForce[id].x = force.x;
+//     newForce[id].y = force.y;
+//     newForce[id].z = force.z;
+// }
 
 //============================================================//
 
@@ -277,7 +273,7 @@ computeOrbitalForces(float4 orbPos, float4* positions, int N)
     {
         // assign shared positions for each tile
         shPositions[threadIdx.x + blockDim.x * threadIdx.y] =
-            positions[WRAP(blockIdx.x + tile, gridDim.x) * blockDim.x + threadIdx.x];
+                positions[WRAP(blockIdx.x + tile, gridDim.x) * blockDim.x + threadIdx.x];
         
         // synchronize the local threads writing to the local memory cache
         __syncthreads();
@@ -291,27 +287,5 @@ computeOrbitalForces(float4 orbPos, float4* positions, int N)
 }
 //============================================================//
 
-// float clamp(float* a)
-// {
-//
-// }
 
-
-#endif // ORBITERV6_NBKERNEL_N2_H
-
-// /* LEAPFROG-VERLET 3-STEP INTEGRATOR */
-// // I haven't a clue if this will work here
-// // firstly -> update just positions with old velocities
-// curPos.x += curVel.x * (deltaTime * 0.5f);
-// curPos.y += curVel.y * (deltaTime * 0.5f);
-// curPos.z += curVel.z * (deltaTime * 0.5f);
-//
-// // secondly -> update velocities with new force
-// curVel.x += force.x * deltaTime;
-// curVel.y += force.y * deltaTime;
-// curVel.z += force.z * deltaTime;
-//
-// // finally -> update positions with new velocities
-// curPos.x += curVel.x * (deltaTime * 0.5f);
-// curPos.y += curVel.y * (deltaTime * 0.5f);
-// curPos.z += curVel.z * (deltaTime * 0.5f);
+#endif // ORBITERV6_NBKERNEL_N2_VERLET_H

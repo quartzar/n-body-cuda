@@ -1,8 +1,0 @@
-//
-// Created by quartzar on 02/11/22.
-//
-
-#ifndef ORBITERV6_NBKERNEL_N2_VERLET_CUH
-#define ORBITERV6_NBKERNEL_N2_VERLET_CUH
-
-#endif //ORBITERV6_NBKERNEL_N2_VERLET_CUH

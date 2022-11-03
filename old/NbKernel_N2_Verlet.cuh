@@ -1,9 +1,9 @@
 //
-// Created by quartzar on 24/10/22.
+// Created by quartzar on 02/11/22.
 //
 
-#ifndef ORBITERV6_NBKERNEL_N2_CUH
-#define ORBITERV6_NBKERNEL_N2_CUH
+#ifndef ORBITERV6_NBKERNEL_N2_VERLET_CUH
+#define ORBITERV6_NBKERNEL_N2_VERLET_CUH
 
 __device__ float3
 orbOrbInteraction(float4 oi, float4 oj, float3 ai);
@@ -27,10 +27,5 @@ fullKickForces(float4* oldPos, float4* newPos,
                float4* oldForce, float4* newForce,
                float deltaTime, int N);
 
-__global__ void
-integrateNOrbitals(float4* oldPos, float4* newPos,
-                   float4* oldVel, float4* newVel,
-                   float4* oldForce, float4* newForce,
-                   float deltaTime, int N);
 
-#endif //ORBITERV6_NBKERNEL_N2_CUH
+#endif //ORBITERV6_NBKERNEL_N2_VERLET_CUH

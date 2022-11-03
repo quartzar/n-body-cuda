@@ -67,12 +67,6 @@ build CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o: CUDA_COMPILER__orbiterv6_Debug
   OBJECT_DIR = CMakeFiles/orbiterv6.dir
   OBJECT_FILE_DIR = CMakeFiles/orbiterv6.dir
 
-build CMakeFiles/orbiterv6.dir/NbKernel_N2_Verlet.cu.o: CUDA_COMPILER__orbiterv6_Debug /home/quartzar/Documents/repos/n-body-cuda/NbKernel_N2_Verlet.cu || cmake_object_order_depends_target_orbiterv6
-  DEP_FILE = CMakeFiles/orbiterv6.dir/NbKernel_N2_Verlet.cu.o.d
-  FLAGS = -g --generate-code=arch=compute_52,code=[compute_52,sm_52]
-  OBJECT_DIR = CMakeFiles/orbiterv6.dir
-  OBJECT_FILE_DIR = CMakeFiles/orbiterv6.dir
-
 
 # =============================================================================
 # Device Link build statements for EXECUTABLE target orbiterv6
@@ -81,7 +75,7 @@ build CMakeFiles/orbiterv6.dir/NbKernel_N2_Verlet.cu.o: CUDA_COMPILER__orbiterv6
 #############################################
 # Link the executable CMakeFiles/orbiterv6.dir/cmake_device_link.o
 
-build CMakeFiles/orbiterv6.dir/cmake_device_link.o: CXX_EXECUTABLE_DEVICE_LINKER__orbiterv6_Debug CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o CMakeFiles/orbiterv6.dir/NbKernel_N2_Verlet.cu.o
+build CMakeFiles/orbiterv6.dir/cmake_device_link.o: CXX_EXECUTABLE_DEVICE_LINKER__orbiterv6_Debug CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o
   LANGUAGE_COMPILE_FLAGS = -g --generate-code=arch=compute_52,code=[compute_52,sm_52]
   LINK_LIBRARIES = -lglfw -lGLU -lGL -lglut -lGLEW -lcudadevrt -lcudart_static -lrt -lpthread -ldl
   LINK_PATH = -L/usr/local/cuda/targets/x86_64-linux/lib/stubs  -L/usr/local/cuda/targets/x86_64-linux/lib
@@ -95,7 +89,7 @@ build CMakeFiles/orbiterv6.dir/cmake_device_link.o: CXX_EXECUTABLE_DEVICE_LINKER
 #############################################
 # Link the executable orbiterv6
 
-build orbiterv6: CXX_EXECUTABLE_LINKER__orbiterv6_Debug CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o CMakeFiles/orbiterv6.dir/NbKernel_N2_Verlet.cu.o CMakeFiles/orbiterv6.dir/cmake_device_link.o
+build orbiterv6: CXX_EXECUTABLE_LINKER__orbiterv6_Debug CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o CMakeFiles/orbiterv6.dir/cmake_device_link.o
   FLAGS = -g
   LINK_LIBRARIES = -lglfw  -lGLU  -lGL  -lglut  -lGLEW  -lcudadevrt  -lcudart_static  -lrt  -lpthread  -ldl
   LINK_PATH = -L/usr/local/cuda/targets/x86_64-linux/lib/stubs   -L/usr/local/cuda/targets/x86_64-linux/lib
