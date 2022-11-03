@@ -31,11 +31,11 @@ NbodyRenderer::RenderMode renderMode = NbodyRenderer::POINTS;
 NBodyICConfig sysConfig = NORB_CONFIG_SOLAR;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = false;
+bool displayEnabled = true;
 bool glxyCollision = true;
 bool colourMode = false;
 bool trailMode = true;
-bool outputEnabled = true;
+bool outputEnabled = false;
 bool rotateCam = false;
 //---------------------------------------q
 
