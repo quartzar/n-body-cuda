@@ -19,27 +19,17 @@
   <component name="ChangeListManager">
     <list default="true" id="2c626faf-f666-476d-8d36-903ca7087f6f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CONSTANTS.h" beforeDir="false" afterPath="$PROJECT_DIR$/CONSTANTS.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbKernel_N2.cu" beforeDir="false" afterPath="$PROJECT_DIR$/NbKernel_N2.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbKernel_N2.cuh" beforeDir="false" afterPath="$PROJECT_DIR$/NbKernel_N2.cuh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbKernel_N2_Verlet.cu" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbKernel_N2_Verlet.cuh" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cu" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cu" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cuh" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cuh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PYnalaysis.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/PYnalaysis.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/codemodel-v2-802064df249f5c0cc5e0.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/index-2022-11-03T15-51-05-0323.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/target-orbiterv6-Debug-3fa166bcec272e61c96c.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/index-2022-11-03T22-49-30-0129.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbKernel_N2_Verlet.cu.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbKernel_N2_Verlet.cu.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/build.ninja" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/build.ninja" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -101,11 +91,6 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="orbiterv6" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="orbiterv6" TARGET_NAME="orbiterv6" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="orbiterv6" RUN_TARGET_NAME="orbiterv6">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -148,6 +133,12 @@
       <workItem from="1667470705235" duration="4469000" />
       <workItem from="1667490665705" duration="1928000" />
       <workItem from="1667501303578" duration="4359000" />
+      <workItem from="1667556125096" duration="7228000" />
+      <workItem from="1667654625089" duration="78000" />
+      <workItem from="1667943993748" duration="1065000" />
+      <workItem from="1668073861865" duration="516000" />
+      <workItem from="1668166524895" duration="638000" />
+      <workItem from="1668189930058" duration="19000" />
     </task>
     <servers />
   </component>

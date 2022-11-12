@@ -12,25 +12,23 @@
 
 // Physical constants
 #define BIG_G 2.9599e-4 // gravitational constant [AU^3 / M_solar * days^2]
-#define KMS_TO_AUD 1731.5 // 1754.385965 // 1731.5 // km.s to AU.day
-#define kmTOau 1.496e8 // unit.kilometres /= unit.AU
-#define SOFTENING 0.000125 // softening factor for close interactions [0.0125?]
+#define KMS_TO_AUD (float)1731.5 // 1754.385965 // 1731.5 // km.s to AU.day
+#define auTOkm (float)1.49597871e8 // unit.kilometres /= unit.AU || unit.AU *= unit.kilometres
+#define SOLAR_MASS (float) 1.989e30 // kg
 
 // Simulation parameters
 #define SEED 5 // seed for IC generator
 #define N_B_MULTIPLIER 1024 // for thread calculation -> 960/12 = 80 [SM's on RTX 3080ti]
 #define N_BODIES (50 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
 #define TIME_STEP 1 // time between integration steps in days
-#define ITERATIONS 1000000 // iterations before finishing simulation
-#define Q 1 // rows of ->  [[threads per body]]
-#define P 32 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
+#define ITERATIONS 100000 // iterations before finishing simulation
+#define SOFTENING 0.000125 // softening factor for close interactions [0.0125?]
+#define Q 1 // rows of ->  [[threads per body]] != REMOVED !=
+#define P 512 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
 // Q=8 threads p/b & P = 80 ->> PxQ==640 (50*NB_M /640)==80
 // At N=10*NB_M, P=128 & Q=8 give enormous performance boosts
 // solar system=>1 | cluster => 64? | fogr N=50*multi, P=640 means all 80 SMP's used
 // for N=200*m, P=1024 (max)
-// threads per body =>  [[N_BODIES/p == threads per block]]
-// each thread processes 1/Q of forces on body, and then 1/Q of the threads with
-// threadIdx.y==0 add up partial sums from other threads for that body
 
 // Initial Conditions
 #define INIT_POS (500) // initial radius from centre in AU
@@ -54,13 +52,17 @@
 // OpenGL parameters
 #define FOV 90 // 90 normal // 2 solar system
 #define V_FAR 50000 // 50000 normal // 50 solar system
-#define INIT_ZOOM 5000 // for initial camera distance // 100 for solar system
+#define INIT_ZOOM 5000 // 5000 normal // 100 for solar system
 
 // Camera controls
-#define ZOOM_SCALE 0.02 // how fast to zoom
+#define ZOOM_SCALE 0.01 // how fast to zoom
 #define SHIFT_FACTOR 10 // how much faster all movement is with shift held
 #define MOVE_SPEED 10 // how fast to move [AU/frame] // 1 for solar system
 #define ORB_SIZE 1 // 2-3 LT // 0.5 PC // range of pixels to display dot
+
+// Proto-cluster options
+
+
 
 // ADV_DISK options
 #define ADVD_CENTRE_M 2000000 //
