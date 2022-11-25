@@ -19,7 +19,7 @@
 // Simulation parameters
 #define SEED 5 // seed for IC generator
 #define N_B_MULTIPLIER 1024 // for thread calculation -> 960/12 = 80 [SM's on RTX 3080ti]
-#define N_BODIES (50 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
+#define N_BODIES (30 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
 #define TIME_STEP 1 // time between integration steps in days
 #define ITERATIONS 100000 // iterations before finishing simulation
 #define SOFTENING 0.000125 // softening factor for close interactions [0.0125?]
@@ -45,8 +45,8 @@
 
 
 // Window & render parameters
-#define WIDTH 1700 // 1700 PC // 2800 LT
-#define HEIGHT 910 // 910 PC // 1550 LT
+#define WIDTH 2800 // 1700 PC // 2800 LT
+#define HEIGHT 1550 // 910 PC // 1550 LT
 #define RENDER_INTERVAL 1 // timesteps between each frame
 
 // OpenGL parameters
@@ -58,7 +58,7 @@
 #define ZOOM_SCALE 0.01 // how fast to zoom
 #define SHIFT_FACTOR 10 // how much faster all movement is with shift held
 #define MOVE_SPEED 10 // how fast to move [AU/frame] // 1 for solar system
-#define ORB_SIZE 1 // 2-3 LT // 0.5 PC // range of pixels to display dot
+#define ORB_SIZE 2 // 2-3 LT // 0.5 PC // range of pixels to display dot
 
 // Proto-cluster options
 
