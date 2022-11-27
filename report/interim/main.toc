@@ -1,9 +1,11 @@
-\contentsline {section}{\numberline {1}Introduction}{i}{}%
-\contentsline {subsection}{\numberline {1.1}Binary Properties}{i}{}%
-\contentsline {subsection}{\numberline {1.2}Star Formation}{i}{}%
-\contentsline {subsection}{\numberline {1.3}Binary Formation}{i}{}%
-\contentsline {subsection}{\numberline {1.4}N-body Problem}{i}{}%
-\contentsline {section}{\numberline {2}Methodology}{ii}{}%
-\contentsline {subsection}{\numberline {2.1}Itegrator Scheme}{ii}{}%
-\contentsline {subsection}{\numberline {2.2}Force Calculations}{ii}{}%
-\contentsline {subsection}{\numberline {2.3}Initial Conditions}{ii}{}%
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
+\contentsline {section}{\numberline {2}Background}{1}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Binary Properties}{1}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Star Formation}{1}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Time Scales}{1}{subsubsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.3}Binary Formation}{2}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}{\slshape N}-body Problem}{2}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Methodology}{2}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Integrator Scheme}{2}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Force Calculations}{3}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Initial Conditions}{3}{subsection.3.3}%

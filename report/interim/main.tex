@@ -3,126 +3,41 @@
 %% This report is part of my personal project
 %% -------------------------------------------------------------------------
 
-\documentclass[11pt]{article}
+\documentclass[11pt,twoside]{article}
 
 % LaTeX packages & global styles
 \input{base/packages.tex}
 \input{base/styles.tex}
 
 
-\title{\textbf{N-body Modelling of Young Stellar Systems}}
-\author{Joseph Dorn}
-\date{ }
-
 % Beginning of document
 \begin{document}
 
-% Cover page, title page, un-numbered sections
+
+% Cover page, title page [including un-numbered]
 \input{paper/cover_page.tex}
-%%%%%%%%%%%%%%%%%%%
-% Interim Report Cover Page
-% \begin{titlepage}
-%     % CU Logo
-    
-%     \begin{figure}
-%         \vspace*{4em}
-%         \centering
-%         \includegraphics[width=3.5cm]{cu_logo.jpg}
-%     \end{figure}
-
-%     \vspace*{0em}
-%     \begin{center}
-%         % Title
-%         {\huge\scshape\bfseries School of Physics and Astronomy}\\
-%         \vspace*{2em}
-%         {\Huge\scshape\bfseries Year 3 Interim Project Report}\\
-%         \vspace*{1em}
-%         {\LARGE\scshape Session 2022--2023}\\
-%     \end{center}
-
-%     \vspace*{4em}
-%     \begin{center}
-%          % Student info
-%         \begin{tabularx}{0.8\textwidth} { 
-%             | >{\raggedright\arraybackslash\bfseries}l 
-%               >{\raggedleft\arraybackslash}X }
-%             Name & Joseph Henry Dorn \\ [0.5ex]
-%             Student Number  & C1940888 \\ [0.5ex]
-%             Degree Programme  & BSc Astrophysics (UFBSASTA) \\ [0.5ex]
-%             Project Title  & N-body Modelling of Young Stellar Systems \\ [0.5ex]
-%             Supervisor  & Dr.\ Paul Clark \\ [0.5ex]
-%             Assessor  & Dr.\ Mikako Matsuura \\ [0.5ex]
-%         \end{tabularx}
-%     \end{center}
-
-%     \vspace*{8em}
-%     \begin{adjustwidth}{0.1\textwidth}{0.1\textwidth}
-%         % Declaration
-%         {\large\bfseries Declaration} \\ [0ex]
-%         I have read and understand Appendix 2 in the Student Handbook: “Some advice on the avoidance of plagiarism”. \\ [2ex] 
-%         I hereby declare that the attached report is exclusively my own work, that no part of the work has previously been submitted for assessment (although do note that material in “Interim Report” may be re-used in the final “Project Report” as it is considered part of the same assessment), and that I have not knowingly allowed it to be copied by another person.
-%         %
-%     \end{adjustwidth}
-% \end{titlepage}
-%%%%%%%%%%%%%%%%%%%
+\input{paper/title_page.tex} 
 
 
-%%%%%%%%%%%%%%%%%%%
-% Report Title Page
-\begin{titlepage}
-    \maketitle
-    % \addcontentsline{toc}{section}{Abstract}
-    % Abstract
-    \begin{abstract}
-        \noindent
-        \lipsum[1]
-    \end{abstract}
-    \vspace*{\fill}
-    \tableofcontents
-    \thispagestyle{empty}
-\end{titlepage}
-%%%%%%%%%%%%%%%%%%%
+%%% --------------------------------------------
 
+\input{paper/introduction.tex}
+% \hrule
 
-%%%%%%%%%%%%%%%%%%%
 \begin{multicols}{2}
-[
-    \section{Introduction}
-    { \lipsum[1] }
-]
-\subsection{Binary Properties}
 
-{ \lipsum[1-2] }
+    \input{paper/background.tex}
+    \input{paper/methodology.tex}
 
-\subsection{Star Formation}
-
-{ \lipsum[1] }
-
-\subsection{Binary Formation}
-
-{ \lipsum[1] }
-
-\subsection{N-body Problem}
-
-{ \lipsum[1] }
-
-
-\section{Methodology}
-
-{ \lipsum[1] }
-
-\subsection{Itegrator Scheme}
-
-{ \lipsum[1] }
-
-\subsection{Force Calculations}
-
-{ \lipsum[1] }
-
-\subsection{Initial Conditions}
-
-{ \lipsum[1] }
 \end{multicols}
+
+\newpage
+
+\begin{multicols*}{2}
+    \printbibliography\
+\end{multicols*}
+
+\end{document}
 
 % #### Intro
 % - Mention the **goals** of the project, making reference to them with where the current state of the project, analysis, and results are [0]
@@ -174,5 +89,3 @@
 % you are able to understand…
 % \end{multicols}
 % Some more text here just to show.
-
-\end{document}

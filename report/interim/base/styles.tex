@@ -1,12 +1,83 @@
 % Margins 
 \geometry{
     a4paper,
-    margin=0.7in,
-    footskip=0.1in
+    %width=197mm,
+    right=6.5mm,
+    left=6.5mm,
+    top=16mm,
+    bottom=18mm,
+    % showframe=true
+    % margin=0.3in,
+    footskip=-0.25in
 }
 
+
 % [2]Column Separation 
-\setlength{\columnsep}{2em}
+\setlength{\columnsep}{1.5em}
+
 
 % Graphics Path
 \graphicspath{ {./graphics/} }
+
+
+% Fonts
+\sectionfont{\LARGE}
+\subsectionfont{\Large}%\underline}
+\subsubsectionfont{\slshape}
+
+
+% Headers/footers
+\setlength\headheight{19.6pt}
+\pagestyle{fancy}
+
+\renewcommand{\sectionmark}[1]{ \markright{#1}{} }
+\renewcommand{\subsectionmark}[1]{}
+
+\fancyhf{}
+
+\fancyhead[LE]{%
+  \makebox[40pt][r]{
+    \colorbox{green}{\makebox[\textwidth][r]{\sffamily\large\bfseries\textcolor{black}{\thepage}\enskip}}\hspace*{1em}}%
+  {\sffamily\large\itshape\rightmark\/}\hspace*{1em}\headrulefill%
+}
+
+\fancyhead[RO]{%
+  \mbox{}\headrulefill \hspace*{1em}{\sffamily\large\itshape\rightmark}%
+  \makebox[40pt][l]{%
+    \hspace*{1em}\colorbox{green}{\makebox[\textwidth][l]{\enskip\sffamily\large\bfseries\textcolor{black}{\thepage}}}}%
+}
+
+\fancyfoot[LO,RE]{\sffamily\itshape\ Joseph Dorn\/}
+\fancyfoot[RO,LE]{\sffamily {\slshape N}--body modelling of young stellar systems}
+
+\renewcommand\headrulewidth{0pt}
+
+\def\headrulefill{\leaders\hrule width 0pt height 3pt depth -2.8pt \hfill}
+
+\renewcommand{\footrulewidth}{0.6pt}
+
+
+%% ------------------------------------------------------
+%% ETC.
+% \usepackage{opensans}
+% \sectionfont{\usefont{T1}{pag}{b}{n}\selectfont\LARGE}
+% \sectionfont{\opensans\selectfont\LARGE}
+% \subsectionfont{\usefont{T1}{pag}{b}{n}\selectfont\large\underline}
+% \subsectionfont{\opensans\selectfont\large\underline}
+
+
+% \fancyhead{}
+% \fancyhead[RO]{N-body modelling of young stellar systems\quad\Large\thepage}
+% % \fancyhead[RO,LE]{\thesection}
+% \fancyhead[LO,RE]{\leftmark}
+
+% \fancyfoot{}
+% \fancyfoot[C]{\leftmark}
+% \fancyfoot[RO]{Joseph Dorn}
+
+% \fancyfoot[CO]{Interim Report}
+% \fancyfoot[CO]{Section \thesection}
+% \fancyfoot[Lo,RE]{\itshape\ Interim Report\/}
+
+% \renewcommand{\headrulewidth}{0.1pt}
+% \renewcommand{\footrulewidth}{0.4pt}

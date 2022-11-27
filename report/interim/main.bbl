@@ -1,0 +1,223 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global}
+    \entry{toonenPopCORNHuntingDifferences2014}{article}{}
+      \name{author}{4}{ul=2}{%
+        {{un=0,uniquepart=base,hash=e1e43d1501882df5d89d8183bcd2abed}{%
+           family={Toonen},
+           familyi={T\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=9d298f6baaea7e203ae2a5d919404701}{%
+           family={Claeys},
+           familyi={C\bibinitperiod},
+           given={J.\bibnamedelimi S.\bibnamedelimi W.},
+           giveni={J\bibinitperiod\bibinitdelim S\bibinitperiod\bibinitdelim W\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=0b4c922522a530d21b5e787a0fd3a98e}{%
+           family={Mennekens},
+           familyi={M\bibinitperiod},
+           given={N.},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5b1b04187e8c931077ba4b5a77fd983c}{%
+           family={Ruiter},
+           familyi={R\bibinitperiod},
+           given={A.\bibnamedelimi J.},
+           giveni={A\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {EDP Sciences}%
+      }
+      \strng{namehash}{7bf860cc662c4b787d975cf059928bff}
+      \strng{fullhash}{19dde48a2996e26ba707476b688369fe}
+      \strng{bibnamehash}{7bf860cc662c4b787d975cf059928bff}
+      \strng{authorbibnamehash}{7bf860cc662c4b787d975cf059928bff}
+      \strng{authornamehash}{7bf860cc662c4b787d975cf059928bff}
+      \strng{authorfullhash}{19dde48a2996e26ba707476b688369fe}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{\emph{Context. {$<$}i/{$>$}Binary population synthesis (BPS) modelling is a very effective tool to study the evolution and properties of various types of close binary systems. The uncertainty in the parameters of the model and their effect on a population can be tested in a statistical way, which then leads to a deeper understanding of the underlying (sometimes poorly understood) physical processes involved. Several BPS codes exist that have been developed with different philosophies and aims. Although BPS has been very successful for studies of many populations of binary stars, in the particular case of the study of the progenitors of supernovae Type Ia, the predicted rates and ZAMS progenitors vary substantially between different BPS codes.\emph{Aims. {$<$}i/{$>$}To understand the predictive power of BPS codes, we study the similarities and differences in the predictions of four different BPS codes for low- and intermediate-mass binaries. We investigate the differences in the characteristics of the predicted populations, and whether they are caused by different assumptions made in the BPS codes or by numerical effects, e.g. a lack of accuracy in BPS codes.\emph{Methods. {$<$}i/{$>$}We compare a large number of evolutionary sequences for binary stars, starting with the same initial conditions following the evolution until the first (and when applicable, the second) white dwarf (WD) is formed. To simplify the complex problem of comparing BPS codes that are based on many (often different) assumptions, we equalise the assumptions as much as possible to examine the inherent differences of the four BPS codes. \emph{Results. {$<$}i/{$>$}We find that the simulated populations are similar between the codes. Regarding the population of binaries with one WD, there is very good agreement between the physical characteristics, the evolutionary channels that lead to the birth of these systems, and their birthrates. Regarding the double WD population, there is a good agreement on which evolutionary channels exist to create double WDs and a rough agreement on the characteristics of the double WD population. Regarding which progenitor systems lead to a single and double WD system and which systems do not, the four codes agree well. Most importantly, we find that for these two populations, the differences in the predictions from the four codes are not due to numerical differences, but because of different inherent assumptions. We identify critical assumptions for BPS studies that need to be studied in more detail.}}}}}
+      \field{day}{1}
+      \field{issn}{0004-6361, 1432-0746}
+      \field{journaltitle}{Astronomy \& Astrophysics}
+      \field{langid}{english}
+      \field{month}{2}
+      \field{shortjournal}{A\&A}
+      \field{shorttitle}{{{PopCORN}}}
+      \field{title}{{{PopCORN}}: {{Hunting}} down the Differences between Binary Population Synthesis Codes}
+      \field{urlday}{26}
+      \field{urlmonth}{11}
+      \field{urlyear}{2022}
+      \field{volume}{562}
+      \field{year}{2014}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{A14}
+      \range{pages}{-1}
+      \verb{doi}
+      \verb 10.1051/0004-6361/201321576
+      \endverb
+      \verb{file}
+      \verb /home/quartzar/Zotero/storage/ENZXQVX6/Toonen et al. - 2014 - PopCORN Hunting down the differences between bina.pdf;/home/quartzar/Zotero/storage/VSERKTKK/aa21576-13.html
+      \endverb
+      \verb{urlraw}
+      \verb https://www.aanda.org/articles/aa/abs/2014/02/aa21576-13/aa21576-13.html
+      \endverb
+      \verb{url}
+      \verb https://www.aanda.org/articles/aa/abs/2014/02/aa21576-13/aa21576-13.html
+      \endverb
+    \endentry
+    \entry{postnovEvolutionCompactBinary2014}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=1462756ea74ed06f045d8eee0c21493b}{%
+           family={Postnov},
+           familyi={P\bibinitperiod},
+           given={Konstantin\bibnamedelima A.},
+           giveni={K\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=af197bc92d901ed029fbf1b2a6cb6fc4}{%
+           family={Yungelson},
+           familyi={Y\bibinitperiod},
+           given={Lev\bibnamedelima R.},
+           giveni={L\bibinitperiod\bibinitdelim R\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{85a05ff726622f47e56695a3c8102d76}
+      \strng{fullhash}{85a05ff726622f47e56695a3c8102d76}
+      \strng{bibnamehash}{85a05ff726622f47e56695a3c8102d76}
+      \strng{authorbibnamehash}{85a05ff726622f47e56695a3c8102d76}
+      \strng{authornamehash}{85a05ff726622f47e56695a3c8102d76}
+      \strng{authorfullhash}{85a05ff726622f47e56695a3c8102d76}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We review the formation and evolution of compact binary stars consisting of white dwarfs (WDs), neutron stars (NSs), and black holes (BHs). Mergings of compact-star binaries are expected to be the most important sources for forthcoming gravitational-wave (GW) astronomy. In the first part of the review, we discuss observational manifestations of close binaries with NS and/or BH components and their merger rate, crucial points in the formation and evolution of compact stars in binary systems, including the treatment of the natal kicks, which NSs and BHs acquire during the core collapse of massive stars and the common envelope phase of binary evolution, which are most relevant to the merging rates of NS-NS, NS-BH and BH-BH binaries. The second part of the review is devoted mainly to the formation and evolution of binary WDs and their observational manifestations, including their role as progenitors of cosmologically-important thermonuclear SN Ia. We also consider AM CVn-stars, which are thought to be the best verification binary GW sources for future low-frequency GW space interferometers.}
+      \field{day}{5}
+      \field{issn}{1433-8351}
+      \field{journaltitle}{Living Reviews in Relativity}
+      \field{langid}{english}
+      \field{month}{5}
+      \field{number}{1}
+      \field{shortjournal}{Living Rev. Relativ.}
+      \field{title}{The {{Evolution}} of {{Compact Binary Star Systems}}}
+      \field{urlday}{26}
+      \field{urlmonth}{11}
+      \field{urlyear}{2022}
+      \field{volume}{17}
+      \field{year}{2014}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{3}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.12942/lrr-2014-3
+      \endverb
+      \verb{file}
+      \verb /home/quartzar/Zotero/storage/7CMP2JZW/Postnov and Yungelson - 2014 - The Evolution of Compact Binary Star Systems.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.12942/lrr-2014-3
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.12942/lrr-2014-3
+      \endverb
+      \keyw{AM CVn stars,Astrophysics,Binary systems,Black holes,Gravitational-wave sources,Neutron stars,Supernovae,White dwarfs}
+    \endentry
+    \entry{toonenEvolutionHierarchicalTriple2016}{misc}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=e1e43d1501882df5d89d8183bcd2abed}{%
+           family={Toonen},
+           familyi={T\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=0029adc578797d4ec7085a5cf7f29f9b}{%
+           family={Hamers},
+           familyi={H\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=fd9440774c805c2522770d050963ad73}{%
+           family={Zwart},
+           familyi={Z\bibinitperiod},
+           given={S.\bibnamedelimi Portegies},
+           giveni={S\bibinitperiod\bibinitdelim P\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{f5a30f0293d3266bd72b26266356ba1d}
+      \strng{fullhash}{f5a30f0293d3266bd72b26266356ba1d}
+      \strng{bibnamehash}{f5a30f0293d3266bd72b26266356ba1d}
+      \strng{authorbibnamehash}{f5a30f0293d3266bd72b26266356ba1d}
+      \strng{authornamehash}{f5a30f0293d3266bd72b26266356ba1d}
+      \strng{authorfullhash}{f5a30f0293d3266bd72b26266356ba1d}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Field stars are frequently formed in pairs, and many of these binaries are part of triples or even higher-order systems. Even though, the principles of single stellar evolution and binary evolution, have been accepted for a long time, the long-term evolution of stellar triples is poorly understood. The presence of a third star in an orbit around a binary system can significantly alter the evolution of those stars and the binary system. The rich dynamical behavior in three-body systems can give rise to Lidov-Kozai cycles, in which the eccentricity of the inner orbit and the inclination between the inner and outer orbit vary periodically. In turn, this can lead to an enhancement of tidal effects (tidal friction), gravitational-wave emission and stellar interactions such as mass transfer and collisions. The lack of a self-consistent treatment of triple evolution, including both three-body dynamics as well as stellar evolution, hinders the systematic study and general understanding of the long-term evolution of triple systems. In this paper, we aim to address some of these hiatus, by discussing the dominant physical processes of hierarchical triple evolution, and presenting heuristic recipes for these processes. To improve our understanding on hierarchical stellar triples, these descriptions are implemented in a public source code TrES which combines three-body dynamics (based on the secular approach) with stellar evolution and their mutual influences. Note that modeling through a phase of stable mass transfer in an eccentric orbit is currently not implemented in TrES , but can be implemented with the appropriate methodology at a later stage.}
+      \field{day}{19}
+      \field{eprintclass}{astro-ph}
+      \field{eprinttype}{arxiv}
+      \field{month}{12}
+      \field{number}{arXiv:1612.06172}
+      \field{title}{The Evolution of Hierarchical Triple Star-Systems}
+      \field{urlday}{26}
+      \field{urlmonth}{11}
+      \field{urlyear}{2022}
+      \field{year}{2016}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.1612.06172
+      \endverb
+      \verb{eprint}
+      \verb 1612.06172
+      \endverb
+      \verb{file}
+      \verb /home/quartzar/Zotero/storage/IC96SW9Y/Toonen et al. - 2016 - The evolution of hierarchical triple star-systems.pdf;/home/quartzar/Zotero/storage/W74GY3QU/1612.html
+      \endverb
+      \verb{urlraw}
+      \verb http://arxiv.org/abs/1612.06172
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/1612.06172
+      \endverb
+      \keyw{Astrophysics - Earth and Planetary Astrophysics,Astrophysics - Solar and Stellar Astrophysics}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
