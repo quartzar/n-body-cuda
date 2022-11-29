@@ -1,13 +1,49 @@
+% Suppress hbox warnings
+\hbadness=99999  % or any number >=10000
+
 \section{Methodology}
-{ \lipsum[7] }
+{\slshape N\/}-body simulations enable the evolution of a system of continuously interacting bodies to be numerically approximated. Here, we describe our astrophysical simulation implementation of this, where each body represents an individual young star contained in a small-{\slshape N\/} cluster, and these bodies gravitationally interact with every other body. The simulation will contain multiple small-{\slshape N\/} clusters separated by radius $2R$, where $R$ is the radius of each individual cluster, and $R<10^{4}AU$.
+
+\subsection{{\slshape N\/}-body Algorithm}
+Multiple algorithms exist for {\slshape N\/}-body simulations. Hierarchical {\slshape N\/}-body algorithms, such as treecodes~\parencite{barnesHierarchicalLogForcecalculation1986}, fast multipole methods (FMM)~\parencite{lfFastAlgorithmParticle2001}, and hybrid treecode/FMM algorithms {\parencites{dehnenHierarchicalForceCalculation2002}{chengFastAdaptiveMultipole1999a}}, greatly reduce the computational complexity of the simulation by approximating some of the body-body interactions. The treecode algorithm approximates long-range forces by replacing groups of remote particles with their centre of mass, bringing the complexity down to $O(N \log N)$, while FMMs additionally group nearby particles, further reducing the complexity to just $O(N)$.
+
+Whilst these hierarchical methods significantly speed up calculations, they do introduce a small amount of error. Their application is perfectly suited for large-scale {\slshape N\/}-body simulations, where {\slshape N\/} is large and the simulation is of structures orders of magnitudes more massive and complex than the small-{\slshape N\/} clusters being studied in this paper, as at that scale the errors introduced by the afformentioned hierarchical algorithms become negligible. Additionally, the direct simulation of an {\slshape N\/}-body problem using the {\slshape all-pairs\/} approach, where all body-body forces are computed, has a significant computational complexity of $O(N^2)$; for large {\slshape N\/} this is simply too expensive. However, given the scientific objective of this paper, the brute-force {\slshape all-pairs\/} approach will be used despite it's computational complexity of order $N^2$, as we are simulating small-{\slshape N\/} clusters and need to minimise errors.
+
+\subsection{All-Pairs Approach}
+
+In the following equations, we signify vectors (generally in 3D) using bold font. For this simulation we use Newtonian equations of gravitational force. The most basic form of this is given by the following:
+\[ 
+    F=\frac{Gm_{1}m_{2}}{r^2}, 
+\]
+where $F$ is the magnitude of the force acting between the two bodies; $m_{1}$ and $m_{2}$ are the masses of the two objects; $r$ is the distance from the centre of mass for each body; and $G$ is the gravitational constant. 
+
+In order to implement this in our {\slshape N\/}-body simulation, we must additionally calculate the direction of the force. Given {\slshape N\/} bodies with position and velocity $\mathbf{x}_i$ and $\mathbf{v}_i$ respectively, where $1\leq i\leq N$, the resulting force vector $\mathbf{f}_{ij}$ acting upon body $i$ caused by its gravitational interaction with body $j$ is given by:
+\[
+    \mathbf{f}_{ij}=\underbrace{G\frac{m_{i}m_{j}}{\|\mathbf{r}_{ij}\|^2}}_{magnitude} \cdot \underbrace{\frac{\mathbf{r}_{ij}}{\|\mathbf{r}_{ij}\|}}_{direction},
+\]
+where $m_{i}$ and $m_{j}$ are the masses of bodies $i$ and $j$, respectively; $\mathbf{r_{ij}}$ is the vector from the centre of body $i$ to body $j$ where $\mathbf{r_{ij}}=\mathbf{x}_i - \mathbf{x}_j$; and $G$ is the gravitational constant. The {\itshape magnitude\/} of the force is proportional to the product of the two bodies masses and is inversely proportional to the square of the distance between body $i$ and body $j$. Given that gravitational forces are attractive, the {\itshape direction\/} of the force is given by the unit vector going from body $i$ to body $j$.
+
+In order to obtain the total force acting on body $i$, $\mathbf{F}_i$, every interaction that body $i$ has with all other $N-1$ bodies is summed:
+\[
+    \mathbf{F}_i=\sum\limits_{\substack{1\leq j\leq N \\ j\neq i }}\mathbf{f}_{ij}=Gm_{i}\cdot \sum\limits_{\substack{1\leq j\leq N \\ j\neq i }}\frac{m_{j}\mathbf{r}_{ij}}{\|\mathbf{r}_{ij}\|^3}.
+\]
+
+Newtonian equations of gravitational force only provide an approximation of the effects of gravity as both bodies are treated as being point-masses; the bodies size is not accounted for. When bodies approach each other, the resultant force, $\mathbf{F}_{i}$, grows without bounds towards infinity. This presents an issue for both the numerical integration required in this simulation and for the physical accuracy of this study. Typically, astrophysical simulations presume a collisionless interaction between bodies where it is appropriate and where collisions are not being studied. We therefore introduce a {\itshape softening factor\/}, $\epsilon^2>0$; this is further explained in \autoref{sec:softening}, along with the value we use for $\epsilon$. The equation is rewritten as:
+\[
+    \mathbf{F}_i\approx Gm_{i}\cdot \sum_{1\leq j\leq N}\frac{m_{j}\mathbf{r}_{ij}}{(\|\mathbf{r}_{ij}\|^2+\epsilon^2)^{\nicefrac{3}{2}}}.
+\]
+Note that when $\epsilon^2>0$, $\mathbf{f}_{ij}=0$, so the condition $j\neq i$ is no longer required. To integrate the body-body interactions over time and update the position and velocity of body $i$, the acceleration $\mathbf{a}_{i}=\mathbf{F}_{i}/m_{i}$ must be calculated. We can therefore simplify the equation to:
+\[ 
+    \mathbf{a}_i\approx G\cdot \sum_{1\leq j\leq N}\frac{m_{j}\mathbf{r}_{ij}}{(\|\mathbf{r}_{ij}\|^2+\epsilon^2)^{\nicefrac{3}{2}}}.
+\]
+
+\subsubsection{Softening Factor}\label{sec:softening}
+
+{ \lipsum[9] }
 
 \subsection{Integrator Scheme}
 
 { \lipsum[2-4] }
-
-\subsection{Force Calculations}
-
-{ \lipsum[5] }
 
 \subsection{Initial Conditions}
 

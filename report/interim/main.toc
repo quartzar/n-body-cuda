@@ -2,10 +2,12 @@
 \contentsline {section}{\numberline {2}Background}{1}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Binary Properties}{1}{subsection.2.1}%
 \contentsline {subsection}{\numberline {2.2}Star Formation}{1}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Time Scales}{1}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.1}Time Scales}{2}{subsubsection.2.2.1}%
 \contentsline {subsection}{\numberline {2.3}Binary Formation}{2}{subsection.2.3}%
 \contentsline {subsection}{\numberline {2.4}{\slshape N}-body Problem}{2}{subsection.2.4}%
 \contentsline {section}{\numberline {3}Methodology}{2}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Integrator Scheme}{2}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Force Calculations}{3}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Initial Conditions}{3}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.1}{\slshape N\/}-body Algorithm}{2}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}All-Pairs Approach}{3}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Softening Factor}{3}{subsubsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.3}Integrator Scheme}{3}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Initial Conditions}{4}{subsection.3.4}%

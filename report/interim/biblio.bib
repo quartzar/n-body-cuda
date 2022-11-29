@@ -15,6 +15,45 @@
   file = {/home/quartzar/Zotero/storage/ESWZUR3Z/Abt and Levy - 1976 - Multiplicity among solar-type stars..pdf}
 }
 
+@article{andreInitialConditionsStar2007,
+  title = {The Initial Conditions of Star Formation in the {{Ophiuchus}} Main Cloud: {{Kinematics}} of the Protocluster Condensations},
+  shorttitle = {The Initial Conditions of Star Formation in the {{Ophiuchus}} Main Cloud},
+  author = {André, Ph and Belloche, A. and Motte, F. and Peretto, N.},
+  date = {2007-09},
+  journaltitle = {Astronomy \& Astrophysics},
+  shortjournal = {A\&A},
+  volume = {472},
+  number = {2},
+  eprint = {0706.1535},
+  eprinttype = {arxiv},
+  primaryclass = {astro-ph},
+  pages = {519--535},
+  issn = {0004-6361, 1432-0746},
+  doi = {10.1051/0004-6361:20077422},
+  url = {http://arxiv.org/abs/0706.1535},
+  urldate = {2022-11-27},
+  abstract = {The earliest phases of clustered star formation and the origin of the stellar initial mass function (IMF) are currently much debated. In order to constrain the origin of the IMF, we investigated the internal and relative motions of starless condensations and protostars previously detected by us in the dust continuum at 1.2mm in the L1688 protocluster of the Ophiuchus molecular cloud complex. The starless condensations have a mass spectrum resembling the IMF and are therefore likely representative of the initial stages of star formation in the protocluster. We carried out detailed molecular line observations, including some N2H+(1-0) mapping, of the Ophiuchus protocluster condensations using the IRAM 30m telescope. We measured subsonic or at most transonic levels of internal turbulence within the condensations, implying virial masses which generally agree within a factor of \textasciitilde{} 2 with the masses derived from the 1.2mm dust continuum. This supports the notion that most of the L1688 starless condensations are gravitationally bound and prestellar in nature. We measured a global one-dimensional velocity dispersion of less than 0.4 km/s between condensations. This small relative velocity dispersion implies that, in general, the condensations do not have time to interact with one another before evolving into pre-main sequence objects. Our observations support the view that the IMF is partly determined by cloud fragmentation at the prestellar stage. Competitive accretion is unlikely to be the dominant mechanism at the protostellar stage in the Ophiuchus protocluster, but it may possibly govern the growth of starless, self-gravitating condensations initially produced by gravoturbulent fragmentation toward an IMF, Salpeter-like mass spectrum.},
+  archiveprefix = {arXiv},
+  keywords = {Astrophysics,From Paul},
+  file = {/home/quartzar/Zotero/storage/5H4DEWKK/André et al. - 2007 - The initial conditions of star formation in the Op.pdf;/home/quartzar/Zotero/storage/YCYIA9T6/0706.html}
+}
+
+@article{barnesHierarchicalLogForcecalculation1986,
+  title = {A Hierarchical {{O}}({{N}} Log {{N}}) Force-Calculation Algorithm},
+  author = {Barnes, Josh and Hut, Piet},
+  date = {1986-12-01},
+  journaltitle = {Nature},
+  volume = {324},
+  pages = {446--449},
+  issn = {0028-0836},
+  doi = {10.1038/324446a0},
+  url = {https://ui.adsabs.harvard.edu/abs/1986Natur.324..446B},
+  urldate = {2022-11-28},
+  abstract = {Until recently the gravitational N-body problem has been modelled numerically either by direct integration, in which the computation needed increases as N2, or by an iterative potential method in which the number of operations grows as N log N. Here we describe a novel method of directly calculating the force on N bodies that grows only as N log N. The technique uses a tree-structured hierarchical subdivision of space into cubic cells, each of which is recursively divided into eight subcells whenever more than one particle is found to occupy the same cell. This tree is constructed anew at every time step, avoiding ambiguity and tangling. Advantages over potential-solving codes are: accurate local interactions; freedom from geometrical assumptions and restrictions; and applicability to a wide class of systems, including (proto-)planetary, stellar, galactic and cosmological ones. Advantages over previous hierarchical tree-codes include simplicity and the possibility of rigorous analysis of error. Although we concentrate here on stellar dynamical applications, our techniques of efficiently handling a large number of long-range interactions and concentrating computational effort where most needed have potential applications in other areas of astrophysics as well.},
+  keywords = {Algorithms,Computational Astrophysics,Hierarchies,Many Body Problem,Numerical Integration,Physics (General),Stellar Motions},
+  annotation = {ADS Bibcode: 1986Natur.324..446B}
+}
+
 @article{burtscherEfficientCUDAImplementation2011,
   title = {An {{Efficient CUDA Implementation}} of the {{Tree-Based Barnes Hut}} n-{{Body Algorithm}}},
   author = {Burtscher, Martin and Pingali, Keshav},
@@ -25,6 +64,109 @@
   doi = {10.1016/B978-0-12-384988-5.00006-1},
   abstract = {This chapter describes the first CUDA implementation of the classical Barnes Hut n-body algorithm that runs entirely on the GPU. Unlike most other CUDA programs, our code builds an irregular tree-based data structure and performs complex traversals on it. It consists of six GPU kernels. The kernels are optimized to minimize memory accesses and thread divergence and are fully parallelized within and across blocks. Our CUDA code takes 5.2 seconds to simulate one time step with 5,000,000 bodies on a 1.3 GHz Quadro FX 5800 GPU with 240 cores, which is 74 times faster than an optimized serial implementation running on a 2.53 GHz Xeon E5540 CPU.},
   file = {/home/quartzar/Zotero/storage/522P59A9/Burtscher and Pingali - 2011 - An Efficient CUDA Implementation of the Tree-Based.pdf}
+}
+
+@article{chatterjeeMONTECARLOSIMULATIONS2010,
+  title = {{{MONTE CARLO SIMULATIONS OF GLOBULAR CLUSTER EVOLUTION}}. {{V}}. {{BINARY S}}℡{{LAR EVOLUTION}}},
+  author = {Chatterjee, Sourav and Fregeau, John M. and Umbreit, Stefan and Rasio, Frederic A.},
+  date = {2010-07},
+  journaltitle = {The Astrophysical Journal},
+  shortjournal = {ApJ},
+  volume = {719},
+  number = {1},
+  pages = {915},
+  publisher = {{The American Astronomical Society}},
+  issn = {0004-637X},
+  doi = {10.1088/0004-637X/719/1/915},
+  url = {https://dx.doi.org/10.1088/0004-637X/719/1/915},
+  urldate = {2022-11-28},
+  abstract = {We study the dynamical evolution of globular clusters containing primordial binaries, including full single and binary stellar evolution using our Monte Carlo cluster evolution code updated with an adaptation of the single and binary stellar evolution codes SSE and BSE from Hurley et al. We describe the modifications that we have made to the code. We present several test calculations and comparisons with existing studies to illustrate the validity of the code. We show that our code finds very good agreement with direct N-body simulations including primordial binaries and stellar evolution. We find significant differences in the evolution of the global properties of the simulated clusters using stellar evolution compared with simulations without any stellar evolution. In particular, we find that the mass loss from the stellar evolution acts as a significant energy production channel simply by reducing the total gravitational binding energy and can significantly prolong the initial core contraction phase before reaching the binary-burning quasi-steady state of the cluster evolution. We simulate a large grid of models varying the initial cluster mass, binary fraction, and concentration parameter, and we compare properties of the simulated clusters with those of the observed Galactic globular clusters (GGCs). We find that simply including stellar evolution in our simulations and assuming the typical initial cluster half-mass radius is approximately a few pc independent of mass, our simulated cluster properties agree well with the observed GGC properties such as the core radius and the ratio of the core radius to the half-mass radius. We explore in some detail qualitatively different clusters in different phases of their evolution and construct synthetic Hertzsprung–Russell diagrams for these clusters.},
+  langid = {english},
+  file = {/home/quartzar/Zotero/storage/VLJASTQR/Chatterjee et al. - 2010 - MONTE CARLO SIMULATIONS OF GLOBULAR CLUSTER EVOLUT.pdf}
+}
+
+@article{chengFastAdaptiveMultipole1999a,
+  title = {A {{Fast Adaptive Multipole Algorithm}} in {{Three Dimensions}}},
+  author = {Cheng, H. and Greengard, L. and Rokhlin, V.},
+  date = {1999-11-01},
+  journaltitle = {Journal of Computational Physics},
+  shortjournal = {Journal of Computational Physics},
+  volume = {155},
+  number = {2},
+  pages = {468--498},
+  issn = {0021-9991},
+  doi = {10.1006/jcph.1999.6355},
+  url = {https://www.sciencedirect.com/science/article/pii/S0021999199963556},
+  urldate = {2022-11-28},
+  abstract = {We present an adaptive fast multipole method for the Laplace equation in three dimensions. It uses both new compression techniques and diagonal forms for translation operators to achieve high accuracy at a reasonable cost.},
+  langid = {english},
+  keywords = {adaptive algorithms,fast multipole method,Laplace equation,translation operators},
+  file = {/home/quartzar/Zotero/storage/ZH6RXTFV/S0021999199963556.html}
+}
+
+@article{dehnenHierarchicalForceCalculation2002,
+  title = {A {{Hierarchical O}}({{N}}) {{Force Calculation Algorithm}}},
+  author = {Dehnen, Walter},
+  date = {2002-06},
+  journaltitle = {Journal of Computational Physics},
+  shortjournal = {Journal of Computational Physics},
+  volume = {179},
+  number = {1},
+  eprint = {astro-ph/0202512},
+  eprinttype = {arxiv},
+  pages = {27--42},
+  issn = {00219991},
+  doi = {10.1006/jcph.2002.7026},
+  url = {http://arxiv.org/abs/astro-ph/0202512},
+  urldate = {2022-11-28},
+  abstract = {A novel code for the approximate computation of long-range forces between N mutually interacting bodies is presented. The code is based on a hierarchical tree of cubic cells and features mutual cell-cell interactions which are calculated via a Cartesian Taylor expansion in a symmetric way, such that total momentum is conserved. The code benefits from an improved and simple multipole acceptance criterion that reduces the force error and the computational effort. For N{$>$}10\^4, the computational costs are found empirically to rise sub-linear with N. For applications in stellar dynamics, this is the first competitive code with complexity O(N), it is faster than the standard tree code by a factor ten or more.},
+  archiveprefix = {arXiv},
+  keywords = {Astrophysics},
+  file = {/home/quartzar/Zotero/storage/KYWKSSHG/Dehnen - 2002 - A Hierarchical O(N) Force Calculation Algorithm.pdf;/home/quartzar/Zotero/storage/5GHAGYDS/0202512.html}
+}
+
+@article{ducheneStellarMultiplicity2013,
+  title = {Stellar {{Multiplicity}}},
+  author = {Duchêne, Gaspard and Kraus, Adam},
+  date = {2013-08-18},
+  journaltitle = {Annual Review of Astronomy and Astrophysics},
+  shortjournal = {Annu. Rev. Astron. Astrophys.},
+  volume = {51},
+  number = {1},
+  eprint = {1303.3028},
+  eprinttype = {arxiv},
+  primaryclass = {astro-ph},
+  pages = {269--310},
+  issn = {0066-4146, 1545-4282},
+  doi = {10.1146/annurev-astro-081710-102602},
+  url = {http://arxiv.org/abs/1303.3028},
+  urldate = {2022-11-27},
+  abstract = {Stellar multiplicity is an ubiquitous outcome of the star formation process. Characterizing the frequency and main characteristics of multiple systems and their dependencies on primary mass and environment is therefore a powerful tool to probe this process. While early attempts were fraught with selection biases and limited completeness, instrumentation breakthroughs in the last two decades now enable robust analyses. In this review, we summarize our current empirical knowledge of stellar multiplicity for Main Sequence stars and brown dwarfs, as well as among populations of Pre-Main Sequence stars and embedded protostars. Clear trends as a function of both primary mass and stellar evolutionary stage are identified that will serve as a comparison basis for numerical and analytical models of star formation.},
+  archiveprefix = {arXiv},
+  keywords = {Astrophysics - Solar and Stellar Astrophysics,From Paul},
+  file = {/home/quartzar/Zotero/storage/5DGVT9US/Duchêne and Kraus - 2013 - Stellar Multiplicity.pdf;/home/quartzar/Zotero/storage/PKDFGNKT/1303.html}
+}
+
+@article{ducheneStellarMultiplicity2013a,
+  title = {Stellar {{Multiplicity}}},
+  author = {Duchêne, Gaspard and Kraus, Adam},
+  date = {2013-08-18},
+  journaltitle = {Annual Review of Astronomy and Astrophysics},
+  shortjournal = {Annu. Rev. Astron. Astrophys.},
+  volume = {51},
+  number = {1},
+  eprint = {1303.3028},
+  eprinttype = {arxiv},
+  primaryclass = {astro-ph},
+  pages = {269--310},
+  issn = {0066-4146, 1545-4282},
+  doi = {10.1146/annurev-astro-081710-102602},
+  url = {http://arxiv.org/abs/1303.3028},
+  urldate = {2022-11-27},
+  abstract = {Stellar multiplicity is an ubiquitous outcome of the star formation process. Characterizing the frequency and main characteristics of multiple systems and their dependencies on primary mass and environment is therefore a powerful tool to probe this process. While early attempts were fraught with selection biases and limited completeness, instrumentation breakthroughs in the last two decades now enable robust analyses. In this review, we summarize our current empirical knowledge of stellar multiplicity for Main Sequence stars and brown dwarfs, as well as among populations of Pre-Main Sequence stars and embedded protostars. Clear trends as a function of both primary mass and stellar evolutionary stage are identified that will serve as a comparison basis for numerical and analytical models of star formation.},
+  archiveprefix = {arXiv},
+  keywords = {Astrophysics - Solar and Stellar Astrophysics},
+  file = {/home/quartzar/Zotero/storage/8ARB5ARI/Duchêne and Kraus - 2013 - Stellar Multiplicity.pdf;/home/quartzar/Zotero/storage/VA94YUST/1303.html}
 }
 
 @article{guoLarsonPenstonSelfsimilarGravitational2021,
@@ -63,6 +205,40 @@
   file = {/home/quartzar/Zotero/storage/WVBXSBSH/Heintz - 1969 - A Statistical Study of Binary Stars.pdf}
 }
 
+@incollection{kroupaInitialConditionsStar2008,
+  title = {Initial {{Conditions}} for {{Star Clusters}}},
+  booktitle = {The {{Cambridge N-Body Lectures}}},
+  author = {Kroupa, Pavel},
+  editor = {Aarseth, Sverre J. and Tout, Christopher A. and Mardling, Rosemary A.},
+  date = {2008},
+  series = {Lecture {{Notes}} in {{Physics}}},
+  pages = {181--259},
+  publisher = {{Springer Netherlands}},
+  location = {{Dordrecht}},
+  doi = {10.1007/978-1-4020-8431-7_8},
+  url = {https://doi.org/10.1007/978-1-4020-8431-7_8},
+  urldate = {2022-11-27},
+  abstract = {Most stars form in dense star clusters deeply embedded in residual gas. The populations of these objects range from small groups of stars with about a dozen binaries within a volume with a typical radius of r ≈ 0.3 pc through to objects formed in extreme star bursts containing N ≈ 108 stars within r ≈ 36 pc. Star clusters, or more generally dense stellar systems, must therefore be seen as the fundamental building blocks of galaxies. Differentiationof the term star cluster from a spheroidal dwarf galaxy becomes blurred near N ≈ 106. Both are mostly pressure-supported, that is, random stellar motions dominate any bulk streaming motions such as rotation.},
+  isbn = {978-1-4020-8431-7},
+  langid = {english},
+  keywords = {Dwarf Galaxy,From Paul,Globular Cluster,Massive Star,Star Cluster,Stellar Population},
+  file = {/home/quartzar/Zotero/storage/Y4CHN8ZB/Kroupa - 2008 - Initial Conditions for Star Clusters.pdf}
+}
+
+@article{kuiperProblemsDoubleStarAstronomy1935,
+  title = {Problems of {{Double-Star Astronomy}}},
+  author = {Kuiper, G. P.},
+  date = {1935},
+  journaltitle = {Publications of the Astronomical Society of the Pacific},
+  volume = {47},
+  number = {275},
+  eprint = {40670631},
+  eprinttype = {jstor},
+  pages = {15--42},
+  publisher = {{[University of Chicago Press, Astronomical Society of the Pacific]}},
+  issn = {0004-6280}
+}
+
 @article{ladaEmbeddedClustersMolecular2003,
   title = {Embedded {{Clusters}} in {{Molecular Clouds}}},
   author = {Lada, Charles J. and Lada, Elizabeth A.},
@@ -82,6 +258,19 @@
   archiveprefix = {arXiv},
   keywords = {Astrophysics},
   file = {/home/quartzar/Zotero/storage/M5PSHYWV/Lada and Lada - 2003 - Embedded Clusters in Molecular Clouds.pdf;/home/quartzar/Zotero/storage/PBJU7ZKV/0301540.html}
+}
+
+@article{lfFastAlgorithmParticle2001,
+  title = {A {{Fast Algorithm}} for {{Particle Simulation}}},
+  author = {LF, Greengard and Rokhlin, V.},
+  date = {2001-04-02},
+  journaltitle = {Journal of Computational Physics},
+  shortjournal = {Journal of Computational Physics},
+  volume = {73},
+  pages = {325--348},
+  doi = {10.1016/0021-9991(87)90140-9},
+  abstract = {An algorithm is presented for the rapid evaluation of the potential and force fields in systems involving large numbers of particles whose interactions are Coulombic or gravitational in nature. For a system of N particles, an amount of work of the order O(N2) has traditionally been required to evaluate all pairwise interactions, unless some approximation or truncation method is used. The algorithm of the present paper requires an amount of work proportional to N to evaluate all interactions to within roundoff error, making it considerably more practical for large-scale problems encountered in plasma physics, fluid dynamics, molecular dynamics, and celestial mechanics.},
+  file = {/home/quartzar/Zotero/storage/3EAGPDFV/LF and Rokhlin - 2001 - A Fast Algorithm for Particle Simulation.pdf}
 }
 
 @article{machidaBinaryFormationStarForming2008,
@@ -147,6 +336,19 @@
   file = {/home/quartzar/Zotero/storage/7CMP2JZW/Postnov and Yungelson - 2014 - The Evolution of Compact Binary Star Systems.pdf}
 }
 
+@online{publishedBinaryStarSystems2018,
+  title = {Binary {{Star Systems}}: {{Classification}} and {{Evolution}}},
+  shorttitle = {Binary {{Star Systems}}},
+  author = {{published}, Space com Staff},
+  date = {2018-01-17T23:14:00Z},
+  url = {https://www.space.com/22509-binary-stars.html},
+  urldate = {2022-11-27},
+  abstract = {Binary stars are two stars orbiting a common center of mass. More than four-fifths of the single points of light we observe in the night sky are actually two or more stars orbiting together.},
+  langid = {english},
+  organization = {{Space.com}},
+  file = {/home/quartzar/Zotero/storage/7LNEUPFV/22509-binary-stars.html}
+}
+
 @article{schaffenrothEREBOSProjectInvestigating2019,
   title = {The {{EREBOS}} Project: {{Investigating}} the Effect of Substellar and Low-Mass Stellar Companions on Late Stellar Evolution - {{Survey}}, Target Selection, and Atmospheric Parameters},
   shorttitle = {The {{EREBOS}} Project},
@@ -164,6 +366,40 @@
   abstract = {Eclipsing post-common-envelope binaries are highly important for resolving the poorly understood, very short-lived common-envelope phase of stellar evolution. Most hot subdwarfs (sdO/Bs) are the bare helium-burning cores of red giants that have lost almost all of their hydrogen envelope. This mass loss is often triggered by common-envelope interactions with close stellar or even substellar companions. Cool companions to hot subdwarf stars such as late-type stars and brown dwarfs are detectable from characteristic light-curve variations – reflection effects and often eclipses. In the recently published catalog of eclipsing binaries in the Galactic Bulge and in the Asteroid Terrestrial-impact Last Alert System (ATLAS) survey, we discovered 125 new eclipsing systems showing a reflection effect seen by visual inspection of the light curves and using a machine-learning algorithm, in addition to the 36 systems previously discovered by the Optical Gravitational Lesing Experiment (OGLE) team. The Eclipsing Reflection Effect Binaries from Optical Surveys (EREBOS) project aims at analyzing all newly discovered eclipsing binaries of the HW Vir type (hot subdwarf + close, cool companion) based on a spectroscopic and photometric follow up to derive the mass distribution of the companions, constrain the fraction of substellar companions, and determine the minimum mass needed to strip off the red-giant envelope. To constrain the nature of the primary we derived the absolute magnitude and the reduced proper motion of all our targets with the help of the parallaxes and proper motions measured by the \emph{Gaia{$<$}i/{$>$} mission and compared those to the \emph{Gaia{$<$}i/{$>$} white-dwarf candidate catalog. It was possible to derive the nature of a subset of our targets, for which observed spectra are available, by measuring the atmospheric parameter of the primary, confirming that less than 10\% of our systems are not sdO/Bs with cool companions but are white dwarfs or central stars of planetary nebula. This large sample of eclipsing hot subdwarfs with cool companions allowed us to derive a significant period distribution for hot subdwarfs with cool companions for the first time showing that the period distribution is much broader than previously thought and is ideally suited to finding the lowest-mass companions to hot subdwarf stars. The comparison with related binary populations shows that the period distribution of HW Vir systems is very similar to WD+dM systems and central stars of planetary nebula with cool companions. In the future, several new photometric surveys will be carried out, which will further increase the sample of this project, providing the potential to test many aspects of common-envelope theory and binary evolution.}}},
   langid = {english},
   file = {/home/quartzar/Zotero/storage/WXG5L2QF/Schaffenroth et al. - 2019 - The EREBOS project Investigating the effect of su.pdf;/home/quartzar/Zotero/storage/6XMTY4FF/aa36019-19.html}
+}
+
+@article{sterzikDynamicDecayYoung1998,
+  title = {The Dynamic Decay of Young Few-Body Stellar Systems. {{I}}. {{The}} Effect of a Mass Spectrum for {{N}} = 3, 4, and 5},
+  author = {Sterzik, Michael and Durisen, R.},
+  date = {1998-10-31},
+  journaltitle = {Astronomy and Astrophysics},
+  shortjournal = {Astronomy and Astrophysics},
+  volume = {339},
+  pages = {95--112},
+  abstract = {We investigate the dynamic decay of nonhierarchical few-body systems, with an emphasis on applications to young stellar multiples formed by fragmenting cloud collapse. A chain regularization scheme is used to integrate orbits for 300 or more crossing times in order to guarantee that most systems are fully decayed. In this paper, we consider cases where the number N of point-mass stars is three, four, or five; and we explore effects of the stellar mass spectrum on the outcome in the low angular momentum limit. A novel classification scheme is introduced to identify the remnant decay products, including singles, binaries, and bound hierarchical multiples. The ensemble of final system configurations is then analysed to determine mass and escape speed distributions, and to characterize properties of the binary and triple stars formed during the decay. Some statistical features of the endstates can be understood analytically using well-known principles of few-body dynamics. Our results suggest observable signatures in and around star forming regions which would be expected if multiply fragmenting collapse is a common mode of star formation.},
+  keywords = {From Paul},
+  file = {/home/quartzar/Zotero/storage/PSW6NBFL/Sterzik and Durisen - 1998 - The dynamic decay of young few-body stellar system.pdf}
+}
+
+@article{sterzikHowBinarySeparations2003,
+  title = {How Do Binary Separations Depend on Cloud Initial Conditions?},
+  author = {Sterzik, M. F. and Durisen, R. H. and Zinnecker, H.},
+  date = {2003-11-01},
+  journaltitle = {Astronomy \& Astrophysics},
+  shortjournal = {A\&A},
+  volume = {411},
+  number = {2},
+  pages = {91--97},
+  publisher = {{EDP Sciences}},
+  issn = {0004-6361, 1432-0746},
+  doi = {10.1051/0004-6361:20034219},
+  url = {https://www.aanda.org/articles/aa/abs/2003/45/aa0219/aa0219.html},
+  urldate = {2022-11-27},
+  abstract = {We explore the consequences of a star formation scenario in which the isothermal collapse of a rotating, star-forming core is followed by prompt fragmentation into a cluster containing a small number () of protostars and/or substellar objects. The subsequent evolution of the cluster is assumed to be dominated by dynamical interactions among cluster members, and this establishes the final properties of the binary and multiple systems. The characteristic scale of the fragmenting core is determined by the cloud initial conditions (such as temperature, angular momentum and mass), and we are able to relate the separation distributions of the final binary population to the properties of the star-forming core. Because the fragmentation scale immediately after the isothermal collapse is typically a factor of 3-10 too large, we conjecture that fragmentation into small clusters followed by dynamical evolution is required to account for the observed binary separation distributions. Differences in the environmental properties of the cores are expected to imprint differences on the characteristic dimensions of the binary systems they form. Recent observations of hierarchical systems, differences in binary characteristics among star forming regions and systematic variations in binary properties with primary mass can be interpreted in the context of this scenario.},
+  issue = {2},
+  langid = {english},
+  keywords = {From Paul},
+  file = {/home/quartzar/Zotero/storage/53C5E2WC/Sterzik et al. - 2003 - How do binary separations depend on cloud initial .pdf;/home/quartzar/Zotero/storage/TBL739SV/aa0219.html}
 }
 
 @misc{toonenEvolutionHierarchicalTriple2016,
