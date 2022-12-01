@@ -11,7 +11,7 @@
 // IC options
 enum NBodyICConfig
 {
-    NORB_SMALLN_CLUSTER
+    NORB_SMALLN_CLUSTER,
     NORB_CONFIG_BASIC,
     NORB_CONFIG_BASIC_DISK,
     NORB_CONFIG_SHELL,
@@ -83,6 +83,8 @@ void processInput(GLFWwindow *window);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
+// Distribution functions ==>
 
 
 

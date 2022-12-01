@@ -4,6 +4,7 @@ project(orbiterv6 CUDA CXX)
 
 set(OpenGlLinkers -lglfw -lGLU -lGL -lglut -lGLEW)
 
+set(OtherLinkers -lgsl -lgslcblas -lm)
 
 set(PROJECT_SOURCES
         NbKernel_N2.cu NbodyRenderer.cpp NbSystemCUDA.cu)
@@ -15,7 +16,7 @@ set(PROJECT_HEADERS
 
 #############################################################################
 add_executable(orbiterv6 ${PROJECT_SOURCES} ${PROJECT_HEADERS})
-target_link_libraries(orbiterv6 ${OpenGlLinkers})
+target_link_libraries(orbiterv6 ${OpenGlLinkers} ${OtherLinkers})
 
 #add_compile_options(-G)
 

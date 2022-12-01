@@ -10,12 +10,17 @@
 #include <random>
 #include <fstream>
 
-#include <GL/glew.h>
-// #include <GL/glut.h>
+#include <GL/glew.h> // glut
 #include <GLFW/glfw3.h>
 
+// lognormal distribution
+#include <map>
+#include <iomanip>
+// #include <gsl>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_cdf.h>
+
 #include "NbKernel_N2.cuh"
-// #include "NbKernel_N2_Verlet.cuh"
 #include "CONSTANTS.h"
 #include "NbSystemCUDA.cuh"
 
@@ -29,11 +34,11 @@ extern __constant__ float big_G;
 
 //------------PARAMETERS---------------//
 NbodyRenderer::RenderMode renderMode = NbodyRenderer::POINTS;
-NBodyICConfig sysConfig = NORB_CONFIG_ADV_DISK_COLLSION;
+NBodyICConfig sysConfig = NORB_SMALLN_CLUSTER;
 NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = true;
+bool displayEnabled = false;
 bool glxyCollision = true;
 bool colourMode = true;
 bool trailMode = false;
@@ -272,6 +277,13 @@ void printToFile(const std::string& outputFName, int step, float deltaTime, int 
 //---------------------------------------
 
 
+// float lognormalMF(float probability, float zeta, float sigma)
+// {
+//
+//
+// }
+
+
 // IC generator
 //---------------------------------------
 void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
@@ -281,9 +293,60 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
     float totalMass = 0.0;
     
     switch(config) {
-        case NORB_SMALLN_CLUSTER: // attempting to implement a lognormal IMF function
+        case NORB_SMALLN_CLUSTER: // attempting to implement a lognormal fake-IMF function
         {
-        
+            // uniform dist for random number between 0-1
+            // plug that into the cumulative lognormal
+            // using GNU for now, need to write my own function; ln is fine for now
+    
+            std::random_device rd;
+            std::mt19937 genr(rd());
+            
+            // Random number between 0-1
+            uniform_real_distribution<double> p(0.0, 1.0);
+            
+            // Inverse probability lognormal
+            const double zeta = 0.1; // solar masses [m_0]
+            const double sigma = 0.627; // Chabrier, 2002
+    
+            std::map<double, double> hist; // for histogram
+            for(int i = 0; i < 10000/*N*/; i++) {
+                // Inverse probability lognormal
+                // double zeta = log10(m_0) - (pow(sigma, 2) / 2);
+                // double mass = exp(zeta + (sigma * sqrt(2) * erfinv(2 * probability - 1)));
+    
+                // Random number between 0-1
+                double px = p(genr);
+                // double A = 0.1 / sqrt(2 * PI * pow(sigma, 2));
+                // double A = 0.158;// 0.141;
+                //
+                // double x = A * exp(-1. * (pow(log10(px) - log10(zeta), 2) / (2 * pow(sigma, 2))));
+                // // Inverted CDF, also called "quantile function", and specifically for normal dist, "probit function"
+                // double mass = zeta + (sigma * sqrt(2) * erfinv(2 * x - 1));
+                
+                
+                
+                std::cout << '\n' << mass;
+                ++hist[std::round(mass)];
+            }
+            
+            
+            
+            // using the GNU scientific library
+            // std::map<double, double> hist;
+            // for(int n=0; n<10000; ++n) {
+            //     // ++hist[std::round(p(genr))];
+            //     auto prob = p(genr);
+            //     auto mass = gsl_cdf_lognormal_Pinv(prob, m_0, sigma);
+            //     ++hist[std::round(mass)];
+            // }
+            for(auto pair : hist) {
+                std::cout << '\n' << std::fixed << std::setprecision(1) << std::setw(2)
+                          << pair.first << ' ' << std::string(pair.second, '*');
+            }
+            // for(auto pair : hist) {
+            //     std::cout << '\n' << pair.first << ' ' << log(pair.second);
+            // }
         }
             break;
         case NORB_CONFIG_BASIC:
