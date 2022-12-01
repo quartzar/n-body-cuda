@@ -281,6 +281,11 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
     float totalMass = 0.0;
     
     switch(config) {
+        case NORB_SMALLN_CLUSTER: // attempting to implement a lognormal IMF function
+        {
+        
+        }
+            break;
         case NORB_CONFIG_BASIC:
         {
             uniform_real_distribution<float> randXPos(-SYS_WIDTH / 2.0, SYS_WIDTH / 2.0);
@@ -323,14 +328,12 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             }
         }
             break;
-        
         case NORB_CONFIG_BASIC_DISK:
         {
             std::cout << "basic disk model to be implemented";
             // also to be implemented
         }
             break;
-        
         case NORB_CONFIG_SHELL:
         {
             uniform_real_distribution<float> randF(0.0f, (float) RAND_MAX);

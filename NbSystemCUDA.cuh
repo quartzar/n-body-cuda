@@ -11,6 +11,7 @@
 // IC options
 enum NBodyICConfig
 {
+    NORB_SMALLN_CLUSTER
     NORB_CONFIG_BASIC,
     NORB_CONFIG_BASIC_DISK,
     NORB_CONFIG_SHELL,

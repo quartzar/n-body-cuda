@@ -45,8 +45,8 @@
 
 
 // Window & render parameters
-#define WIDTH 2800 // 1700 PC // 2800 LT
-#define HEIGHT 1550 // 910 PC // 1550 LT
+#define WIDTH 1700 // 1700 PC // 2800 LT
+#define HEIGHT 910 // 910 PC // 1550 LT
 #define RENDER_INTERVAL 1 // timesteps between each frame
 
 // OpenGL parameters
