@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="orbiterv6"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="orbiterv6">
+				<Option output="/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/orbiterv6" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 orbiterv6"/>
+					<CompileFile command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="orbiterv6/fast">
+				<Option output="/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/orbiterv6" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 orbiterv6/fast"/>
+					<CompileFile command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j20 -f &quot;/home/quartzar/Documents/repos/n-body-cuda/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/quartzar/Documents/repos/n-body-cuda/CONSTANTS.h">
+			<Option target="orbiterv6"/>
+		</Unit>
+		<Unit filename="/home/quartzar/Documents/repos/n-body-cuda/NbKernel_N2.cu">
+			<Option target="orbiterv6"/>
+		</Unit>
+		<Unit filename="/home/quartzar/Documents/repos/n-body-cuda/NbKernel_N2.cuh">
+			<Option target="orbiterv6"/>
+		</Unit>
+		<Unit filename="/home/quartzar/Documents/repos/n-body-cuda/NbSystemCUDA.cu">
+			<Option target="orbiterv6"/>
+		</Unit>
+		<Unit filename="/home/quartzar/Documents/repos/n-body-cuda/NbSystemCUDA.cuh">
+			<Option target="orbiterv6"/>
+		</Unit>
+		<Unit filename="/home/quartzar/Documents/repos/n-body-cuda/NbodyRenderer.cpp">
+			<Option target="orbiterv6"/>
+		</Unit>
+		<Unit filename="/home/quartzar/Documents/repos/n-body-cuda/NbodyRenderer.h">
+			<Option target="orbiterv6"/>
+		</Unit>
+		<Unit filename="/home/quartzar/Documents/repos/n-body-cuda/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
