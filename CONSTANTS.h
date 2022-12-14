@@ -19,16 +19,20 @@
 // Simulation parameters
 #define SEED 5 // seed for IC generator
 #define N_B_MULTIPLIER 1 // for thread calculation -> 960/12 = 80 [SM's on RTX 3080ti]
-#define N_BODIES (1 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
+#define N_BODIES (2 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
 #define TIME_STEP 1 // time between integration steps in days
-#define ITERATIONS 1 // iterations before finishing simulation
+#define ITERATIONS 1000000 // iterations before finishing simulation
 #define SOFTENING 0.000125 // softening factor for close interactions [0.0125?]
 #define Q 1 // rows of ->  [[threads per body]] != REMOVED !=
-#define P 1 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
+#define P 2 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
 // Q=8 threads p/b & P = 80 ->> PxQ==640 (50*NB_M /640)==80
 // At N=10*NB_M, P=128 & Q=8 give enormous performance boosts
 // solar system=>1 | cluster => 64? | fogr N=50*multi, P=640 means all 80 SMP's used
 // for N=200*m, P=1024 (max)
+
+// IC for proper small-N simulations
+#define NUM_CLUSTERS 1 // number of clusters
+#define STARS_PER_CLUSTER 10 // number of stars per cluster
 
 // Initial Conditions
 #define INIT_POS (500) // initial radius from centre in AU
@@ -50,9 +54,9 @@
 #define RENDER_INTERVAL 1 // timesteps between each frame
 
 // OpenGL parameters
-#define FOV 90 // 90 normal // 2 solar system
-#define V_FAR 50000 // 50000 normal // 50 solar system
-#define INIT_ZOOM 5000 // 5000 normal // 100 for solar system
+#define FOV 2 // 90 normal // 2 solar system
+#define V_FAR 50 // 50000 normal // 50 solar system
+#define INIT_ZOOM 100 // 5000 normal // 100 for solar system
 
 // Camera controls
 #define ZOOM_SCALE 0.01 // how fast to zoom

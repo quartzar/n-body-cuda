@@ -43,7 +43,7 @@
 				}
 			],
 			"type" : "STRING",
-			"value" : "Debug"
+			"value" : ""
 		},
 		{
 			"name" : "CMAKE_CACHEFILE_DIR",
@@ -127,7 +127,7 @@
 				}
 			],
 			"type" : "STRING",
-			"value" : "-j20"
+			"value" : "-j16"
 		},
 		{
 			"name" : "CMAKE_COLOR_MAKEFILE",
@@ -206,7 +206,7 @@
 					"value" : "CUDA compiler"
 				}
 			],
-			"type" : "FILEPATH",
+			"type" : "STRING",
 			"value" : "/usr/local/cuda/bin/nvcc"
 		},
 		{

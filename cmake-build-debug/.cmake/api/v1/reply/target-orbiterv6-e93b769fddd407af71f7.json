@@ -42,7 +42,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g --generate-code=arch=compute_52,code=[compute_52,sm_52]"
+					"fragment" : " --generate-code=arch=compute_52,code=[compute_52,sm_52]"
 				}
 			],
 			"language" : "CUDA",
@@ -61,12 +61,6 @@
 			]
 		},
 		{
-			"compileCommandFragments" : 
-			[
-				{
-					"fragment" : "-g"
-				}
-			],
 			"language" : "CXX",
 			"sourceIndexes" : 
 			[
@@ -79,10 +73,6 @@
 	{
 		"commandFragments" : 
 		[
-			{
-				"fragment" : "-g",
-				"role" : "flags"
-			},
 			{
 				"fragment" : "",
 				"role" : "flags"

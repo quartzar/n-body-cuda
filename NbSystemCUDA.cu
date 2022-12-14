@@ -34,7 +34,7 @@ extern __constant__ float big_G;
 
 //------------PARAMETERS---------------//
 NbodyRenderer::RenderMode renderMode = NbodyRenderer::POINTS;
-NBodyICConfig sysConfig = NORB_SMALLN_CLUSTER;
+NBodyICConfig sysConfig = NORB_CONFIG_SOLAR;
 NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
@@ -42,8 +42,8 @@ bool displayEnabled = false;
 bool glxyCollision = true;
 bool colourMode = true;
 bool trailMode = false;
-bool outputEnabled = false;
-bool outputRealUnits = true;
+bool outputEnabled = true;
+bool outputRealUnits = false;
 bool rotateCam = false;
 //---------------------------------------q
 
@@ -301,37 +301,72 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
     
             std::random_device rd;
             std::mt19937 genr(rd());
+    
+            //  max radius of each cluster
+            float radius = 10e4; // AU
+            float offset = -1.f;
             
             // Random number between 0-1
             uniform_real_distribution<double> p(0.0, 1.0);
+            uniform_real_distribution<float> xyz(-radius/2.f, radius/2.f);
+            uniform_real_distribution<float> v(-1.f, 1.f);
             
             // Inverse probability lognormal
             const double zeta = 0.1; // solar masses [m_0]
             const double sigma = 0.627; // Chabrier, 2002
-    
+            
             std::map<double, double> hist; // for histogram
-            for(int i = 0; i < 10000/*N*/; i++) {
-                // Inverse probability lognormal
-                // double zeta = log10(m_0) - (pow(sigma, 2) / 2);
-                // double mass = exp(zeta + (sigma * sqrt(2) * erfinv(2 * probability - 1)));
-    
-                // Random number between 0-1
-                double px = p(genr);
-                // double A = 0.1 / sqrt(2 * PI * pow(sigma, 2));
-                // double A = 0.158;// 0.141;
-                //
-                // double x = A * exp(-1. * (pow(log10(px) - log10(zeta), 2) / (2 * pow(sigma, 2))));
-                // // Inverted CDF, also called "quantile function", and specifically for normal dist, "probit function"
-                // double mass = zeta + (sigma * sqrt(2) * erfinv(2 * x - 1));
+            for (int i = 0; i < N; i++)
+            {
+                // how many clusters? how many stars/cluster?
+                if ((i + 1) % STARS_PER_CLUSTER == 0)
+                { // generate new cluster
+                    offset = 1.f; // no idea yet
+                }
                 
+                // mass function
+                auto prob = p(genr);
+                auto mass = gsl_cdf_lognormal_Pinv(prob, zeta, sigma);
+                
+                // randomised positions based on radius
+                float px = xyz(genr);
+                float py = xyz(genr);
+                float pz = xyz(genr);
+                
+                // assign positions
+                pos[i].x = px + offset * radius;
+                pos[i].y = py + offset * radius;
+                pos[i].z = pz + offset * radius;
+                pos[i].w = float(mass);
+                
+                // assign velocities [dumb for now]
+                // vel[i].x = v(genr);
+                // vel[i].y = v(genr);
+                // vel[i].z = v(genr);
+                vel[i].x = 0.f;
+                vel[i].y = 0.f;
+                vel[i].z = 0.f;
+                vel[i].w = pos[i].w;
                 
                 
                 std::cout << '\n' << mass;
+                totalMass += float(mass);
                 ++hist[std::round(mass)];
             }
-            
-            
-            
+            std::cout << "\nTotal mass: " << totalMass << '\n';
+    
+            // Inverse probability lognormal
+            // double zeta = log10(m_0) - (pow(sigma, 2) / 2);
+            // double mass = exp(zeta + (sigma * sqrt(2) * erfinv(2 * probability - 1)));
+    
+            // Random number between 0-1
+            // double px = p(genr);
+            // double A = 0.1 / sqrt(2 * PI * pow(sigma, 2));
+            // double A = 0.158;// 0.141;
+            //
+            // double x = A * exp(-1. * (pow(log10(px) - log10(zeta), 2) / (2 * pow(sigma, 2))));
+            // // Inverted CDF, also called "quantile function", and specifically for normal dist, "probit function"
+            // double mass = zeta + (sigma * sqrt(2) * erfinv(2 * x - 1));
             // using the GNU scientific library
             // std::map<double, double> hist;
             // for(int n=0; n<10000; ++n) {
