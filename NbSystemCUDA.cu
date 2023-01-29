@@ -34,7 +34,7 @@ extern __constant__ float big_G;
 
 //------------PARAMETERS---------------//
 NbodyRenderer::RenderMode renderMode = NbodyRenderer::POINTS;
-NBodyICConfig sysConfig = NORB_CONFIG_SOLAR;
+NBodyICConfig sysConfig = NORB_SMALLN_CLUSTER;
 NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
@@ -303,13 +303,13 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             std::mt19937 genr(rd());
     
             //  max radius of each cluster
-            float radius = 10e4; // AU
+            float radius = 2062; //10e4; // AU
             float offset = -1.f;
             
             // Random number between 0-1
             uniform_real_distribution<double> p(0.0, 1.0);
             uniform_real_distribution<float> xyz(-radius/2.f, radius/2.f);
-            uniform_real_distribution<float> v(-1.f, 1.f);
+            uniform_real_distribution<float> v(-2.f/KMS_TO_AUD, 2.f/KMS_TO_AUD);
             
             // Inverse probability lognormal
             const double zeta = 0.1; // solar masses [m_0]
@@ -319,7 +319,7 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             for (int i = 0; i < N; i++)
             {
                 // how many clusters? how many stars/cluster?
-                if ((i + 1) % STARS_PER_CLUSTER == 0)
+                if ((i /*+ 1*/) % STARS_PER_CLUSTER == 0)
                 { // generate new cluster
                     offset = 1.f; // no idea yet
                 }
@@ -340,12 +340,12 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 pos[i].w = float(mass);
                 
                 // assign velocities [dumb for now]
-                // vel[i].x = v(genr);
-                // vel[i].y = v(genr);
-                // vel[i].z = v(genr);
-                vel[i].x = 0.f;
-                vel[i].y = 0.f;
-                vel[i].z = 0.f;
+                vel[i].x = v(genr);
+                vel[i].y = v(genr);
+                vel[i].z = v(genr);
+                // vel[i].x = 0.f;
+                // vel[i].y = 0.f;
+                // vel[i].z = 0.f;
                 vel[i].w = pos[i].w;
                 
                 
@@ -841,23 +841,23 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             vel[i].w = 3.00273e-6f;
     
             // Mercury
-            // pos[++i] = {.387f, 0.f, 0.f, 1.651e-7f};
-            // vel[i]   = {0.f, 47.36f/KMS_TO_AUD, 0.f, 1.651e-7f};
-            //
-            // // Venus
-            // pos[++i].x = 0.723f;
-            // pos[i].y = 0.f;
-            // pos[i].z = 0.f;
-            // pos[i].w = 2.447e-6f;
-            //
-            // vel[i].x = 0.f;
-            // vel[i].y = 35.02f / KMS_TO_AUD;
-            // vel[i].z = 0.f;
-            // vel[i].w = 2.447e-6f;
-            //
-            // // Mars
-            // pos[++i] = {1.524f, 0.f, 0.f, 3.213e-7f};
-            // vel[i]   = {0.f, 24.07f/KMS_TO_AUD, 0.f, 3.213e-7f};
+            pos[++i] = {.387f, 0.f, 0.f, 1.651e-7f};
+            vel[i]   = {0.f, 47.36f/KMS_TO_AUD, 0.f, 1.651e-7f};
+
+            // Venus
+            pos[++i].x = 0.723f;
+            pos[i].y = 0.f;
+            pos[i].z = 0.f;
+            pos[i].w = 2.447e-6f;
+
+            vel[i].x = 0.f;
+            vel[i].y = 35.02f / KMS_TO_AUD;
+            vel[i].z = 0.f;
+            vel[i].w = 2.447e-6f;
+
+            // Mars
+            pos[++i] = {1.524f, 0.f, 0.f, 3.213e-7f};
+            vel[i]   = {0.f, 24.07f/KMS_TO_AUD, 0.f, 3.213e-7f};
             
         }
             break;
