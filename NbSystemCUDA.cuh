@@ -54,6 +54,8 @@ void runTimer(std::chrono::system_clock::time_point start,
               int N_orbitals, bool init);
 GLFWwindow* initGL(GLFWwindow *window);
 void printToFile(const std::string& outputFName, int step, float deltaTime, int N, float4* pos, float4* vel, float4* force);
+void writeBinaryData(const std::string& filename, int iteration, float deltaTime, int N, float4* pos, float4* vel, float4* force);
+std::string getCurrentTime();
 void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N);
 void initialiseForces(float4* pos, float4* force, int N);
 void simulate(float4* m_hPos, float4* m_dPos[2],

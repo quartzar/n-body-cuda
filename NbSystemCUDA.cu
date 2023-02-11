@@ -9,6 +9,8 @@
 #include <iostream>
 #include <random>
 #include <fstream>
+#include <cstdio>
+#include <filesystem>
 
 #include <GL/glew.h> // glut
 #include <GLFW/glfw3.h>
@@ -39,10 +41,11 @@ NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
 bool displayEnabled = false;
-bool glxyCollision = true;
+bool glxyCollision = false;
 bool colourMode = true;
 bool trailMode = false;
-bool outputEnabled = true;
+bool outputEnabled = false;
+bool outputBinary = true;
 bool outputRealUnits = false;
 bool rotateCam = false;
 //---------------------------------------q
@@ -71,14 +74,23 @@ int main(int argc, char** argv)
     //-------------------------
     // File output =>
     std::string outputFName = "outputCSV.csv";
+    /* Binary file output */
+    // std::ofstream snapshot_file;
+    std::string snapshot_filename;
+    std::string output_directory;
+
+    
     //-------------------------
     // Simulation =>
     int iteration;
     int N_orbitals;
+    int snapshot_interval;
+    int snapshot_counter = 1;
     uint m_p;
     uint m_q;
     N_orbitals = N_BODIES;
     iteration = 0;
+    snapshot_interval = SNAPSHOT_INTERVAL;
     timestep = TIME_STEP;
     m_currentRead = 0;
     m_currentWrite = 1;
@@ -126,8 +138,12 @@ int main(int argc, char** argv)
         window = initGL(window);
     }
     
+    // Create new directory for output
+    output_directory = "../out/" + getCurrentTime();
+    std::filesystem::create_directory(output_directory);
+    
     // PRINT TO FILE
-    if (outputEnabled)
+    if (outputEnabled && !outputBinary)
     {
         std::ofstream outputFile(outputFName);
         for (int orbital = 0; orbital < N_orbitals; orbital++)
@@ -164,8 +180,21 @@ int main(int argc, char** argv)
         if (iteration % 100 == 0)
             std::cout << "\nSTEP =>> " << iteration << std::flush;
     
-        if (outputEnabled)
+        if (outputEnabled && !outputBinary)
             printToFile(outputFName, iteration, timestep, N_orbitals, m_hPos, m_hVel, m_hForce);
+        
+        if (outputBinary)
+        {
+            if (iteration % snapshot_interval == 0)
+            {
+                std::stringstream snapshot_filename_ss;
+                snapshot_filename_ss << output_directory << "/snapshot_"
+                << std::setfill('0') << std::setw(4) << std::to_string(snapshot_counter) << ".bin";
+                snapshot_filename = snapshot_filename_ss.str();
+                snapshot_counter++;
+            }
+            writeBinaryData(snapshot_filename, iteration, timestep, N_orbitals, m_hPos, m_hVel, m_hForce);
+        }
         
         simulate(m_hPos, m_dPos,
                  m_hVel, m_dVel,
@@ -221,6 +250,53 @@ int main(int argc, char** argv)
     // TERMINATE SUCCESSFULLY
     glfwTerminate();
     exit(EXIT_SUCCESS);
+}
+//---------------------------------------
+
+// WIP: Write data to snapshot binary file
+//---------------------------------------
+void writeBinaryData(const std::string& filename, int iteration, float deltaTime, int N, float4* pos, float4* vel, float4* force)
+{
+    std::ofstream file(filename, std::ios::binary | std::ios::app);
+    if (file.is_open())
+    {
+        for (int orbital = 0; orbital < N; orbital++)
+        {
+            file.write((char*)&pos[orbital].w, sizeof(float));  // Mass
+            file.write((char*)&pos[orbital].x, sizeof(float));  // x position
+            file.write((char*)&pos[orbital].y, sizeof(float));  // y position
+            file.write((char*)&pos[orbital].z, sizeof(float));  // z position
+            file.write((char*)&vel[orbital].x, sizeof(float));  // x velocity
+            file.write((char*)&vel[orbital].y, sizeof(float));  // y velocity
+            file.write((char*)&vel[orbital].z, sizeof(float));  // z velocity
+        
+            float xFrc = force[orbital].x * deltaTime;
+            float yFrc = force[orbital].y * deltaTime;
+            float zFrc = force[orbital].z * deltaTime;
+        
+            file.write((char*)&xFrc, sizeof(float));    // x force
+            file.write((char*)&yFrc, sizeof(float));    // y force
+            file.write((char*)&zFrc, sizeof(float));    // z force
+        }
+        file.close();
+    }
+    else { std::cerr << "Error opening file: " << filename << std::endl; }
+}
+//---------------------------------------
+
+
+// Returns the current time in the format yymmddhhmmss
+//---------------------------------------
+std::string getCurrentTime()
+{
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    std::tm *tm = std::localtime(&now_c);
+    
+    std::stringstream ss;
+    ss << std::put_time(tm, "%y-%m-%d--%H-%M-%S");
+    
+    return ss.str();
 }
 //---------------------------------------
 

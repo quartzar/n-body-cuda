@@ -17,6 +17,7 @@
 #define SOLAR_MASS (float) 1.989e30 // kg
 
 // Simulation parameters
+#define SNAPSHOT_INTERVAL 10000 // iterations between each snapshot
 #define SEED 5 // seed for IC generator
 #define N_B_MULTIPLIER 1 // for thread calculation -> 960/12 = 80 [SM's on RTX 3080ti]
 #define N_BODIES (10 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
