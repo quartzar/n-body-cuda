@@ -83,14 +83,18 @@ int main(int argc, char** argv)
     //-------------------------
     // Simulation =>
     int iteration;
+    int total_iterations;
     int N_orbitals;
     int snapshot_interval;
+    float softening_factor;
     int snapshot_counter = 1;
     uint m_p;
     uint m_q;
     N_orbitals = N_BODIES;
     iteration = 0;
+    total_iterations = ITERATIONS;
     snapshot_interval = SNAPSHOT_INTERVAL;
+    softening_factor = SOFTENING;
     timestep = TIME_STEP;
     m_currentRead = 0;
     m_currentWrite = 1;
@@ -169,31 +173,35 @@ int main(int argc, char** argv)
     
     // Randomise Orbitals
     randomiseOrbitals(sysConfig, m_hPos, m_hVel, N_orbitals);
+    
     // Set Initial Forces [only run for solar system, HUGE performance hit]
     if (sysConfig == NORB_CONFIG_SOLAR)
         initialiseForces(m_hPos, m_hForce, N_orbitals);
     
     //---------------------------------------
     // MAIN UPDATE LOOP
-    while (iteration <= ITERATIONS)
+    while (iteration < total_iterations)
     {
-        if (iteration % 100 == 0)
+        // std::cout << "\nIteration: " << iteration << std::endl;
+        if (iteration  % 10000 == 0)
             std::cout << "\nSTEP =>> " << iteration << std::flush;
     
         if (outputEnabled && !outputBinary)
             printToFile(outputFName, iteration, timestep, N_orbitals, m_hPos, m_hVel, m_hForce);
         
-        if (outputBinary)
+        if (outputBinary && !outputEnabled)
         {
             if (iteration % snapshot_interval == 0)
             {
                 std::stringstream snapshot_filename_ss;
                 snapshot_filename_ss << output_directory << "/snapshot_"
                 << std::setfill('0') << std::setw(4) << std::to_string(snapshot_counter) << ".bin";
+                
                 snapshot_filename = snapshot_filename_ss.str();
                 snapshot_counter++;
             }
-            writeBinaryData(snapshot_filename, iteration, timestep, N_orbitals, m_hPos, m_hVel, m_hForce);
+            writeBinaryData(snapshot_filename, snapshot_interval, iteration, total_iterations, timestep,
+                            softening_factor, N_orbitals, m_hPos, m_hVel, m_hForce);
         }
         
         simulate(m_hPos, m_dPos,
@@ -255,11 +263,21 @@ int main(int argc, char** argv)
 
 // WIP: Write data to snapshot binary file
 //---------------------------------------
-void writeBinaryData(const std::string& filename, int iteration, float deltaTime, int N, float4* pos, float4* vel, float4* force)
+void writeBinaryData(const std::string& filename, int snapshot_interval, int iteration, int total_iterations, float deltaTime,
+                     float softening_factor, int N, float4* pos, float4* vel, float4* force)
 {
     std::ofstream file(filename, std::ios::binary | std::ios::app);
     if (file.is_open())
     {
+        if (iteration % snapshot_interval == 0)
+        {
+            file.write((char*)&N, sizeof(int));
+            file.write((char*)&deltaTime, sizeof(float));
+            file.write((char*)&softening_factor, sizeof(float));
+            file.write((char*)&total_iterations, sizeof(int));
+            file.write((char*)&snapshot_interval, sizeof(int));
+        }
+        
         for (int orbital = 0; orbital < N; orbital++)
         {
             file.write((char*)&pos[orbital].w, sizeof(float));  // Mass
@@ -294,7 +312,7 @@ std::string getCurrentTime()
     std::tm *tm = std::localtime(&now_c);
     
     std::stringstream ss;
-    ss << std::put_time(tm, "%y-%m-%d--%H-%M-%S");
+    ss << std::put_time(tm, "%Y-%m-%d--%H-%M-%S");
     
     return ss.str();
 }
