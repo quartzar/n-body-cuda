@@ -13,6 +13,7 @@
 // Physical constants
 #define BIG_G 2.9599e-4 // gravitational constant [AU^3 / M_solar * days^2]
 #define KMS_TO_AUD (float)1731.5 // 1754.385965 // 1731.5 // km.s to AU.day
+#define ALPHA_VIR 2.f // virial theorem constant
 #define auTOkm (float)1.49597871e8 // unit.kilometres /= unit.AU || unit.AU *= unit.kilometres
 #define SOLAR_MASS (float) 1.989e30 // kg
 
@@ -22,7 +23,7 @@
 #define N_B_MULTIPLIER 1 // for thread calculation -> 960/12 = 80 [SM's on RTX 3080ti]
 #define N_BODIES (10 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
 #define TIME_STEP 100 // time between integration steps in days // 0.003472222222222223 is 5 minutes
-#define ITERATIONS 1000000 // iterations before finishing simulation
+#define ITERATIONS 1 // iterations before finishing simulation
 #define SOFTENING 0.000125 // softening factor for close interactions [0.0125?]
 #define Q 1 // rows of ->  [[threads per body]] != REMOVED !=
 #define P 10 // P <= 640 || N/80 to calculate // MAX PxQ = 1024

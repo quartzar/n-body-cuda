@@ -58,6 +58,8 @@ void writeBinaryData(const std::string& filename, int snapshot_interval, int ite
                      float softening_factor, int N, float4* pos, float4* vel, float4* force);
 std::string getCurrentTime();
 void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N);
+float calculateGravitationalEnergy(float4* pos, int N);
+float calculateKineticEnergy(float4* vel, int N);
 void initialiseForces(float4* pos, float4* force, int N);
 void simulate(float4* m_hPos, float4* m_dPos[2],
               float4* m_hVel, float4* m_dVel[2],

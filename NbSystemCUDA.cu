@@ -42,7 +42,7 @@ NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
 bool displayEnabled = false;
-bool outputBinary = true;
+bool outputBinary = false;
 bool glxyCollision = false;
 bool colourMode = true;
 bool trailMode = false;
@@ -330,9 +330,10 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             float offset = -1.f;
             
             uniform_real_distribution<float> r(-radius/2.f, radius/2.f);
-            uniform_real_distribution<float> v(-2.f/KMS_TO_AUD, 2.f/KMS_TO_AUD);
-    
-            for (int i = 0; i < N; i++) {
+            uniform_real_distribution<float> v(-1.f, 1.f); // -.1 to .1 before scaling
+            
+            for (int i = 0; i < N; i++)
+            {
                 // How many clusters? How many stars/cluster?
                 if ((i /*+ 1*/) % STARS_PER_CLUSTER == 0) { // generate new cluster
                     offset = 1.f; // no idea yet
@@ -342,7 +343,7 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 float ln_mass = dist(rng);
                 float mass = std::log10(std::exp(ln_mass)); // convert back to base-10 log space
                 
-                // Randomised positions based on radius
+                // Randomised positions based on radius TODO: scale with centre of mass
                 float px = r(gen);
                 float py = r(gen);
                 float pz = r(gen);
@@ -358,6 +359,25 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 
                 totalMass += mass;
             }
+            
+            // Scale the velocities to the virial theorem
+            float gravitationalEnergy = calculateGravitationalEnergy(pos, N);
+            float kineticEnergy = calculateKineticEnergy(vel, N);
+            
+            float scalingFactor = sqrtf(ALPHA_VIR * gravitationalEnergy / kineticEnergy) * .5f;
+            std::cout << "Scaling factor: " << scalingFactor << std::endl;
+            std::cout << "Gravitational energy: " << gravitationalEnergy << std::endl;
+            std::cout << "Kinetic energy: " << kineticEnergy << std::endl;
+            
+            for (int i = 0; i < N; i++) {
+                vel[i].x *= scalingFactor;
+                vel[i].y *= scalingFactor;
+                vel[i].z *= scalingFactor;
+            }
+            float verifyVirial = gravitationalEnergy/calculateKineticEnergy(vel, N);
+            std::cout << "Verifying VIR (should == 2): " << verifyVirial << std::endl;
+            
+            
             
             //region old code w/ histogram
             
@@ -917,7 +937,53 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
 //---------------------------------------
 
 
-// Print to file
+
+// Calculate Gravitational Energy
+//---------------------------------------
+float calculateGravitationalEnergy(float4* pos, int N)
+{
+    float gravitationalEnergy = 0.0f;
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            if (i==j)
+                continue;
+            
+            float3 r;
+            r.x = pos[j].x - pos[i].x;
+            r.y = pos[j].y - pos[i].y;
+            r.z = pos[j].z - pos[i].z;
+            
+            float distSqr = r.x * r.x + r.y * r.y + r.z * r.z;
+            
+            gravitationalEnergy += float(BIG_G) * pos[i].w * pos[j].w / sqrtf(distSqr);
+            // std::cout << "Distance Sqr ->> " << distSqr << std::endl;
+            // std::cout << "Distance Sqrt ->> " << sqrtf(distSqr) << std::endl;
+            // std::cout << "Gravitational Energy ->> " << gravitationalEnergy << std::endl;
+        }
+    }
+    return gravitationalEnergy * .5f;   // .5f because each pairwise interaction is counted twice
+}
+//---------------------------------------
+
+
+// Calculate Kinetic Energy
+//---------------------------------------
+float calculateKineticEnergy(float4* vel, int N)
+{
+    float kineticEnergy = 0.0f;
+    for (int i = 0; i < N; i++)
+    {
+        kineticEnergy += 0.5f * vel[i].w * (vel[i].x * vel[i].x + vel[i].y * vel[i].y + vel[i].z * vel[i].z);
+    }
+    return kineticEnergy;
+}
+//---------------------------------------
+
+
+
+// Initialise Forces [typically unnecessary unless for solar-system]
 //---------------------------------------
 void initialiseForces(float4* pos, float4* force, int N)
 {
@@ -1172,7 +1238,7 @@ void runTimer(std::chrono::system_clock::time_point start,
         start = std::chrono::system_clock::now();
         std::time_t start_time = std::chrono::system_clock::to_time_t(start);
         std::cout << "Starting Simulation at ->> " << std::ctime(&start_time)
-                  << "For N == " << N_orbitals << " || Iterations == " << ITERATIONS;
+                  << "For N == " << N_orbitals << " || Iterations == " << ITERATIONS << std::endl;
     }
     else // end
     {
