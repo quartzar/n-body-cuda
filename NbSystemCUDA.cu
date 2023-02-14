@@ -25,6 +25,7 @@
 #include "NbKernel_N2.cuh"
 #include "CONSTANTS.h"
 #include "NbSystemCUDA.cuh"
+// #include "gnuplot-iostream.h"
 
 /////////////////////////////////////////
 // █▀█░█▀█░█▄▄░█░▀█▀░█▀▀░█▀█░░░█░█░▀▀█ //
@@ -40,12 +41,12 @@ NBodyICConfig sysConfig = NORB_SMALLN_CLUSTER;
 NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = false;
+bool displayEnabled = true;
 bool glxyCollision = false;
 bool colourMode = true;
 bool trailMode = false;
 bool outputEnabled = false;
-bool outputBinary = true;
+bool outputBinary = false;
 bool outputRealUnits = false;
 bool rotateCam = false;
 //---------------------------------------q
@@ -388,67 +389,108 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
     float totalMass = 0.0;
     
     switch(config) {
-        case NORB_SMALLN_CLUSTER: // attempting to implement a lognormal fake-IMF function
+        case NORB_SMALLN_CLUSTER:
         {
-            // uniform dist for random number between 0-1
-            // plug that into the cumulative lognormal
-            // using GNU for now, need to write my own function; ln is fine for now
+            float mu = 0.1;        // mean in base_10 log space, solar masses, m_0
+            float sigma = 0.627;   // std. deviations in log 10 space | Chabrier, 2002
+            
+            // Convert the mean and standard deviation to natural logarithm space
+            float ln_mu = mu * std::log(10.f);
+            float ln_sigma = sigma * std::log(10.f);
     
+            // Generate the lognormal distribution random masses in natural log space
+            // std::vector<double> ln_mass(N);
             std::random_device rd;
-            std::mt19937 genr(rd());
+            std::mt19937_64 rng(rd()); // mersenne-twister 19937 generator with 64-bit output
+            std::lognormal_distribution<float> dist(ln_mu, ln_sigma);
+            // for (int i = 0; i < N; i++) {
+            //     ln_mass[i] = dist(rng);
+            // }
     
-            //  max radius of each cluster
-            float radius = 2062; //10e4; // AU
+            // Convert the natural logarithm values back to base-10 logarithm space
+            // std::vector<double> log_mass(N);
+            // for (int i = 0; i < N; i++) {
+            //     log_mass[i] = std::log10(std::exp(ln_mass[i]));
+            // }
+    
+            //  Max radius of each cluster
+            float radius = 2062; //10e4; // AU // 0.01 pc
             float offset = -1.f;
             
-            // Random number between 0-1
-            uniform_real_distribution<double> p(0.0, 1.0);
-            uniform_real_distribution<float> xyz(-radius/2.f, radius/2.f);
+            uniform_real_distribution<float> r(-radius/2.f, radius/2.f);
             uniform_real_distribution<float> v(-2.f/KMS_TO_AUD, 2.f/KMS_TO_AUD);
-            
-            // Inverse probability lognormal
-            const double zeta = 0.1; // solar masses [m_0]
-            const double sigma = 0.627; // Chabrier, 2002
-            
-            std::map<double, double> hist; // for histogram
-            for (int i = 0; i < N; i++)
-            {
-                // how many clusters? how many stars/cluster?
-                if ((i /*+ 1*/) % STARS_PER_CLUSTER == 0)
-                { // generate new cluster
+    
+            for (int i = 0; i < N; i++) {
+                // How many clusters? How many stars/cluster?
+                if ((i /*+ 1*/) % STARS_PER_CLUSTER == 0) { // generate new cluster
                     offset = 1.f; // no idea yet
                 }
                 
-                // mass function
-                auto prob = p(genr);
-                auto mass = gsl_cdf_lognormal_Pinv(prob, zeta, sigma);
+                // Lognormal Initial Mass Function
+                float ln_mass = dist(rng);
+                float mass = std::log10(std::exp(ln_mass)); // convert back to base-10 log space
                 
-                // randomised positions based on radius
-                float px = xyz(genr);
-                float py = xyz(genr);
-                float pz = xyz(genr);
+                // Randomised positions based on radius
+                float px = r(gen);
+                float py = r(gen);
+                float pz = r(gen);
                 
-                // assign positions
-                pos[i].x = px + offset * radius;
-                pos[i].y = py + offset * radius;
-                pos[i].z = pz + offset * radius;
-                pos[i].w = float(mass);
+                // Randomised velocities TODO: scale this with virial theorem
+                float vx = v(gen);
+                float vy = v(gen);
+                float vz = v(gen);
                 
-                // assign velocities [dumb for now]
-                vel[i].x = v(genr);
-                vel[i].y = v(genr);
-                vel[i].z = v(genr);
-                // vel[i].x = 0.f;
-                // vel[i].y = 0.f;
-                // vel[i].z = 0.f;
-                vel[i].w = pos[i].w;
+                // Assign pos, vel, mass
+                pos[i] = make_float4(px, py, pz, mass);
+                vel[i] = make_float4(vx, vy, vz, mass);
                 
-                
-                std::cout << '\n' << mass;
-                totalMass += float(mass);
-                ++hist[std::round(mass*100)];
+                totalMass += mass;
             }
-            std::cout << "\nTotal mass: " << totalMass << '\n';
+            
+            //region old code w/ histogram
+            
+            // Inverse probability lognormal
+            // const double zeta = 0.1; // solar masses [m_0]
+            // const double sigma = 0.627; // Chabrier, 2002
+            // std::map<double, double> hist; // for histogram
+            // for (int i = 0; i < N; i++)
+            // {
+            //     // how many clusters? how many stars/cluster?
+            //     if ((i /*+ 1*/) % STARS_PER_CLUSTER == 0)
+            //     { // generate new cluster
+            //         offset = 1.f; // no idea yet
+            //     }
+            //
+            //     // mass function
+            //     auto prob = p(genr);
+            //     auto mass = gsl_cdf_lognormal_Pinv(prob, zeta, sigma);
+            //
+            //     // randomised positions based on radius
+            //     float px = xyz(genr);
+            //     float py = xyz(genr);
+            //     float pz = xyz(genr);
+            //
+            //     // assign positions
+            //     pos[i].x = px + offset * radius;
+            //     pos[i].y = py + offset * radius;
+            //     pos[i].z = pz + offset * radius;
+            //     pos[i].w = float(mass);
+            //
+            //     // assign velocities [dumb for now]
+            //     vel[i].x = v(genr);
+            //     vel[i].y = v(genr);
+            //     vel[i].z = v(genr);
+            //     // vel[i].x = 0.f;
+            //     // vel[i].y = 0.f;
+            //     // vel[i].z = 0.f;
+            //     vel[i].w = pos[i].w;
+            //
+            //
+            //     std::cout << '\n' << mass;
+            //     totalMass += float(mass);
+            //     ++hist[std::round(mass*100)];
+            // }
+            // std::cout << "\nTotal mass: " << totalMass << '\n';
     
             // Inverse probability lognormal
             // double zeta = log10(m_0) - (pow(sigma, 2) / 2);
@@ -470,13 +512,14 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             //     auto mass = gsl_cdf_lognormal_Pinv(prob, m_0, sigma);
             //     ++hist[std::round(mass)];
             // }
-            for(auto pair : hist) {
-                std::cout << '\n' << std::fixed << std::setprecision(1) << std::setw(2)
-                          << pair.first << ' ' << std::string(pair.second, '*');
-            }
+            // for(auto pair : hist) {
+            //     std::cout << '\n' << std::fixed << std::setprecision(1) << std::setw(2)
+            //               << pair.first << ' ' << std::string(pair.second, '*');
+            // }
             // for(auto pair : hist) {
             //     std::cout << '\n' << pair.first << ' ' << log(pair.second);
             // }
+            //endregion
         }
             break;
         case NORB_CONFIG_BASIC:
@@ -1320,6 +1363,10 @@ void processInput(GLFWwindow *window)
         shiftSpeed = 1 * SHIFT_FACTOR;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
         shiftSpeed = 1;
+    // if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+    //     shiftSpeed = 1 * CTRL_FACTOR;
+    // if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
+    //     shiftSpeed = 1;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         zTrans += shiftSpeed * MOVE_SPEED * 1.0f;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -1392,6 +1439,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             rotateCam = true;
         } else rotateCam = false;
     }
+    // CTRL TO SLOW THINGS DOWN
+    if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS)
+        shiftSpeed = 1 * CTRL_FACTOR;
     // COMMA/PERIOD FOR TIMESTEP
     // if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
     //     timestep -= 0.25f;

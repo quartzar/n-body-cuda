@@ -62,7 +62,8 @@
 // Camera controls
 #define ZOOM_SCALE 0.01 // how fast to zoom
 #define SHIFT_FACTOR 10 // how much faster all movement is with shift held
-#define MOVE_SPEED 10 // how fast to move [AU/frame] // 1 for solar system
+#define CTRL_FACTOR 0.1 // how much slower all movement is with ctrl held
+#define MOVE_SPEED 1 // how fast to move [AU/frame] // 1 for solar system
 #define ORB_SIZE 2 // 2-3 LT // 0.5 PC // range of pixels to display dot
 
 // Proto-cluster options
