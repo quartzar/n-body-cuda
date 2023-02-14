@@ -41,13 +41,11 @@ NBodyICConfig sysConfig = NORB_SMALLN_CLUSTER;
 NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = true;
+bool displayEnabled = false;
+bool outputBinary = true;
 bool glxyCollision = false;
 bool colourMode = true;
 bool trailMode = false;
-bool outputEnabled = false;
-bool outputBinary = false;
-bool outputRealUnits = false;
 bool rotateCam = false;
 //---------------------------------------q
 
@@ -145,32 +143,9 @@ int main(int argc, char** argv)
     }
     
     // Create new directory for output
-    output_directory = "../out/" + getCurrentTime();
-    std::filesystem::create_directory(output_directory);
-    
-    // PRINT TO FILE
-    if (outputEnabled && !outputBinary)
-    {
-        std::ofstream outputFile(outputFName);
-        for (int orbital = 0; orbital < N_orbitals; orbital++)
-        {
-            outputFile << orbital << ","
-                       << orbital << "," << orbital << "," << orbital << ","
-                       << orbital << "," << orbital << "," << orbital << ","
-                       << orbital << "," << orbital << "," << orbital;
-            if (orbital != N_orbitals - 1) outputFile << ",";
-        }
-        outputFile << std::endl;
-        for (int orbital = 0; orbital < N_orbitals; orbital++)
-        {
-            outputFile << "M" << ","
-                       <<"x"  << "," << "y"  << "," << "z"  << ","
-                       << "vx" << "," << "vy" << "," << "vz" << ","
-                       << "fx" << "," << "fy" << "," << "fz";
-            if (orbital != N_orbitals - 1) outputFile << ",";
-        }
-        outputFile << std::endl;
-        outputFile.close();
+    if (outputBinary) {
+        output_directory = "../out/" + getCurrentTime();
+        std::filesystem::create_directory(output_directory);
     }
     
     // Randomise Orbitals
@@ -184,14 +159,10 @@ int main(int argc, char** argv)
     // MAIN UPDATE LOOP
     while (iteration < total_iterations)
     {
-        // std::cout << "\nIteration: " << iteration << std::endl;
         if (iteration  % 10000 == 0)
             std::cout << "\nSTEP =>> " << iteration << std::flush;
-    
-        if (outputEnabled && !outputBinary)
-            printToFile(outputFName, iteration, timestep, N_orbitals, m_hPos, m_hVel, m_hForce);
         
-        if (outputBinary && !outputEnabled)
+        if (outputBinary)
         {
             if (iteration % snapshot_interval == 0)
             {
@@ -229,7 +200,7 @@ int main(int argc, char** argv)
                 exit(EXIT_SUCCESS);
             }
             
-            // render
+            // Render
             renderer->setPositions(reinterpret_cast<float *>(m_hPos));
             renderer->setVelocities(reinterpret_cast<float *>(m_hVel));
             renderer->display(renderMode, zoom, xRot, yRot, zRot, xTrans, yTrans, zTrans, trailMode, colourMode);
@@ -238,12 +209,11 @@ int main(int argc, char** argv)
             // glutSwapBuffers();
             glfwPollEvents();
     
-            // set window title to current timestep
+            // Set window title to current timestep
             std::string s = std::to_string(iteration);
             const char* cstr = s.c_str();
             glfwSetWindowTitle(window, cstr);
         }
-        
         iteration++;
     }
     //---------------------------------------
@@ -320,64 +290,6 @@ std::string getCurrentTime()
 }
 //---------------------------------------
 
-
-// Print to file
-//---------------------------------------
-void printToFile(const std::string& outputFName, int step, float deltaTime, int N, float4* pos, float4* vel, float4* force)
-{
-    std::ofstream outputFile;
-    outputFile.open(outputFName, std::ios::app); // open file
-    
-    float mass, xPos, yPos, zPos, xVel, yVel, zVel, xFrc, yFrc, zFrc;
-    for (int orbital = 0; orbital < N; orbital++)
-    {
-        if (outputRealUnits)
-        {
-            mass = pos[orbital].w * SOLAR_MASS;
-            xPos = pos[orbital].x * auTOkm;
-            yPos = pos[orbital].y * auTOkm;
-            zPos = pos[orbital].z * auTOkm;
-            xVel = vel[orbital].x * KMS_TO_AUD;
-            yVel = vel[orbital].y * KMS_TO_AUD;
-            zVel = vel[orbital].z * KMS_TO_AUD;
-            xFrc = force[orbital].x * deltaTime * KMS_TO_AUD;
-            yFrc = force[orbital].y * deltaTime * KMS_TO_AUD;
-            zFrc = force[orbital].z * deltaTime * KMS_TO_AUD;
-        }
-        else
-        {
-            mass = pos[orbital].w;
-            xPos = pos[orbital].x;
-            yPos = pos[orbital].y;
-            zPos = pos[orbital].z;
-            xVel = vel[orbital].x;// * (float)KMS_TO_AUD;
-            yVel = vel[orbital].y;// * (float)KMS_TO_AUD;
-            zVel = vel[orbital].z; // * (float)KMS_TO_AUD;
-            xFrc = force[orbital].x * deltaTime;
-            yFrc = force[orbital].y * deltaTime;
-            zFrc = force[orbital].z * deltaTime;
-        }
-        
-        outputFile << mass << ","
-                   << xPos << "," << yPos << "," << zPos << ","
-                   << xVel << "," << yVel << "," << zVel << ","
-                   << xFrc << "," << yFrc << "," << zFrc;
-        if (orbital != N - 1) outputFile << ",";
-    }
-    outputFile << std::endl; //"\n" doesn't seem to improve performance
-    // outputFile.close();
-
-    // outputFile << step << "," << xPos << "," << yPos << "," << zPos << ","
-    //            << xVel << "," << yVel << "," << zVel << std::endl;
-}
-//---------------------------------------
-
-
-// float lognormalMF(float probability, float zeta, float sigma)
-// {
-//
-//
-// }
 
 
 // IC generator
