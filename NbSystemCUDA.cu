@@ -101,6 +101,7 @@ int main(int argc, char** argv)
     m_p = P;
     m_q = Q;
     zoom = 1;
+    
     //---------------------------------------
     // INITIALISE ARRAYS & ALLOCATE DEVICE STORAGE
     //---------------------------------------
@@ -445,7 +446,7 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 
                 std::cout << '\n' << mass;
                 totalMass += float(mass);
-                ++hist[std::round(mass)];
+                ++hist[std::round(mass*100)];
             }
             std::cout << "\nTotal mass: " << totalMass << '\n';
     
