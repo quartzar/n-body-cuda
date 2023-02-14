@@ -41,7 +41,7 @@ NBodyICConfig sysConfig = NORB_SMALLN_CLUSTER;
 NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = false;
+bool displayEnabled = true;
 bool outputBinary = false;
 bool glxyCollision = false;
 bool colourMode = true;
@@ -348,7 +348,7 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 float py = r(gen);
                 float pz = r(gen);
                 
-                // Randomised velocities TODO: scale this with virial theorem
+                // Randomised velocities
                 float vx = v(gen);
                 float vy = v(gen);
                 float vz = v(gen);
@@ -358,6 +358,14 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 vel[i] = make_float4(vx, vy, vz, mass);
                 
                 totalMass += mass;
+            }
+            
+            // Apply centre of mass correction
+            float4 centreOfMass = calculateCentreOfMass(pos, N);
+            for (int i = 0; i < N; i++) {
+                pos[i].x -= centreOfMass.x;
+                pos[i].y -= centreOfMass.y;
+                pos[i].z -= centreOfMass.z;
             }
             
             // Scale the velocities to the virial theorem
@@ -376,8 +384,6 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             }
             float verifyVirial = gravitationalEnergy/calculateKineticEnergy(vel, N);
             std::cout << "Verifying VIR (should == 2): " << verifyVirial << std::endl;
-            
-            
             
             //region old code w/ histogram
             
@@ -936,6 +942,24 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
 }
 //---------------------------------------
 
+// Calculate Centre of Mass
+//---------------------------------------
+float4 calculateCentreOfMass(float4* pos, int N)
+{
+    float4 centreOfMass = make_float4(.0f, 0.0f, 0.0f, 0.0f);
+    for (int i = 0; i < N; i++)
+    {
+        centreOfMass.x += pos[i].x * pos[i].w;
+        centreOfMass.y += pos[i].y * pos[i].w;
+        centreOfMass.z += pos[i].z * pos[i].w;
+        centreOfMass.w += pos[i].w;
+    }
+    centreOfMass.x /= centreOfMass.w;
+    centreOfMass.y /= centreOfMass.w;
+    centreOfMass.z /= centreOfMass.w;
+    return centreOfMass;
+}
+//---------------------------------------
 
 
 // Calculate Gravitational Energy
