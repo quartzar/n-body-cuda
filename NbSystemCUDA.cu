@@ -41,7 +41,7 @@ NBodyICConfig sysConfig = NORB_SMALLN_CLUSTER;
 NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = true;
+bool displayEnabled = false;
 bool outputBinary = false;
 bool glxyCollision = false;
 bool colourMode = true;
@@ -362,6 +362,7 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             
             // Apply centre of mass correction
             float4 centreOfMass = calculateCentreOfMass(pos, N);
+            std::cout << "Centre of mass: " << centreOfMass.x << ", " << centreOfMass.y << ", " << centreOfMass.z << std::endl;
             for (int i = 0; i < N; i++) {
                 pos[i].x -= centreOfMass.x;
                 pos[i].y -= centreOfMass.y;
@@ -373,91 +374,21 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             float kineticEnergy = calculateKineticEnergy(vel, N);
             
             float scalingFactor = sqrtf(ALPHA_VIR * gravitationalEnergy / kineticEnergy) * .5f;
-            std::cout << "Scaling factor: " << scalingFactor << std::endl;
-            std::cout << "Gravitational energy: " << gravitationalEnergy << std::endl;
-            std::cout << "Kinetic energy: " << kineticEnergy << std::endl;
             
             for (int i = 0; i < N; i++) {
                 vel[i].x *= scalingFactor;
                 vel[i].y *= scalingFactor;
                 vel[i].z *= scalingFactor;
             }
-            float verifyVirial = gravitationalEnergy/calculateKineticEnergy(vel, N);
+            float kineticEnergyScaled = calculateKineticEnergy(vel, N);
+            float verifyVirial = gravitationalEnergy/kineticEnergyScaled;
+    
+            std::cout << "Scaling factor: " << scalingFactor << std::endl;
+            std::cout << "Gravitational energy: " << gravitationalEnergy << std::endl;
+            std::cout << "Kinetic energy (unscaled): " << kineticEnergy << std::endl;
+            std::cout << "Kinetic energy (scaled): " << kineticEnergyScaled << std::endl;
             std::cout << "Verifying VIR (should == 2): " << verifyVirial << std::endl;
             
-            //region old code w/ histogram
-            
-            // Inverse probability lognormal
-            // const double zeta = 0.1; // solar masses [m_0]
-            // const double sigma = 0.627; // Chabrier, 2002
-            // std::map<double, double> hist; // for histogram
-            // for (int i = 0; i < N; i++)
-            // {
-            //     // how many clusters? how many stars/cluster?
-            //     if ((i /*+ 1*/) % STARS_PER_CLUSTER == 0)
-            //     { // generate new cluster
-            //         offset = 1.f; // no idea yet
-            //     }
-            //
-            //     // mass function
-            //     auto prob = p(genr);
-            //     auto mass = gsl_cdf_lognormal_Pinv(prob, zeta, sigma);
-            //
-            //     // randomised positions based on radius
-            //     float px = xyz(genr);
-            //     float py = xyz(genr);
-            //     float pz = xyz(genr);
-            //
-            //     // assign positions
-            //     pos[i].x = px + offset * radius;
-            //     pos[i].y = py + offset * radius;
-            //     pos[i].z = pz + offset * radius;
-            //     pos[i].w = float(mass);
-            //
-            //     // assign velocities [dumb for now]
-            //     vel[i].x = v(genr);
-            //     vel[i].y = v(genr);
-            //     vel[i].z = v(genr);
-            //     // vel[i].x = 0.f;
-            //     // vel[i].y = 0.f;
-            //     // vel[i].z = 0.f;
-            //     vel[i].w = pos[i].w;
-            //
-            //
-            //     std::cout << '\n' << mass;
-            //     totalMass += float(mass);
-            //     ++hist[std::round(mass*100)];
-            // }
-            // std::cout << "\nTotal mass: " << totalMass << '\n';
-    
-            // Inverse probability lognormal
-            // double zeta = log10(m_0) - (pow(sigma, 2) / 2);
-            // double mass = exp(zeta + (sigma * sqrt(2) * erfinv(2 * probability - 1)));
-    
-            // Random number between 0-1
-            // double px = p(genr);
-            // double A = 0.1 / sqrt(2 * PI * pow(sigma, 2));
-            // double A = 0.158;// 0.141;
-            //
-            // double x = A * exp(-1. * (pow(log10(px) - log10(zeta), 2) / (2 * pow(sigma, 2))));
-            // // Inverted CDF, also called "quantile function", and specifically for normal dist, "probit function"
-            // double mass = zeta + (sigma * sqrt(2) * erfinv(2 * x - 1));
-            // using the GNU scientific library
-            // std::map<double, double> hist;
-            // for(int n=0; n<10000; ++n) {
-            //     // ++hist[std::round(p(genr))];
-            //     auto prob = p(genr);
-            //     auto mass = gsl_cdf_lognormal_Pinv(prob, m_0, sigma);
-            //     ++hist[std::round(mass)];
-            // }
-            // for(auto pair : hist) {
-            //     std::cout << '\n' << std::fixed << std::setprecision(1) << std::setw(2)
-            //               << pair.first << ' ' << std::string(pair.second, '*');
-            // }
-            // for(auto pair : hist) {
-            //     std::cout << '\n' << pair.first << ' ' << log(pair.second);
-            // }
-            //endregion
         }
             break;
         case NORB_CONFIG_BASIC:

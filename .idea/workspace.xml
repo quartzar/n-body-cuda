@@ -24,7 +24,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CONSTANTS.h" beforeDir="false" afterPath="$PROJECT_DIR$/CONSTANTS.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cu" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cuh" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cuh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
@@ -110,7 +109,8 @@
       <workItem from="1676282651427" duration="2439000" />
       <workItem from="1676308761339" duration="637000" />
       <workItem from="1676381667241" duration="1564000" />
-      <workItem from="1676386883658" duration="10603000" />
+      <workItem from="1676386883658" duration="10990000" />
+      <workItem from="1676460487748" duration="698000" />
     </task>
     <servers />
   </component>
