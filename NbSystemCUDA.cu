@@ -37,11 +37,11 @@ extern __constant__ float big_G;
 
 //------------PARAMETERS---------------//
 NbodyRenderer::RenderMode renderMode = NbodyRenderer::POINTS;
-NBodyICConfig sysConfig = NORB_SMALLN_CLUSTER;
+NBodyICConfig sysConfig = NORB_SMALLN_CLUSTER;//NORB_CONFIG_SOLAR;
 NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = false;
+bool displayEnabled = true;
 bool outputBinary = false;
 bool glxyCollision = false;
 bool colourMode = true;
@@ -152,8 +152,8 @@ int main(int argc, char** argv)
     randomiseOrbitals(sysConfig, m_hPos, m_hVel, N_orbitals);
     
     // Set Initial Forces [only run for solar system, HUGE performance hit]
-    if (sysConfig == NORB_CONFIG_SOLAR)
-        initialiseForces(m_hPos, m_hForce, N_orbitals);
+    // if (sysConfig == NORB_CONFIG_SOLAR)
+    initialiseForces(m_hPos, m_hForce, N_orbitals);
     
     //---------------------------------------
     // MAIN UPDATE LOOP
@@ -161,21 +161,22 @@ int main(int argc, char** argv)
     {
         if (iteration  % 10000 == 0)
             std::cout << "\nSTEP =>> " << iteration << std::flush;
-        
+    
         if (outputBinary)
         {
             if (iteration % snapshot_interval == 0)
             {
                 std::stringstream snapshot_filename_ss;
                 snapshot_filename_ss << output_directory << "/snapshot_"
-                << std::setfill('0') << std::setw(4) << std::to_string(snapshot_counter) << ".bin";
-                
+                                     << std::setfill('0') << std::setw(4) << std::to_string(snapshot_counter) << ".bin";
+            
                 snapshot_filename = snapshot_filename_ss.str();
                 snapshot_counter++;
             }
             writeBinaryData(snapshot_filename, snapshot_interval, iteration, total_iterations, timestep,
                             softening_factor, N_orbitals, m_hPos, m_hVel, m_hForce);
         }
+        
         
         simulate(m_hPos, m_dPos,
                  m_hVel, m_dVel,
@@ -214,6 +215,9 @@ int main(int argc, char** argv)
             const char* cstr = s.c_str();
             glfwSetWindowTitle(window, cstr);
         }
+        
+        
+        
         iteration++;
     }
     //---------------------------------------
@@ -311,22 +315,12 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             float ln_sigma = sigma * std::log(10.f);
     
             // Generate the lognormal distribution random masses in natural log space
-            // std::vector<double> ln_mass(N);
             std::random_device rd;
             std::mt19937_64 rng(rd()); // mersenne-twister 19937 generator with 64-bit output
             std::lognormal_distribution<float> dist(ln_mu, ln_sigma);
-            // for (int i = 0; i < N; i++) {
-            //     ln_mass[i] = dist(rng);
-            // }
-    
-            // Convert the natural logarithm values back to base-10 logarithm space
-            // std::vector<double> log_mass(N);
-            // for (int i = 0; i < N; i++) {
-            //     log_mass[i] = std::log10(std::exp(ln_mass[i]));
-            // }
     
             //  Max radius of each cluster
-            float radius = 2062; //10e4; // AU // 0.01 pc
+            float radius = 2062.f; //10e4; // AU // 0.01 pc
             float offset = -1.f;
             
             uniform_real_distribution<float> r(-radius/2.f, radius/2.f);
@@ -343,7 +337,7 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 float ln_mass = dist(rng);
                 float mass = std::log10(std::exp(ln_mass)); // convert back to base-10 log space
                 
-                // Randomised positions based on radius TODO: scale with centre of mass
+                // Randomised positions based on radius
                 float px = r(gen);
                 float py = r(gen);
                 float pz = r(gen);
@@ -361,19 +355,24 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             }
             
             // Apply centre of mass correction
-            float4 centreOfMass = calculateCentreOfMass(pos, N);
-            std::cout << "Centre of mass: " << centreOfMass.x << ", " << centreOfMass.y << ", " << centreOfMass.z << std::endl;
+            float4 centreOfMassPos = calculateCentreOfMass(pos, N);
+            float4 centreOfMassVel = calculateCentreOfMass(vel, N);
             for (int i = 0; i < N; i++) {
-                pos[i].x -= centreOfMass.x;
-                pos[i].y -= centreOfMass.y;
-                pos[i].z -= centreOfMass.z;
+                pos[i].x -= centreOfMassPos.x;
+                pos[i].y -= centreOfMassPos.y;
+                pos[i].z -= centreOfMassPos.z;
+                vel[i].x -= centreOfMassVel.x;
+                vel[i].y -= centreOfMassVel.y;
+                vel[i].z -= centreOfMassVel.z;
             }
             
             // Scale the velocities to the virial theorem
-            float gravitationalEnergy = calculateGravitationalEnergy(pos, N);
-            float kineticEnergy = calculateKineticEnergy(vel, N);
+            float gravitationalEnergy = -calculateGravitationalEnergy(pos, N);   // W
+            float kineticEnergy = calculateKineticEnergy(vel, N);               // K  E = K + W | VIR = W/2 = K
             
-            float scalingFactor = sqrtf(ALPHA_VIR * gravitationalEnergy / kineticEnergy) * .5f;
+            // float scalingFactor = sqrtf(ALPHA_VIR * gravitationalEnergy / kineticEnergy) ;
+            float virialRatio =  - kineticEnergy / gravitationalEnergy;
+            float scalingFactor = sqrtf(.5f / virialRatio);
             
             for (int i = 0; i < N; i++) {
                 vel[i].x *= scalingFactor;
@@ -381,13 +380,15 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 vel[i].z *= scalingFactor;
             }
             float kineticEnergyScaled = calculateKineticEnergy(vel, N);
-            float verifyVirial = gravitationalEnergy/kineticEnergyScaled;
+            float verifyVirial = - kineticEnergyScaled / gravitationalEnergy;
     
+            std::cout << "Centre of mass [pos]: " << centreOfMassPos.x << ", " << centreOfMassPos.y << ", " << centreOfMassPos.z << std::endl;
             std::cout << "Scaling factor: " << scalingFactor << std::endl;
             std::cout << "Gravitational energy: " << gravitationalEnergy << std::endl;
             std::cout << "Kinetic energy (unscaled): " << kineticEnergy << std::endl;
             std::cout << "Kinetic energy (scaled): " << kineticEnergyScaled << std::endl;
-            std::cout << "Verifying VIR (should == 2): " << verifyVirial << std::endl;
+            std::cout << "Virial Ratio (initial): " << virialRatio << std::endl;
+            std::cout << "Virial Ratio (should == 0.5?): " << verifyVirial << std::endl;
             
         }
             break;
@@ -847,24 +848,24 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             vel[i].z = 0.f;
             vel[i].w = 3.00273e-6f;
     
-            // Mercury
-            pos[++i] = {.387f, 0.f, 0.f, 1.651e-7f};
-            vel[i]   = {0.f, 47.36f/KMS_TO_AUD, 0.f, 1.651e-7f};
-
-            // Venus
-            pos[++i].x = 0.723f;
-            pos[i].y = 0.f;
-            pos[i].z = 0.f;
-            pos[i].w = 2.447e-6f;
-
-            vel[i].x = 0.f;
-            vel[i].y = 35.02f / KMS_TO_AUD;
-            vel[i].z = 0.f;
-            vel[i].w = 2.447e-6f;
-
-            // Mars
-            pos[++i] = {1.524f, 0.f, 0.f, 3.213e-7f};
-            vel[i]   = {0.f, 24.07f/KMS_TO_AUD, 0.f, 3.213e-7f};
+            // // Mercury
+            // pos[++i] = {.387f, 0.f, 0.f, 1.651e-7f};
+            // vel[i]   = {0.f, 47.36f/KMS_TO_AUD, 0.f, 1.651e-7f};
+            //
+            // // Venus
+            // pos[++i].x = 0.723f;
+            // pos[i].y = 0.f;
+            // pos[i].z = 0.f;
+            // pos[i].w = 2.447e-6f;
+            //
+            // vel[i].x = 0.f;
+            // vel[i].y = 35.02f / KMS_TO_AUD;
+            // vel[i].z = 0.f;
+            // vel[i].w = 2.447e-6f;
+            //
+            // // Mars
+            // pos[++i] = {1.524f, 0.f, 0.f, 3.213e-7f};
+            // vel[i]   = {0.f, 24.07f/KMS_TO_AUD, 0.f, 3.213e-7f};
             
         }
             break;
@@ -875,15 +876,15 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
 
 // Calculate Centre of Mass
 //---------------------------------------
-float4 calculateCentreOfMass(float4* pos, int N)
+float4 calculateCentreOfMass(float4* body, int N)
 {
     float4 centreOfMass = make_float4(.0f, 0.0f, 0.0f, 0.0f);
     for (int i = 0; i < N; i++)
     {
-        centreOfMass.x += pos[i].x * pos[i].w;
-        centreOfMass.y += pos[i].y * pos[i].w;
-        centreOfMass.z += pos[i].z * pos[i].w;
-        centreOfMass.w += pos[i].w;
+        centreOfMass.x += body[i].x * body[i].w;
+        centreOfMass.y += body[i].y * body[i].w;
+        centreOfMass.z += body[i].z * body[i].w;
+        centreOfMass.w += body[i].w;
     }
     centreOfMass.x /= centreOfMass.w;
     centreOfMass.y /= centreOfMass.w;
