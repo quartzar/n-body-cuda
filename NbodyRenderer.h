@@ -28,6 +28,7 @@ public:
 protected: // METHODS
     void _initGL();
     void _createTexture(int resolution);
+    void _drawSprite(float r, float g, float b, float a);
     void _drawOrbitals(bool color);
     
     // struct Colour { float r, g, b; };

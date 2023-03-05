@@ -34,6 +34,8 @@
 
 extern __constant__ float softeningSqr;
 extern __constant__ float big_G;
+extern __constant__ float eta_acc;
+extern __constant__ float eta_vel;
 
 //------------PARAMETERS---------------//
 NbodyRenderer::RenderMode renderMode = NbodyRenderer::POINTS;
@@ -41,8 +43,8 @@ NBodyICConfig sysConfig = NORB_SMALLN_CLUSTER;//NORB_CONFIG_SOLAR;
 NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = false;
-bool outputBinary = true;
+bool displayEnabled = true;
+bool outputBinary = false;
 bool glxyCollision = false;
 bool colourMode = true;
 bool trailMode = false;
@@ -57,12 +59,14 @@ int main(int argc, char** argv)
     //-------------------------
     // CPU data =>
     float4 *m_hPos, *m_hVel, *m_hForce;
+    float *m_hDeltaTime;
     //-------------------------
     // memory transfers =>
     uint m_currentRead, m_currentWrite;
     //-------------------------
     // GPU data =>
     float4 *m_dPos[2], *m_dVel[2], *m_dForce[2];
+    float *m_dDeltaTime;
     //-------------------------
     // OpenGL =>
     GLFWwindow *window = nullptr;
@@ -109,6 +113,7 @@ int main(int argc, char** argv)
     m_hPos = new float4[N_orbitals]; // x, y, z, mass
     m_hVel = new float4[N_orbitals]; // vx,vy,vz, empty
     m_hForce = new float4[N_orbitals]; // fx, fy, fz, empty
+    // float *m_deltaTime = new float;
     // NEW / DEVICE
     m_dPos[0] = m_dPos[1] = nullptr;
     m_dVel[0] = m_dVel[1] = nullptr;
@@ -124,6 +129,8 @@ int main(int argc, char** argv)
     // set device constants
     setDeviceSoftening(SOFTENING);
     setDeviceBigG(1.0f * BIG_G);
+    setDeviceEtaAcc(ETA_ACC);
+    setDeviceEtaVel(ETA_VEL);
     getCUDAError();
     
     //---------------------------------------
@@ -215,13 +222,9 @@ int main(int argc, char** argv)
             const char* cstr = s.c_str();
             glfwSetWindowTitle(window, cstr);
         }
-        
-        
-        
         iteration++;
     }
     //---------------------------------------
-    
     
     // END TIMER
     runTimer(start,  N_orbitals,false);
@@ -1085,6 +1088,21 @@ void setDeviceBigG(float G)
     cudaMemcpyToSymbol(big_G, &G, sizeof(float),0);
 }
 //---------------------------------------
+
+
+// Send eta_acc value to device
+//---------------------------------------
+void setDeviceEtaAcc(float eta)
+{
+    cudaMemcpyToSymbol(eta_acc, &eta, sizeof(float),0);
+}
+
+// Send eta_vel value to device
+//---------------------------------------
+void setDeviceEtaVel(float eta)
+{
+    cudaMemcpyToSymbol(eta_vel, &eta, sizeof(float),0);
+}
 
 
 // Allocate device memory for variables

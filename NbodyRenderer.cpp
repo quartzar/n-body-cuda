@@ -50,35 +50,16 @@ void NbodyRenderer::display(RenderMode mode, float zoom, float xRot,
     {
         case SPRITES: // TODO: implement sprites       // FROM NVIDIA
         {
-            std::cout << "\nSPRITES CALLED BUT NOT IMPLEMENTED YET";
-            // glEnable(GL_POINT_SPRITE_ARB);
-            // glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE);
-            // glEnable(GL_VERTEX_PROGRAM_POINT_SIZE_NV);
-            // glPointSize(ORB_SIZE);
-            // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-            // glEnable(GL_BLEND);
-            // glDepthMask(GL_FALSE);
+            // std::cout << "\nSPRITES CALLED BUT NOT IMPLEMENTED YET";
+            // for (int i = 0; i < N_BODIES; ++i) {
+            //     const float4 pos = make_float4(m_hPos[i * 4], m_hPos[i * 4 + 1], m_hPos[i * 4 + 2], m_hPos[i * 4 + 3]);
+            //     const float4 vel = make_float4(m_hVel[i * 4], m_hVel[i * 4 + 1], m_hVel[i * 4 + 2], m_hVel[i * 4 + 3]);
             //
-            // glUseProgram(m_program);
-            // GLint texLoc = glGetUniformLocation(m_program, "");
-            // glUniform1i(texLoc, 0);
+            //     const float mass = pos.w; // mass is stored in the w component
             //
-            // glActiveTextureARB(GL_TEXTURE0_ARB);
-            // glBindTexture(GL_TEXTURE_2D, m_texture);
-            //
-            // glutReportErrors();
-            //
-            // glColor3f(1, 1, 1);
-            //
-            // _drawOrbitals(false);
-            //
-            // glUseProgram(0);
-            //
-            // glutReportErrors();
-            //
-            // glDisable(GL_POINT_SPRITE_ARB);
-            // glDisable(GL_BLEND);
-            // glDepthMask(GL_TRUE);
+            //     drawSprite(pos.x, pos.y, mass * 0.01f, 1.0f, 1.0f, 1.0f, 1.0f);
+            // }
+            _drawSprite(1.f,1.f,1.f,1.f);
         }
             break;
         case POINTS:
@@ -109,6 +90,36 @@ void NbodyRenderer::display(RenderMode mode, float zoom, float xRot,
             _drawOrbitals(colourMode);
         }
             break;
+    }
+}
+
+void NbodyRenderer::_drawSprite(float r, float g, float b, float a)
+{
+    for (int i = 0; i < N_BODIES; i++) {
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glTranslatef(m_pos[4*i], m_pos[4*i+1], m_pos[4*i+2]);
+    
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glColor4f(r, g, b, a);
+    
+        const int sides = 16;
+        const float step = 2.0f * M_PI / sides;
+        glBegin(GL_TRIANGLE_FAN);
+        glVertex2f(0.0f, 0.0f);
+        float size = m_pos[4*i+3];
+        for (int j = 0; j <= sides; j++) {
+            const float angle = float(j) * step;
+            const float px = size * std::cos(angle);
+            const float py = size * std::sin(angle);
+            glVertex2f(px, py);
+        }
+        glEnd();
+    
+        glDisable(GL_BLEND);
+    
+        glPopMatrix();
     }
 }
 
@@ -164,22 +175,7 @@ void NbodyRenderer::_drawOrbitals(bool colour)
     }
     else
     {
-        // glEnableClientState(GL_VERTEX_ARRAY);
-        //
-        // glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_pbo);
-        // glVertexPointer(4, GL_FLOAT, 0, nullptr);
-        // if (colour)
-        // {
-        //     glEnableClientState(GL_COLOR_ARRAY);
-        //     glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vboColour);
-        //     //glActiveTexture(GL_TEXTURE1);
-        //     //glTexCoordPointer(4, GL_FLOAT, 0, 0);
-        //     glColorPointer(4, GL_FLOAT, 0, nullptr);
-        // }
-        // glDrawArrays(GL_POINTS, 0, N_BODIES);
-        // glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-        // glDisableClientState(GL_VERTEX_ARRAY);
-        // glDisableClientState(GL_COLOR_ARRAY);
+        std::cout << "\nPBO CALLED BUT NOT IMPLEMENTED YET";
     }
 }
 

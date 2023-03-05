@@ -98,6 +98,8 @@ extern "C"
 {
 void setDeviceSoftening(float softening);
 void setDeviceBigG(float G);
+void setDeviceEtaAcc(float eta);
+void setDeviceEtaVel(float eta);
 void allocateNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2],  int N);
 void deleteNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2]);
 void copyDataToDevice(float4* device, const float4* host, int N);

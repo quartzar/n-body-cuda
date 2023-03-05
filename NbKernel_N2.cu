@@ -15,6 +15,8 @@
 
 __constant__ float softeningSqr;
 __constant__ float big_G;
+__constant__ float eta_acc;
+__constant__ float eta_vel;
 
 // Simplified shared memory (refer to CUDA programming guide 2007)
 /* All this essentially does is take the index provided by
