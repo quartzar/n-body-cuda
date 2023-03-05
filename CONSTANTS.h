@@ -15,12 +15,13 @@
 #define SEED 5 // seed for IC generator
 #define N_B_MULTIPLIER 1 // for thread calculation -> 960/12 = 80 [SM's on RTX 3080ti]
 #define N_BODIES (10 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
-#define TIME_STEP 100 // time between integration steps in days // 0.003472222222222223 is 5 minutes
+#define TIME_STEP 10 // time between integration steps in days // 0.003472222222222223 is 5 minutes
 #define ITERATIONS 1000000 // iterations before finishing simulation
 #define SOFTENING 0.000125 // ~0.011 AU // softening factor for close interactions [0.0125?]
-#define ETA_ACC 0.2 // acceleration variable timestep coefficient
-#define ETA_VEL 0.2 // velocity variable timestep coefficient
+#define ETA_ACC 0.002 // acceleration variable timestep coefficient
+#define ETA_VEL 0.0002 // velocity variable timestep coefficient
 #define TIME_STEP_INTERVAL 100 // iterations between each timestep change
+#define MAX_DELTA_TIME 200 // maximum timestep in days
 #define Q 1 // rows of ->  [[threads per body]] != REMOVED !=
 #define P 10 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
 // Q=8 threads p/b & P = 80 ->> PxQ==640 (50*NB_M /640)==80

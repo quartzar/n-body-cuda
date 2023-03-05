@@ -197,6 +197,13 @@ int main(int argc, char** argv)
                  m_currentRead, m_currentWrite,
                  m_hDeltaTime, m_dDeltaTime, N_orbitals, m_p, m_q);
         // std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
+        
+        if (iteration % TIME_STEP_INTERVAL == 0)
+        {
+            m_hDeltaTime = calculateTimeStep(m_hPos, m_hVel, m_hForce, m_hDeltaTime, N_orbitals);
+            std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
+        }
+        
         if (displayEnabled && iteration%RENDER_INTERVAL == 0)
         {
             // CHECK FOR INPUT FIRST
@@ -224,7 +231,7 @@ int main(int argc, char** argv)
             glfwPollEvents();
     
             // Set window title to current timestep
-            std::string s = std::to_string(iteration);
+            std::string s = std::to_string(m_hDeltaTime);//iteration);
             const char* cstr = s.c_str();
             glfwSetWindowTitle(window, cstr);
         }
@@ -987,6 +994,38 @@ void initialiseForces(float4* pos, float4* force, int N)
 //---------------------------------------
 
 
+// Calculate variable time-step
+//---------------------------------------
+float calculateTimeStep(float4* pos, float4* vel, float4* force, float curDT, int N)
+{
+    float maxAcc = 0.0f;
+    int maxAccIndex = 0;
+    float maxVel = 0.0f;
+    for (int i = 0; i < N; i++)
+    {
+        // Acceleration
+        float accel = force[i].x * force[i].x + force[i].y * force[i].y + force[i].z * force[i].z;
+        accel /= pos[i].w;
+        float accelMag = sqrtf(accel);
+        
+        maxAccIndex = (accelMag > maxAcc) ? i : maxAccIndex;
+        maxAcc = (accelMag > maxAcc) ? accelMag : maxAcc;
+        
+        // Velocity
+        float velocity = vel[i].x * vel[i].x + vel[i].y * vel[i].y + vel[i].z * vel[i].z;
+        float velMag = sqrtf(velocity);
+        
+        maxVel = (velMag > maxVel) ? velMag : maxVel;
+    }
+    float m = pos[maxAccIndex].w;
+    float3 a = make_float3(force[maxAccIndex].x / m,
+                           force[maxAccIndex].y / m,
+                           force[maxAccIndex].z / m);
+    float aDot = dot(a, a);
+    float dt = ETA_ACC * maxAcc / aDot + ETA_VEL * maxVel / curDT * maxAcc;
+    std::cout << "\nDelta Time ->> " << dt << std::endl;
+    return fminf(dt, MAX_DELTA_TIME);
+}
 
 //---------------------------------------
 // MAIN UPDATE LOOP
@@ -1023,7 +1062,7 @@ void simulate(float4* m_hPos, float4* m_dPos[2],
     copyDataToHost(m_hForce, m_dForce[m_currentRead], N);
     cudaMemcpy(&m_hDeltaTime, m_dDeltaTime[m_currentRead], sizeof(float), cudaMemcpyDeviceToHost);
     getCUDAError();
-    std::cout << "Time step: " << m_hDeltaTime << std::endl;
+    // std::cout << "Time step: " << m_hDeltaTime << std::endl;
     // Retrieve any CUDA errors and output
     getCUDAError();
 }
