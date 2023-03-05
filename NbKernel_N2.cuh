@@ -19,18 +19,18 @@ __global__ void
 initHalfKickForces(float4* oldPos, float4* newPos,
                    float4* oldVel, float4* newVel,
                    float4* oldForce, float4* newForce,
-                   float deltaTime, int N);
+                   float *deltaTime, int N);
 
 __global__ void
 fullKickForces(float4* oldPos, float4* newPos,
                float4* oldVel, float4* newVel,
                float4* oldForce, float4* newForce,
-               float deltaTime, int N);
+               float *deltaTime, int N);
 
 __global__ void
 integrateNOrbitals(float4* oldPos, float4* newPos,
                    float4* oldVel, float4* newVel,
                    float4* oldForce, float4* newForce,
-                   float deltaTime, int N);
+                   float* oldDT, float* newDT, int N);
 
 #endif //ORBITERV6_NBKERNEL_N2_CUH

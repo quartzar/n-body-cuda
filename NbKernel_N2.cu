@@ -38,7 +38,7 @@ __global__ void
 initHalfKickForces(float4* oldPos, float4* newPos,
                    float4* oldVel, float4* newVel,
                    float4* oldForce, float4* newForce,
-                   float deltaTime, int N)
+                   float *deltaTime, int N)
 {
     uint id = blockIdx.x * blockDim.x + threadIdx.x;
     
@@ -49,14 +49,14 @@ initHalfKickForces(float4* oldPos, float4* newPos,
     float4 curVel = oldVel[id];
     
     // Update half-kick velocities
-    curVel.x += force.x * deltaTime * 0.5f;
-    curVel.y += force.y * deltaTime * 0.5f;
-    curVel.z += force.z * deltaTime * 0.5f;
+    curVel.x += force.x * (*deltaTime) * 0.5f;
+    curVel.y += force.y * (*deltaTime) * 0.5f;
+    curVel.z += force.z * (*deltaTime) * 0.5f;
     
     // Update positions [drift]
-    curPos.x += curVel.x * deltaTime;
-    curPos.y += curVel.y * deltaTime;
-    curPos.z += curVel.z * deltaTime;
+    curPos.x += curVel.x * (*deltaTime);
+    curPos.y += curVel.y * (*deltaTime);
+    curPos.z += curVel.z * (*deltaTime);
     
     newPos[id] = curPos;
     newVel[id] = curVel;
@@ -69,7 +69,7 @@ __global__ void
 fullKickForces(float4* oldPos, float4* newPos,
                float4* oldVel, float4* newVel,
                float4* oldForce, float4* newForce,
-               float deltaTime, int N)
+               float *deltaTime, int N)
 {
     uint id = blockIdx.x * blockDim.x + threadIdx.x;
     
@@ -80,9 +80,9 @@ fullKickForces(float4* oldPos, float4* newPos,
     float4 curVel = newVel[id];
     
     // Update half-kick velocities
-    curVel.x += force.x * deltaTime * 0.5f;
-    curVel.y += force.y * deltaTime * 0.5f;
-    curVel.z += force.z * deltaTime * 0.5f;
+    curVel.x += force.x * (*deltaTime) * 0.5f;
+    curVel.y += force.y * (*deltaTime) * 0.5f;
+    curVel.z += force.z * (*deltaTime) * 0.5f;
     
     newPos[id] = curPos;
     newVel[id] = curVel;
@@ -98,7 +98,7 @@ __global__ void
 integrateNOrbitals(float4* oldPos, float4* newPos,
                    float4* oldVel, float4* newVel,
                    float4* oldForce, float4* newForce,
-                   float deltaTime, int N)
+                   float* oldDT, float* newDT, int N)
 /*   where:  */
 // |-> new[Pos/Vel] is calculated here, in kernel/device,
 // |-> old[Pos/Vel] is previous calculation, held on host,
@@ -113,6 +113,8 @@ integrateNOrbitals(float4* oldPos, float4* newPos,
     float3 force = computeOrbitalForces(curPos, oldPos, N);
     
     float4 curVel = oldVel[id];
+    
+    float deltaTime = (*oldDT);
     
     // Leapfrog-Verlet integrator (1967)
     
@@ -131,6 +133,9 @@ integrateNOrbitals(float4* oldPos, float4* newPos,
     curPos.y += curVel.y * deltaTime;
     curPos.z += curVel.z * deltaTime;
     
+    // *newDT = *oldDT * 1000.f;
+    // newDT[id] = *oldDT * 2.f;
+    (*newDT) = (*oldDT) + 0.01f;
     // complete by storing updated position and velocity
     newPos[id] = curPos;
     newVel[id] = curVel;
@@ -138,6 +143,7 @@ integrateNOrbitals(float4* oldPos, float4* newPos,
     newForce[id].x = force.x;
     newForce[id].y = force.y;
     newForce[id].z = force.z;
+    
 }
 
 //============================================================//

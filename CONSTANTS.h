@@ -10,13 +10,6 @@
 // [shell] seed=88, N=40, CM=2000000, Size=30, VScale=2
 // [shell] seed=1, N=30, CM=10000, Size=20, Scale=1
 
-// Physical constants
-#define BIG_G 2.9599e-4 // gravitational constant [AU^3 / M_solar * days^2]
-#define KMS_TO_AUD (float)1731.5 // 1754.385965 // 1731.5 // km.s to AU.day
-#define ALPHA_VIR 2.f // virial theorem constant
-#define auTOkm (float)1.49597871e8 // unit.kilometres /= unit.AU || unit.AU *= unit.kilometres
-#define SOLAR_MASS (float) 1.989e30 // kg
-
 // Simulation parameters
 #define SNAPSHOT_INTERVAL 10000 // iterations between each snapshot
 #define SEED 5 // seed for IC generator
@@ -27,12 +20,20 @@
 #define SOFTENING 0.000125 // ~0.011 AU // softening factor for close interactions [0.0125?]
 #define ETA_ACC 0.2 // acceleration variable timestep coefficient
 #define ETA_VEL 0.2 // velocity variable timestep coefficient
+#define TIME_STEP_INTERVAL 100 // iterations between each timestep change
 #define Q 1 // rows of ->  [[threads per body]] != REMOVED !=
 #define P 10 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
 // Q=8 threads p/b & P = 80 ->> PxQ==640 (50*NB_M /640)==80
 // At N=10*NB_M, P=128 & Q=8 give enormous performance boosts
 // solar system=>1 | cluster => 64? | fogr N=50*multi, P=640 means all 80 SMP's used
 // for N=200*m, P=1024 (max)
+
+// Physical constants
+#define BIG_G 2.9599e-4 // gravitational constant [AU^3 / M_solar * days^2]
+#define KMS_TO_AUD (float)1731.5 // 1754.385965 // 1731.5 // km.s to AU.day
+#define ALPHA_VIR 2.f // virial theorem constant
+#define auTOkm (float)1.49597871e8 // unit.kilometres /= unit.AU || unit.AU *= unit.kilometres
+#define SOLAR_MASS (float) 1.989e30 // kg
 
 // IC for proper small-N simulations
 #define NUM_CLUSTERS 1 // number of clusters

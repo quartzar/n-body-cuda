@@ -59,14 +59,14 @@ int main(int argc, char** argv)
     //-------------------------
     // CPU data =>
     float4 *m_hPos, *m_hVel, *m_hForce;
-    float *m_hDeltaTime;
+    float m_hDeltaTime;
     //-------------------------
     // memory transfers =>
     uint m_currentRead, m_currentWrite;
     //-------------------------
     // GPU data =>
     float4 *m_dPos[2], *m_dVel[2], *m_dForce[2];
-    float *m_dDeltaTime;
+    float *m_dDeltaTime[2];
     //-------------------------
     // OpenGL =>
     GLFWwindow *window = nullptr;
@@ -98,7 +98,8 @@ int main(int argc, char** argv)
     total_iterations = ITERATIONS;
     snapshot_interval = SNAPSHOT_INTERVAL;
     softening_factor = SOFTENING;
-    timestep = TIME_STEP;
+    // timestep = TIME_STEP;
+    // float deltaTime = TIME_STEP;
     m_currentRead = 0;
     m_currentWrite = 1;
     m_p = P;
@@ -113,18 +114,22 @@ int main(int argc, char** argv)
     m_hPos = new float4[N_orbitals]; // x, y, z, mass
     m_hVel = new float4[N_orbitals]; // vx,vy,vz, empty
     m_hForce = new float4[N_orbitals]; // fx, fy, fz, empty
-    // float *m_deltaTime = new float;
+    // m_hDeltaTime = new float; // dt
+    m_hDeltaTime = TIME_STEP;
+    // m_hDeltaTime = reinterpret_cast<float *>(TIME_STEP);
     // NEW / DEVICE
     m_dPos[0] = m_dPos[1] = nullptr;
     m_dVel[0] = m_dVel[1] = nullptr;
     m_dForce[0] = m_dForce[1] = nullptr;
+    m_dDeltaTime[0] = m_dDeltaTime[1] = nullptr;
     // set memory for host arrays
     memset(m_hPos, 0, N_orbitals*sizeof(float4));
     memset(m_hVel, 0, N_orbitals*sizeof(float4));
     memset(m_hForce, 0, N_orbitals*sizeof(float4));
+    // memset(&m_hDeltaTime, 0, sizeof(float));
     getCUDAError();
     // set memory for device arrays
-    allocateNOrbitalArrays(m_dPos,m_dVel, m_dForce, N_orbitals);
+    allocateNOrbitalArrays(m_dPos,m_dVel, m_dForce, m_dDeltaTime, N_orbitals);
     getCUDAError();
     // set device constants
     setDeviceSoftening(SOFTENING);
@@ -154,7 +159,8 @@ int main(int argc, char** argv)
         output_directory = "../out/" + getCurrentTime();
         std::filesystem::create_directory(output_directory);
     }
-    
+    // Set initial timestep
+    // m_hDeltaTime = TIME_STEP;
     // Randomise Orbitals
     randomiseOrbitals(sysConfig, m_hPos, m_hVel, N_orbitals);
     
@@ -180,7 +186,7 @@ int main(int argc, char** argv)
                 snapshot_filename = snapshot_filename_ss.str();
                 snapshot_counter++;
             }
-            writeBinaryData(snapshot_filename, snapshot_interval, iteration, total_iterations, timestep,
+            writeBinaryData(snapshot_filename, snapshot_interval, iteration, total_iterations, m_hDeltaTime,
                             softening_factor, N_orbitals, m_hPos, m_hVel, m_hForce);
         }
         
@@ -189,8 +195,8 @@ int main(int argc, char** argv)
                  m_hVel, m_dVel,
                  m_hForce, m_dForce,
                  m_currentRead, m_currentWrite,
-                 timestep, N_orbitals, m_p, m_q);
-        
+                 m_hDeltaTime, m_dDeltaTime, N_orbitals, m_p, m_q);
+        // std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
         if (displayEnabled && iteration%RENDER_INTERVAL == 0)
         {
             // CHECK FOR INPUT FIRST
@@ -203,7 +209,7 @@ int main(int argc, char** argv)
                 runTimer(start,  N_orbitals,false);
                 finalise(m_hPos, m_dPos,
                          m_hVel, m_dVel,
-                         m_hForce, m_dForce);
+                         m_hForce, m_dForce, m_dDeltaTime);
                 glfwTerminate();
                 exit(EXIT_SUCCESS);
             }
@@ -232,7 +238,7 @@ int main(int argc, char** argv)
     // DELETE ARRAYS
     finalise(m_hPos, m_dPos,
              m_hVel, m_dVel,
-             m_hForce, m_dForce);
+             m_hForce, m_dForce, m_dDeltaTime);
     
     // TERMINATE SUCCESSFULLY
     glfwTerminate();
@@ -242,7 +248,7 @@ int main(int argc, char** argv)
 
 // WIP: Write data to snapshot binary file
 //---------------------------------------
-void writeBinaryData(const std::string& filename, int snapshot_interval, int iteration, int total_iterations, float deltaTime,
+void writeBinaryData(const std::string& filename, int snapshot_interval, int iteration, int total_iterations, float dT,
                      float softening_factor, int N, float4* pos, float4* vel, float4* force)
 {
     std::ofstream file(filename, std::ios::binary | std::ios::app);
@@ -251,7 +257,7 @@ void writeBinaryData(const std::string& filename, int snapshot_interval, int ite
         if (iteration % snapshot_interval == 0)
         {
             file.write((char*)&N, sizeof(int));
-            file.write((char*)&deltaTime, sizeof(float));
+            file.write((char*)&dT, sizeof(float));
             file.write((char*)&softening_factor, sizeof(float));
             file.write((char*)&total_iterations, sizeof(int));
             file.write((char*)&snapshot_interval, sizeof(int));
@@ -267,9 +273,9 @@ void writeBinaryData(const std::string& filename, int snapshot_interval, int ite
             file.write((char*)&vel[orbital].y, sizeof(float));  // y velocity
             file.write((char*)&vel[orbital].z, sizeof(float));  // z velocity
         
-            float xFrc = force[orbital].x * deltaTime;
-            float yFrc = force[orbital].y * deltaTime;
-            float zFrc = force[orbital].z * deltaTime;
+            float xFrc = force[orbital].x * dT;
+            float yFrc = force[orbital].y * dT;
+            float zFrc = force[orbital].z * dT;
         
             file.write((char*)&xFrc, sizeof(float));    // x force
             file.write((char*)&yFrc, sizeof(float));    // y force
@@ -989,7 +995,7 @@ void simulate(float4* m_hPos, float4* m_dPos[2],
               float4* m_hVel, float4* m_dVel[2],
               float4* m_hForce, float4* m_dForce[2],
               uint m_currentRead, uint m_currentWrite,
-              float deltaTime, int N, uint m_p, uint m_q)
+              float& m_hDeltaTime, float* m_dDeltaTime[2], int N, uint m_p, uint m_q)
 {
     // set pos,vel -> update -> get pos,vel ~@ repeat
     
@@ -997,23 +1003,27 @@ void simulate(float4* m_hPos, float4* m_dPos[2],
     copyDataToDevice(m_dPos[m_currentRead], m_hPos, N);
     copyDataToDevice(m_dVel[m_currentRead], m_hVel, N);
     copyDataToDevice(m_dForce[m_currentRead], m_hForce, N);
+    cudaMemcpy(m_dDeltaTime[m_currentRead], &m_hDeltaTime, sizeof(float), cudaMemcpyHostToDevice);
+    getCUDAError();
 
 
     // Do the thing
     deployToGPU(m_dPos[m_currentRead], m_dPos[m_currentWrite],
                 m_dVel[m_currentRead], m_dVel[m_currentWrite],
                 m_dForce[m_currentRead], m_dForce[m_currentWrite],
-                deltaTime, N, m_p, m_q);
+                m_dDeltaTime[m_currentRead], m_dDeltaTime[m_currentWrite], N, m_p, m_q);
     // Swap read and write
     std::swap(m_currentRead, m_currentWrite);
 
-    // cudaDeviceSynchronize();
+    cudaDeviceSynchronize();
     
     // Retrieve data from device
     copyDataToHost(m_hPos, m_dPos[m_currentRead], N);
     copyDataToHost(m_hVel, m_dVel[m_currentRead], N);
     copyDataToHost(m_hForce, m_dForce[m_currentRead], N);
-
+    cudaMemcpy(&m_hDeltaTime, m_dDeltaTime[m_currentRead], sizeof(float), cudaMemcpyDeviceToHost);
+    getCUDAError();
+    std::cout << "Time step: " << m_hDeltaTime << std::endl;
     // Retrieve any CUDA errors and output
     getCUDAError();
 }
@@ -1034,13 +1044,15 @@ void getCUDAError()
 //---------------------------------------
 void finalise(float4* m_hPos, float4* m_dPos[2],
               float4* m_hVel, float4* m_dVel[2],
-              float4* m_hForce, float4* m_dForce[2])
+              float4* m_hForce, float4* m_dForce[2],
+              float* m_dDeltaTime[2])
 {
     delete [] m_hPos;
     delete [] m_hVel;
     delete [] m_hForce;
+    // delete m_hDeltaTime;
     
-    deleteNOrbitalArrays(m_dPos, m_dVel, m_dForce);
+    deleteNOrbitalArrays(m_dPos, m_dVel, m_dForce, m_dDeltaTime);
 }
 //---------------------------------------
 
@@ -1107,11 +1119,10 @@ void setDeviceEtaVel(float eta)
 
 // Allocate device memory for variables
 //---------------------------------------
-void allocateNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2],  int N)
+void allocateNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2], float* dT[2],  int N)
 {
     // memory size for device allocation
     uint memSize = sizeof(float4) * N;
-    // uint fMemSize = sizeof(float3) * N;
     
     cudaMalloc((void**)&pos[0], memSize);
     cudaMalloc((void**)&pos[1], memSize);
@@ -1119,13 +1130,15 @@ void allocateNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2],  i
     cudaMalloc((void**)&vel[1], memSize);
     cudaMalloc((void**)&force[0], memSize);
     cudaMalloc((void**)&force[1], memSize);
+    cudaMalloc((void**)&dT[0], sizeof(float));
+    cudaMalloc((void**)&dT[1], sizeof(float));
 }
 //---------------------------------------
 
 
 // De-allocate device memory variables
 //---------------------------------------
-void deleteNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2])
+void deleteNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2], float* dT[2])
 {
     cudaFree((void**)pos[0]);
     cudaFree((void**)pos[1]);
@@ -1133,6 +1146,8 @@ void deleteNOrbitalArrays(float4* pos[2], float4* vel[2], float4* force[2])
     cudaFree((void**)vel[1]);
     cudaFree((void**)force[0]);
     cudaFree((void**)force[1]);
+    cudaFree((void**)dT[0]);
+    cudaFree((void**)dT[1]);
 }
 //---------------------------------------
 
@@ -1164,7 +1179,7 @@ void copyDataToHost(float4* host, const float4* device, int N)
 void deployToGPU(float4* oldPos, float4* newPos,
                  float4* oldVel, float4* newVel,
                  float4* oldForce, float4* newForce,
-                 float deltaTime, int N, uint p, uint q)
+                 float* oldDT, float* newDT, int N, uint p, uint q)
 {
     uint shMemSize = p * q * sizeof(float4);
     
@@ -1183,16 +1198,16 @@ void deployToGPU(float4* oldPos, float4* newPos,
         default:
         {
             integrateNOrbitals<<<grid, threads, shMemSize
-            >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N);
+            >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, oldDT, newDT, N);
         }
         break;
         case KICK_DRIFT_VERLET:
         {
             initHalfKickForces<<<grid, threads, shMemSize
-            >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N);
+            >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, oldDT, N);
             cudaDeviceSynchronize();
             fullKickForces<<<grid, threads, shMemSize
-            >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, deltaTime, N);
+            >>>(oldPos, newPos, oldVel, newVel, oldForce, newForce, oldDT, N);
         }
         break;
     }
@@ -1349,10 +1364,10 @@ void processInput(GLFWwindow *window)
         zoom -= (zoom * (float)ZOOM_SCALE);
     
     // timestep adjustment
-    if (glfwGetKey(window, GLFW_KEY_COMMA) == GLFW_PRESS)
-        timestep -= 0.1f ;
-    if (glfwGetKey(window, GLFW_KEY_PERIOD) == GLFW_PRESS)
-        timestep += 0.1f;
+    // if (glfwGetKey(window, GLFW_KEY_COMMA) == GLFW_PRESS)
+    //     timestep -= 0.1f ;
+    // if (glfwGetKey(window, GLFW_KEY_PERIOD) == GLFW_PRESS)
+    //     timestep += 0.1f;
 }
 //---------------------------------------
 
@@ -1396,9 +1411,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         shiftSpeed = 1 * CTRL_FACTOR;
     // COMMA/PERIOD FOR TIMESTEP
     // if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
-    //     timestep -= 0.25f;
+    //     m_hDeltaTime -= 0.25f;
     // if (key == GLFW_KEY_PERIOD && action == GLFW_PRESS)
-    //     timestep += 0.25f;
+    //     m_hDeltaTime += 10000.25f;
 }
 //---------------------------------------
 
