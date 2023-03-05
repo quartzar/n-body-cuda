@@ -106,15 +106,17 @@ integrateNOrbitals(float4* oldPos, float4* newPos,
 // |-> N_orbitals is just N-bodies (moving away from using #DEFINE's)
 {
     // fused-multiply-add [previously __mul24(a,b)+c]
-    uint id = blockIdx.x * blockDim.x + threadIdx.x;
+    uint idx = blockIdx.x * blockDim.x + threadIdx.x;
     
-    float4 curPos = oldPos[id];
+    float4 curPos = oldPos[idx];
     
     float3 force = computeOrbitalForces(curPos, oldPos, N);
     
-    float4 curVel = oldVel[id];
+    float4 curVel = oldVel[idx];
     
     float deltaTime = (*oldDT);
+    if (idx == 0) (*newDT) = (*oldDT);
+    
     
     // Leapfrog-Verlet integrator (1967)
     
@@ -135,14 +137,14 @@ integrateNOrbitals(float4* oldPos, float4* newPos,
     
     // *newDT = *oldDT * 1000.f;
     // newDT[id] = *oldDT * 2.f;
-    (*newDT) = (*oldDT) + 0.01f;
+    // (*newDT) = (*oldDT) + 0.01f;
     // complete by storing updated position and velocity
-    newPos[id] = curPos;
-    newVel[id] = curVel;
+    newPos[idx] = curPos;
+    newVel[idx] = curVel;
     // store force as well
-    newForce[id].x = force.x;
-    newForce[id].y = force.y;
-    newForce[id].z = force.z;
+    newForce[idx].x = force.x;
+    newForce[idx].y = force.y;
+    newForce[idx].z = force.z;
     
 }
 
