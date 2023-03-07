@@ -46,7 +46,7 @@ NbodyRenderer *renderer = nullptr;
 bool displayEnabled = true;
 bool outputBinary = false;
 bool glxyCollision = false;
-bool colourMode = true;
+bool colourMode = false;
 bool trailMode = false;
 bool rotateCam = false;
 //---------------------------------------q
@@ -998,34 +998,99 @@ void initialiseForces(float4* pos, float4* force, int N)
 //---------------------------------------
 float calculateTimeStep(float4* pos, float4* vel, float4* force, float curDT, int N)
 {
-    float maxAcc = 0.0f;
-    int maxAccIndex = 0;
-    float maxVel = 0.0f;
+    auto* acc_dot = new float3[N];
     for (int i = 0; i < N; i++)
     {
-        // Acceleration
-        float accel = force[i].x * force[i].x + force[i].y * force[i].y + force[i].z * force[i].z;
-        accel /= pos[i].w;
-        float accelMag = sqrtf(accel);
-        
-        maxAccIndex = (accelMag > maxAcc) ? i : maxAccIndex;
-        maxAcc = (accelMag > maxAcc) ? accelMag : maxAcc;
-        
-        // Velocity
-        float velocity = vel[i].x * vel[i].x + vel[i].y * vel[i].y + vel[i].z * vel[i].z;
-        float velMag = sqrtf(velocity);
-        
-        maxVel = (velMag > maxVel) ? velMag : maxVel;
+        for (int j = 0; j < N; j++)
+        {
+            if (i == j) continue;
+            
+            float3 r; float3 v;
+            // r_ij -> AU [distance]
+            r.x = pos[j].x - pos[i].x;
+            r.y = pos[j].y - pos[i].y;
+            r.z = pos[j].z - pos[i].z;
+            
+            // v_ij -> AU/day [velocity]
+            v.x = vel[j].x - vel[i].x;
+            v.y = vel[j].y - vel[i].y;
+            v.z = vel[j].z - vel[i].z;
+            
+            // distance squared == dot(r_ij, r_ij) + softening^2
+            float distSqr = r.x * r.x + r.y * r.y + r.z * r.z;
+            float dist = sqrtf(distSqr);
+            distSqr += SOFTENING * SOFTENING;
+            
+            // inverse distance cubed == 1 / distSqr^(3/2) [fastest method]
+            float distSixth = distSqr * distSqr * distSqr;
+            float invDistCube = 1.0f / sqrtf(distSixth);
+            float distFifth = distSqr * distSqr * dist;
+            float invDistFifth = 1.0f / sqrtf(distFifth);
+            
+            // force = mass_j * inverse distance cube
+            float f1 = pos[j].w * invDistCube;
+            float f2 = pos[j].w * invDistFifth;
+            
+            // acceleration
+            acc_dot[i].x += ( (v.x * f1) + ((3 * v.x * r.x) * r.x * f2) ) * (float)BIG_G;
+            acc_dot[i].y += ( (v.y * f1) + ((3 * v.y * r.y) * r.y * f2) ) * (float)BIG_G;
+            acc_dot[i].z += ( (v.z * f1) + ((3 * v.z * r.z) * r.z * f2) ) * (float)BIG_G;
+        }
     }
-    float m = pos[maxAccIndex].w;
-    float3 a = make_float3(force[maxAccIndex].x / m,
-                           force[maxAccIndex].y / m,
-                           force[maxAccIndex].z / m);
-    float aDot = dot(a, a);
-    float dt = ETA_ACC * maxAcc / aDot + ETA_VEL * maxVel / curDT * maxAcc;
-    std::cout << "\nDelta Time ->> " << dt << std::endl;
+    
+    float max_aa_dot = 0.0f;
+    float max_a = 0;
+    float max_v = 0.0f;
+    for (int i = 0; i < N; i++)
+    {
+        float a_dot = acc_dot[i].x * acc_dot[i].x + acc_dot[i].y * acc_dot[i].y + acc_dot[i].z * acc_dot[i].z;
+        float a = force[i].x * force[i].x + force[i].y * force[i].y + force[i].z * force[i].z;
+        float v = vel[i].x * vel[i].x + vel[i].y * vel[i].y + vel[i].z * vel[i].z;
+        a_dot = sqrtf(a_dot);
+        a = sqrtf(a);
+        v = sqrtf(v);
+        
+        float aa_dot = a / a_dot;
+        max_aa_dot = (aa_dot > max_aa_dot) ? aa_dot : max_aa_dot;
+        max_a = (a > max_a) ? a : max_a;
+        max_v = (v > max_v) ? v : max_v;
+    }
+    float dt = ETA_ACC * max_aa_dot + ETA_VEL * (max_v / max_a);
     return fminf(dt, MAX_DELTA_TIME);
 }
+
+//---------------------------------------
+
+// float calculateTimeStep(float4* pos, float4* vel, float4* force, float curDT, int N)
+// {
+//     float maxAcc = 0.0f;
+//     int maxAccIndex = 0;
+//     float maxVel = 0.0f;
+//     for (int i = 0; i < N; i++)
+//     {
+//         // Acceleration
+//         float accel = force[i].x * force[i].x + force[i].y * force[i].y + force[i].z * force[i].z;
+//         accel /= pos[i].w;
+//         float accelMag = sqrtf(accel);
+//
+//         maxAccIndex = (accelMag > maxAcc) ? i : maxAccIndex;
+//         maxAcc = (accelMag > maxAcc) ? accelMag : maxAcc;
+//
+//         // Velocity
+//         float velocity = vel[i].x * vel[i].x + vel[i].y * vel[i].y + vel[i].z * vel[i].z;
+//         float velMag = sqrtf(velocity);
+//
+//         maxVel = (velMag > maxVel) ? velMag : maxVel;
+//     }
+//     float m = pos[maxAccIndex].w;
+//     float3 a = make_float3(force[maxAccIndex].x / m,
+//                            force[maxAccIndex].y / m,
+//                            force[maxAccIndex].z / m);
+//     float aDot = dot(a, a);
+//     float dt = ETA_ACC * maxAcc / aDot + ETA_VEL * maxVel / curDT * maxAcc;
+//     std::cout << "\nDelta Time ->> " << dt << std::endl;
+//     return fminf(dt, MAX_DELTA_TIME);
+// }
 
 //---------------------------------------
 // MAIN UPDATE LOOP
