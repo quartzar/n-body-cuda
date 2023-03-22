@@ -1031,10 +1031,13 @@ float calculateTimeStep(float4* pos, float4* vel, float4* force, float curDT, in
             float f1 = pos[j].w * invDistCube;
             float f2 = pos[j].w * invDistFifth;
             
+            float vdotr = dot(v, r);
+            
             // acceleration
-            acc_dot[i].x += ( (v.x * f1) + ((3 * v.x * r.x) * r.x * f2) ) * (float)BIG_G;
-            acc_dot[i].y += ( (v.y * f1) + ((3 * v.y * r.y) * r.y * f2) ) * (float)BIG_G;
-            acc_dot[i].z += ( (v.z * f1) + ((3 * v.z * r.z) * r.z * f2) ) * (float)BIG_G;
+            // acc_dot[i].x += ( (v.x * f1) + ((3 * v.x * r.x) * r.x * f2) ) * (float)BIG_G;
+            acc_dot[i].x += ( (v.x * f1) + ((3 * vdotr) * r.x * f2) ) * (float)BIG_G;
+            acc_dot[i].y += ( (v.y * f1) + ((3 * vdotr) * r.y * f2) ) * (float)BIG_G;
+            acc_dot[i].z += ( (v.z * f1) + ((3 * vdotr) * r.z * f2) ) * (float)BIG_G;
         }
     }
     
