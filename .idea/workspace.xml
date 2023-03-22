@@ -22,16 +22,6 @@
   <component name="ChangeListManager">
     <list default="true" id="d43b48db-8551-480f-abfc-10ad2719c094" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CONSTANTS.h" beforeDir="false" afterPath="$PROJECT_DIR$/CONSTANTS.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cu" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cuh" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cuh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/compiler_depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/compiler_depend.internal" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/compiler_depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/compiler_depend.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -131,7 +121,7 @@
       <workItem from="1678662819592" duration="1000" />
       <workItem from="1678701766941" duration="1594000" />
       <workItem from="1678897159596" duration="28000" />
-      <workItem from="1679497016264" duration="7257000" />
+      <workItem from="1679497016264" duration="8059000" />
     </task>
     <servers />
   </component>
