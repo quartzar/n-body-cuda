@@ -44,7 +44,7 @@ NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
 bool displayEnabled = true;
-bool outputBinary = false;
+bool outputBinary = true;
 bool glxyCollision = false;
 bool colourMode = false;
 bool trailMode = false;
@@ -87,13 +87,13 @@ int main(int argc, char** argv)
     // Simulation =>
     int iteration;
     int total_iterations;
-    int N_orbitals;
+    // int N_bodies;
     int snapshot_interval;
     float softening_factor;
     int snapshot_counter = 1;
     uint m_p;
     uint m_q;
-    N_orbitals = N_BODIES;
+    // N_orbitals = N_BODIES;
     iteration = 0;
     total_iterations = ITERATIONS;
     snapshot_interval = SNAPSHOT_INTERVAL;
@@ -105,17 +105,46 @@ int main(int argc, char** argv)
     m_p = P;
     m_q = Q;
     zoom = 1;
-    
+    ////////////////////////////////
+    std::string simulation_base;
+    int N_bodies;
+    float softening;
+    float time_start;
+    float time_end;
+    float current_time = 0.f;
+    float delta_time;
+    float snap_rate;
+    float time_since_snap = 0.f;
+    bool cross_time = false;
+    float eta_cross;
+    ////////////////////////////////
+    // Read in parameters from file
+    readParameters("../parameters.dat", simulation_base, N_bodies, softening, time_start,
+                   time_end, snap_rate, delta_time, cross_time, eta_cross, eta_acc, eta_vel);
+    std::cout << "---------------------------------" << std::endl;
+    std::cout << "Simulation base: " << simulation_base << std::endl;
+    std::cout << "N_bodies: " << N_bodies << std::endl;
+    std::cout << "Softening: " << softening << std::endl;
+    std::cout << "Time start: " << time_start << std::endl;
+    std::cout << "Time end: " << time_end << std::endl;
+    std::cout << "Snap rate: " << snap_rate << std::endl;
+    std::cout << "Delta time: " << delta_time << std::endl;
+    std::cout << "Cross time: " << cross_time << std::endl;
+    std::cout << "Eta cross: " << eta_cross << std::endl;
+    std::cout << "Eta acc: " << eta_acc << std::endl;
+    std::cout << "Eta vel: " << eta_vel << std::endl;
+    std::cout << "---------------------------------" << std::endl;
+    ////////////////////////////////
     //---------------------------------------
     // INITIALISE ARRAYS & ALLOCATE DEVICE STORAGE
     //---------------------------------------
     
     // OLD / HOST
-    m_hPos = new float4[N_orbitals]; // x, y, z, mass
-    m_hVel = new float4[N_orbitals]; // vx,vy,vz, empty
-    m_hForce = new float4[N_orbitals]; // fx, fy, fz, empty
+    m_hPos = new float4[N_bodies]; // x, y, z, mass
+    m_hVel = new float4[N_bodies]; // vx,vy,vz, empty
+    m_hForce = new float4[N_bodies]; // fx, fy, fz, empty
     // m_hDeltaTime = new float; // dt
-    m_hDeltaTime = TIME_STEP;
+    m_hDeltaTime = delta_time;
     // m_hDeltaTime = reinterpret_cast<float *>(TIME_STEP);
     // NEW / DEVICE
     m_dPos[0] = m_dPos[1] = nullptr;
@@ -123,16 +152,16 @@ int main(int argc, char** argv)
     m_dForce[0] = m_dForce[1] = nullptr;
     m_dDeltaTime[0] = m_dDeltaTime[1] = nullptr;
     // set memory for host arrays
-    memset(m_hPos, 0, N_orbitals*sizeof(float4));
-    memset(m_hVel, 0, N_orbitals*sizeof(float4));
-    memset(m_hForce, 0, N_orbitals*sizeof(float4));
+    memset(m_hPos, 0, N_bodies*sizeof(float4));
+    memset(m_hVel, 0, N_bodies*sizeof(float4));
+    memset(m_hForce, 0, N_bodies*sizeof(float4));
     // memset(&m_hDeltaTime, 0, sizeof(float));
     getCUDAError();
     // set memory for device arrays
-    allocateNOrbitalArrays(m_dPos,m_dVel, m_dForce, m_dDeltaTime, N_orbitals);
+    allocateNOrbitalArrays(m_dPos,m_dVel, m_dForce, m_dDeltaTime, N_bodies);
     getCUDAError();
     // set device constants
-    setDeviceSoftening(SOFTENING);
+    setDeviceSoftening(softening * softening);
     setDeviceBigG(1.0f * BIG_G);
     setDeviceEtaAcc(ETA_ACC);
     setDeviceEtaVel(ETA_VEL);
@@ -144,7 +173,9 @@ int main(int argc, char** argv)
     
     
     // BEGIN TIMER
-    runTimer(start, N_orbitals, true);
+    runTimer(start, N_bodies, true);
+    
+    
     
     // INITIALISE OPENGL
     if (displayEnabled)
@@ -156,38 +187,54 @@ int main(int argc, char** argv)
     
     // Create new directory for output
     if (outputBinary) {
-        output_directory = "../out/" + getCurrentTime();
+        // output_directory = "../out/" + getCurrentTime();
+        output_directory = "../out/" + simulation_base;
         std::filesystem::create_directory(output_directory);
+        if (std::filesystem::exists(output_directory)) {
+            deleteFilesInDirectory(output_directory);
+        } else {
+            std::filesystem::create_directory(output_directory);
+        }
     }
     // Set initial timestep
     // m_hDeltaTime = TIME_STEP;
     // Randomise Orbitals
-    randomiseOrbitals(sysConfig, m_hPos, m_hVel, N_orbitals);
+    randomiseOrbitals(sysConfig, m_hPos, m_hVel, N_bodies);
     
     // Set Initial Forces [only run for solar system, HUGE performance hit]
     // if (sysConfig == NORB_CONFIG_SOLAR)
-    initialiseForces(m_hPos, m_hForce, N_orbitals);
+    initialiseForces(m_hPos, m_hForce, N_bodies);
+    
+    // Calculate and set the crossing time if needed
+    if (cross_time)
+    {
+        float t_crossing = calculateCrossingTime(m_hVel, N_bodies);
+        time_end = eta_cross * t_crossing;
+        std::cout << "\n---------------------------------" << std::endl;
+        std::cout << "Crossing time: " << t_crossing / 365.25 << " years" << std::endl;
+        std::cout << "---------------------------------" << std::endl;
+    }
     
     //---------------------------------------
     // MAIN UPDATE LOOP
-    while (iteration < total_iterations)
+    while (current_time < time_end)
     {
         if (iteration  % 10000 == 0)
             std::cout << "\nSTEP =>> " << iteration << std::flush;
     
-        if (outputBinary)
+        // Write a snapshot every snap_rate days
+        if (outputBinary && time_since_snap >= snap_rate)
         {
-            if (iteration % snapshot_interval == 0)
-            {
-                std::stringstream snapshot_filename_ss;
-                snapshot_filename_ss << output_directory << "/snapshot_"
-                                     << std::setfill('0') << std::setw(4) << std::to_string(snapshot_counter) << ".bin";
-            
-                snapshot_filename = snapshot_filename_ss.str();
-                snapshot_counter++;
-            }
-            writeBinaryData(snapshot_filename, snapshot_interval, iteration, total_iterations, m_hDeltaTime,
-                            softening_factor, N_orbitals, m_hPos, m_hVel, m_hForce);
+            std::stringstream snapshot_filename_ss;
+            snapshot_filename_ss << output_directory << "/snapshot_"
+                                 << std::setfill('0') << std::setw(6) << std::to_string(snapshot_counter) << ".bin";
+        
+            snapshot_filename = snapshot_filename_ss.str();
+            snapshot_counter++;
+        
+            writeBinaryData(snapshot_filename, current_time, m_hDeltaTime,
+                            softening_factor, N_bodies, m_hPos, m_hVel, m_hForce);
+            time_since_snap = 0.f;
         }
         
         
@@ -195,12 +242,12 @@ int main(int argc, char** argv)
                  m_hVel, m_dVel,
                  m_hForce, m_dForce,
                  m_currentRead, m_currentWrite,
-                 m_hDeltaTime, m_dDeltaTime, N_orbitals, m_p, m_q);
+                 m_hDeltaTime, m_dDeltaTime, N_bodies, m_p, m_q);
         // std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
         
         if (iteration % TIME_STEP_INTERVAL == 0)
         {
-            m_hDeltaTime = calculateTimeStep(m_hPos, m_hVel, m_hForce, m_hDeltaTime, N_orbitals);
+            m_hDeltaTime = calculateTimeStep(m_hPos, m_hVel, m_hForce, m_hDeltaTime, N_bodies);
             std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
         }
         
@@ -213,7 +260,7 @@ int main(int argc, char** argv)
             if (glfwWindowShouldClose(window))
             {
                 std::cout << "\nPROGRAM TERMINATED BY USER\nEXITING AT STEP " << iteration;
-                runTimer(start,  N_orbitals,false);
+                runTimer(start,  N_bodies,false);
                 finalise(m_hPos, m_dPos,
                          m_hVel, m_dVel,
                          m_hForce, m_dForce, m_dDeltaTime);
@@ -235,12 +282,14 @@ int main(int argc, char** argv)
             const char* cstr = s.c_str();
             glfwSetWindowTitle(window, cstr);
         }
+        time_since_snap += m_hDeltaTime;
+        current_time += m_hDeltaTime;
         iteration++;
     }
     //---------------------------------------
     
     // END TIMER
-    runTimer(start,  N_orbitals,false);
+    runTimer(start,  N_bodies,false);
     
     // DELETE ARRAYS
     finalise(m_hPos, m_dPos,
@@ -253,22 +302,76 @@ int main(int argc, char** argv)
 }
 //---------------------------------------
 
+// Read in parameters from config file
+//---------------------------------------
+void readParameters(const std::string &filename, std::string &simulation_base, int &N_bodies, float &softening,
+                    float &time_start, float &time_end, float &snap_rate, float &initial_dt,
+                    bool &cross_time, float &ETA_cross, float &ETA_acc, float &ETA_vel)
+{
+    std::ifstream file(filename);
+    
+    if (file.is_open())
+    {
+        std::string line;
+        
+        while (std::getline(file, line))
+        {
+            std::string value;
+            std::getline(file, value);
+            
+            if (line == "SIMULATION_BASE")
+                simulation_base = value;
+            else if (line == "N-BODIES")
+                N_bodies = std::stoi(value);
+            else if (line == "SOFTENING")
+                softening = std::stof(value);
+            else if (line == "TIME_START")
+                time_start = std::stof(value);
+            else if (line == "TIME_END")
+                time_end = std::stof(value);
+            else if (line == "SNAP_RATE")
+                snap_rate = std::stof(value);
+            else if (line == "INITIAL_DT")
+                initial_dt = std::stof(value);
+            else if (line == "CROSS_TIME")
+            {
+                if (value == "true")
+                    cross_time = true;
+                else if (value == "false")
+                    cross_time = false;
+                else
+                    std::cerr << "Invalid value for CROSS_TIME: " << value << ". Use 'true' or 'false'." << std::endl;
+            }
+            else if (line == "ETA_CROSS")
+                ETA_cross = std::stof(value);
+            else if (line == "ETA_ACC")
+                ETA_acc = std::stof(value);
+            else if (line == "ETA_VEL")
+                ETA_vel = std::stof(value);
+            else
+                std::cerr << "Unknown parameter: " << line << std::endl;
+        }
+        file.close();
+    }
+    else
+    {
+        std::cerr << "Error opening file: " << filename << std::endl;
+    }
+}
+//---------------------------------------
+
 // WIP: Write data to snapshot binary file
 //---------------------------------------
-void writeBinaryData(const std::string& filename, int snapshot_interval, int iteration, int total_iterations, float dT,
+void writeBinaryData(const std::string& filename, float current_time, float dT,
                      float softening_factor, int N, float4* pos, float4* vel, float4* force)
 {
     std::ofstream file(filename, std::ios::binary | std::ios::app);
     if (file.is_open())
     {
-        if (iteration % snapshot_interval == 0)
-        {
-            file.write((char*)&N, sizeof(int));
-            file.write((char*)&dT, sizeof(float));
-            file.write((char*)&softening_factor, sizeof(float));
-            file.write((char*)&total_iterations, sizeof(int));
-            file.write((char*)&snapshot_interval, sizeof(int));
-        }
+        file.write((char*)&current_time, sizeof(float));
+        file.write((char*)&dT, sizeof(float));
+        file.write((char*)&softening_factor, sizeof(float));
+        file.write((char*)&N, sizeof(int));
         
         for (int orbital = 0; orbital < N; orbital++)
         {
@@ -279,11 +382,11 @@ void writeBinaryData(const std::string& filename, int snapshot_interval, int ite
             file.write((char*)&vel[orbital].x, sizeof(float));  // x velocity
             file.write((char*)&vel[orbital].y, sizeof(float));  // y velocity
             file.write((char*)&vel[orbital].z, sizeof(float));  // z velocity
-        
+            
             float xFrc = force[orbital].x * dT;
             float yFrc = force[orbital].y * dT;
             float zFrc = force[orbital].z * dT;
-        
+            
             file.write((char*)&xFrc, sizeof(float));    // x force
             file.write((char*)&yFrc, sizeof(float));    // y force
             file.write((char*)&zFrc, sizeof(float));    // z force
@@ -294,6 +397,20 @@ void writeBinaryData(const std::string& filename, int snapshot_interval, int ite
 }
 //---------------------------------------
 
+// Calculate the crossing time of the system
+//---------------------------------------
+float calculateCrossingTime(const float4 *vel, int N)
+{
+    float mean_v2 = 0.0f;
+    for (int i = 0; i < N; i++)
+    {
+        mean_v2 += (vel[i].x * vel[i].x) + (vel[i].y * vel[i].y) + (vel[i].z * vel[i].z);
+    }
+    mean_v2 /= float(N);
+    
+    return R_CLUSTER / std::sqrt(mean_v2);
+}
+//---------------------------------------
 
 // Returns the current time in the format yymmddhhmmss
 //---------------------------------------
@@ -1179,6 +1296,23 @@ float normalise(float3& vector)
 }
 //---------------------------------------
 
+// Deletes snapshot folder files if already exists
+//---------------------------------------
+void deleteFilesInDirectory(const std::string& directory_path)
+{
+    try
+    {
+        for (const auto &entry : std::filesystem::directory_iterator(directory_path))
+        {
+            std::filesystem::remove(entry.path());
+        }
+    }
+    catch (std::filesystem::filesystem_error &e)
+    {
+        std::cerr << "Error deleting files in directory: " << e.what() << std::endl;
+    }
+}
+//---------------------------------------
 
 
 //////////////////////////////////////////////////////
