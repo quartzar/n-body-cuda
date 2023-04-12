@@ -56,8 +56,8 @@
 
 
 // Window & render parameters
-#define WIDTH 1700 // 1700 PC // 2800 LT
-#define HEIGHT 910 // 910 PC // 1550 LT
+#define WIDTH 2900 // 1700 PC // 2800 LT
+#define HEIGHT 1550 // 910 PC // 1550 LT
 #define RENDER_INTERVAL 100 // timesteps between each frame
 
 // OpenGL parameters
@@ -70,7 +70,7 @@
 #define SHIFT_FACTOR 10 // how much faster all movement is with shift held
 #define CTRL_FACTOR 0.1 // how much slower all movement is with ctrl held
 #define MOVE_SPEED 1 // how fast to move [AU/frame] // 1 for solar system
-#define ORB_SIZE 3 // 2-3 LT // 0.5 PC // range of pixels to display dot
+#define ORB_SIZE 5 // 2-3 LT // 0.5 PC // range of pixels to display dot
 
 // Proto-cluster options
 

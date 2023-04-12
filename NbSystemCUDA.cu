@@ -237,7 +237,6 @@ int main(int argc, char** argv)
             time_since_snap = 0.f;
         }
         
-        
         simulate(m_hPos, m_dPos,
                  m_hVel, m_dVel,
                  m_hForce, m_dForce,

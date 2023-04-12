@@ -15,8 +15,8 @@ CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o : /home/quartzar/Documents/repos/n-bod
     /usr/local/cuda/bin/../targets/x86_64-linux/include/crt/host_defines.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/driver_types.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/vector_types.h \
-    /usr/lib/gcc/x86_64-linux-gnu/12/include/limits.h \
-    /usr/lib/gcc/x86_64-linux-gnu/12/include/syslimits.h \
+    /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
+    /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
     /usr/include/limits.h \
     /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
     /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
@@ -26,19 +26,19 @@ CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o : /home/quartzar/Documents/repos/n-bod
     /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
     /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
     /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
-    /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
+    /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/surface_types.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/texture_types.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/library_types.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/channel_descriptor.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/cuda_runtime_api.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/cuda_device_runtime_api.h \
-    /usr/include/c++/12/stdlib.h \
-    /usr/include/c++/12/cstdlib \
-    /usr/include/x86_64-linux-gnu/c++/12/bits/c++config.h \
-    /usr/include/x86_64-linux-gnu/c++/12/bits/os_defines.h \
-    /usr/include/x86_64-linux-gnu/c++/12/bits/cpu_defines.h \
-    /usr/include/c++/12/pstl/pstl_config.h \
+    /usr/include/c++/11/stdlib.h \
+    /usr/include/c++/11/cstdlib \
+    /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
+    /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
+    /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
+    /usr/include/c++/11/pstl/pstl_config.h \
     /usr/include/stdlib.h \
     /usr/include/x86_64-linux-gnu/bits/waitflags.h \
     /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
@@ -74,7 +74,7 @@ CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o : /home/quartzar/Documents/repos/n-bod
     /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
     /usr/include/alloca.h \
     /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
-    /usr/include/c++/12/bits/std_abs.h \
+    /usr/include/c++/11/bits/std_abs.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/driver_functions.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/vector_functions.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/vector_functions.hpp \
@@ -86,10 +86,10 @@ CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o : /home/quartzar/Documents/repos/n-bod
     /usr/include/x86_64-linux-gnu/bits/timex.h \
     /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
     /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
-    /usr/include/c++/12/new \
-    /usr/include/c++/12/bits/exception.h \
+    /usr/include/c++/11/new \
+    /usr/include/c++/11/bits/exception.h \
     /usr/include/stdio.h \
-    /usr/lib/gcc/x86_64-linux-gnu/12/include/stdarg.h \
+    /usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h \
     /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
     /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
     /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
@@ -100,10 +100,10 @@ CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o : /home/quartzar/Documents/repos/n-bod
     /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
     /usr/include/assert.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/crt/math_functions.h \
-    /usr/include/c++/12/math.h \
-    /usr/include/c++/12/cmath \
-    /usr/include/c++/12/bits/cpp_type_traits.h \
-    /usr/include/c++/12/ext/type_traits.h \
+    /usr/include/c++/11/math.h \
+    /usr/include/c++/11/cmath \
+    /usr/include/c++/11/bits/cpp_type_traits.h \
+    /usr/include/c++/11/ext/type_traits.h \
     /usr/include/math.h \
     /usr/include/x86_64-linux-gnu/bits/math-vector.h \
     /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
@@ -114,36 +114,35 @@ CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o : /home/quartzar/Documents/repos/n-bod
     /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
     /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
     /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
-    /usr/include/c++/12/bits/specfun.h \
-    /usr/include/c++/12/bits/stl_algobase.h \
-    /usr/include/c++/12/bits/functexcept.h \
-    /usr/include/c++/12/bits/exception_defines.h \
-    /usr/include/c++/12/ext/numeric_traits.h \
-    /usr/include/c++/12/bits/stl_pair.h \
-    /usr/include/c++/12/type_traits \
-    /usr/include/c++/12/bits/move.h \
-    /usr/include/c++/12/bits/utility.h \
-    /usr/include/c++/12/bits/stl_iterator_base_types.h \
-    /usr/include/c++/12/bits/stl_iterator_base_funcs.h \
-    /usr/include/c++/12/bits/concept_check.h \
-    /usr/include/c++/12/debug/assertions.h \
-    /usr/include/c++/12/bits/stl_iterator.h \
-    /usr/include/c++/12/bits/ptr_traits.h \
-    /usr/include/c++/12/debug/debug.h \
-    /usr/include/c++/12/bits/predefined_ops.h \
-    /usr/include/c++/12/limits \
-    /usr/include/c++/12/tr1/gamma.tcc \
-    /usr/include/c++/12/tr1/special_function_util.h \
-    /usr/include/c++/12/tr1/bessel_function.tcc \
-    /usr/include/c++/12/tr1/beta_function.tcc \
-    /usr/include/c++/12/tr1/ell_integral.tcc \
-    /usr/include/c++/12/tr1/exp_integral.tcc \
-    /usr/include/c++/12/tr1/hypergeometric.tcc \
-    /usr/include/c++/12/tr1/legendre_function.tcc \
-    /usr/include/c++/12/tr1/modified_bessel_func.tcc \
-    /usr/include/c++/12/tr1/poly_hermite.tcc \
-    /usr/include/c++/12/tr1/poly_laguerre.tcc \
-    /usr/include/c++/12/tr1/riemann_zeta.tcc \
+    /usr/include/c++/11/bits/specfun.h \
+    /usr/include/c++/11/bits/stl_algobase.h \
+    /usr/include/c++/11/bits/functexcept.h \
+    /usr/include/c++/11/bits/exception_defines.h \
+    /usr/include/c++/11/ext/numeric_traits.h \
+    /usr/include/c++/11/bits/stl_pair.h \
+    /usr/include/c++/11/bits/move.h \
+    /usr/include/c++/11/type_traits \
+    /usr/include/c++/11/bits/stl_iterator_base_types.h \
+    /usr/include/c++/11/bits/stl_iterator_base_funcs.h \
+    /usr/include/c++/11/bits/concept_check.h \
+    /usr/include/c++/11/debug/assertions.h \
+    /usr/include/c++/11/bits/stl_iterator.h \
+    /usr/include/c++/11/bits/ptr_traits.h \
+    /usr/include/c++/11/debug/debug.h \
+    /usr/include/c++/11/bits/predefined_ops.h \
+    /usr/include/c++/11/limits \
+    /usr/include/c++/11/tr1/gamma.tcc \
+    /usr/include/c++/11/tr1/special_function_util.h \
+    /usr/include/c++/11/tr1/bessel_function.tcc \
+    /usr/include/c++/11/tr1/beta_function.tcc \
+    /usr/include/c++/11/tr1/ell_integral.tcc \
+    /usr/include/c++/11/tr1/exp_integral.tcc \
+    /usr/include/c++/11/tr1/hypergeometric.tcc \
+    /usr/include/c++/11/tr1/legendre_function.tcc \
+    /usr/include/c++/11/tr1/modified_bessel_func.tcc \
+    /usr/include/c++/11/tr1/poly_hermite.tcc \
+    /usr/include/c++/11/tr1/poly_laguerre.tcc \
+    /usr/include/c++/11/tr1/riemann_zeta.tcc \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/crt/math_functions.hpp \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/crt/device_functions.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/crt/device_functions.hpp \
@@ -177,7 +176,7 @@ CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o : /home/quartzar/Documents/repos/n-bod
     /usr/local/cuda/bin/../targets/x86_64-linux/include/surface_indirect_functions.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/crt/cudacc_ext.h \
     /usr/local/cuda/bin/../targets/x86_64-linux/include/device_launch_parameters.h \
-    /usr/include/c++/12/utility \
-    /usr/include/c++/12/bits/stl_relops.h \
-    /usr/include/c++/12/initializer_list \
+    /usr/include/c++/11/utility \
+    /usr/include/c++/11/bits/stl_relops.h \
+    /usr/include/c++/11/initializer_list \
     /home/quartzar/Documents/repos/n-body-cuda/NbKernel_N2.cuh
