@@ -247,7 +247,7 @@ int main(int argc, char** argv)
         if (iteration % TIME_STEP_INTERVAL == 0)
         {
             m_hDeltaTime = calculateTimeStep(m_hPos, m_hVel, m_hForce, m_hDeltaTime, N_bodies);
-            std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
+            // std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
         }
         
         if (displayEnabled && iteration%RENDER_INTERVAL == 0)
@@ -367,10 +367,10 @@ void writeBinaryData(const std::string& filename, float current_time, float dT,
     std::ofstream file(filename, std::ios::binary | std::ios::app);
     if (file.is_open())
     {
+        file.write((char*)&N, sizeof(int));
         file.write((char*)&current_time, sizeof(float));
         file.write((char*)&dT, sizeof(float));
         file.write((char*)&softening_factor, sizeof(float));
-        file.write((char*)&N, sizeof(int));
         
         for (int orbital = 0; orbital < N; orbital++)
         {
@@ -400,14 +400,20 @@ void writeBinaryData(const std::string& filename, float current_time, float dT,
 //---------------------------------------
 float calculateCrossingTime(const float4 *vel, int N)
 {
-    float mean_v2 = 0.0f;
+    float max_v2 = 0.0f;
     for (int i = 0; i < N; i++)
     {
-        mean_v2 += (vel[i].x * vel[i].x) + (vel[i].y * vel[i].y) + (vel[i].z * vel[i].z);
+        float v2 = (vel[i].x * vel[i].x) + (vel[i].y * vel[i].y) + (vel[i].z * vel[i].z);
+        if (v2 > max_v2) {
+            max_v2 = v2;
+        }
+        
     }
-    mean_v2 /= float(N);
+    //     mean_v2 += (vel[i].x * vel[i].x) + (vel[i].y * vel[i].y) + (vel[i].z * vel[i].z);
+    // }
+    // mean_v2 /= float(N);
     
-    return R_CLUSTER / std::sqrt(mean_v2);
+    return R_CLUSTER / std::sqrt(max_v2);
 }
 //---------------------------------------
 
@@ -452,17 +458,20 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             std::lognormal_distribution<float> dist(ln_mu, ln_sigma);
     
             //  Max radius of each cluster
-            float radius = 2062.f; //10e4; // AU // 0.01 pc
-            float offset = -1.f;
-            
-            uniform_real_distribution<float> r(-radius/2.f, radius/2.f);
+            // float radius = 2062.f; //10e4; // AU // 0.01 pc
+            float3 cluster_centre = {0.f, 0.f, 0.f};
+            float3 filament_offset = {2000.f, 0.f, 0.f};
+            uniform_real_distribution<float> r(-R_CLUSTER/2.f, R_CLUSTER/2.f);
             uniform_real_distribution<float> v(-1.f, 1.f); // -.1 to .1 before scaling
             
             for (int i = 0; i < N; i++)
             {
                 // How many clusters? How many stars/cluster?
-                if ((i /*+ 1*/) % STARS_PER_CLUSTER == 0) { // generate new cluster
-                    offset = 1.f; // no idea yet
+                if (i % STARS_PER_CLUSTER == 0 && i > 0) { // generate new cluster
+                    cluster_centre.x += filament_offset.x;
+                    cluster_centre.y += filament_offset.y;
+                    cluster_centre.z += filament_offset.z;
+                    std::cout << "New cluster at: " << cluster_centre.x << ", " << cluster_centre.y << ", " << cluster_centre.z << std::endl;
                 }
                 
                 // Lognormal Initial Mass Function
@@ -470,9 +479,11 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 float mass = std::log10(std::exp(ln_mass)); // convert back to base-10 log space
                 
                 // Randomised positions based on radius
-                float px = r(gen);
-                float py = r(gen);
-                float pz = r(gen);
+                float px = r(gen) + cluster_centre.x;
+                float py = r(gen) + cluster_centre.y;
+                float pz = r(gen) + cluster_centre.z;
+                
+                // std::cout << "Star " << i << " at: " << px << ", " << py << ", " << pz << std::endl;
                 
                 // Randomised velocities
                 float vx = v(gen);
@@ -486,42 +497,81 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 totalMass += mass;
             }
             
-            // Apply centre of mass correction
-            float4 centreOfMassPos = calculateCentreOfMass(pos, N);
-            float4 centreOfMassVel = calculateCentreOfMass(vel, N);
-            for (int i = 0; i < N; i++) {
-                pos[i].x -= centreOfMassPos.x;
-                pos[i].y -= centreOfMassPos.y;
-                pos[i].z -= centreOfMassPos.z;
-                vel[i].x -= centreOfMassVel.x;
-                vel[i].y -= centreOfMassVel.y;
-                vel[i].z -= centreOfMassVel.z;
-            }
-            
-            // Scale the velocities to the virial theorem
-            float gravitationalEnergy = -calculateGravitationalEnergy(pos, N);   // W
-            float kineticEnergy = calculateKineticEnergy(vel, N);               // K  E = K + W | VIR = W/2 = K
-            
-            // float scalingFactor = sqrtf(ALPHA_VIR * gravitationalEnergy / kineticEnergy) ;
-            float virialRatio =  - kineticEnergy / gravitationalEnergy;
-            float scalingFactor = sqrtf(.5f / virialRatio);
-            
-            for (int i = 0; i < N; i++) {
-                vel[i].x *= scalingFactor;
-                vel[i].y *= scalingFactor;
-                vel[i].z *= scalingFactor;
-            }
-            float kineticEnergyScaled = calculateKineticEnergy(vel, N);
-            float verifyVirial = - kineticEnergyScaled / gravitationalEnergy;
+            // Loop through each cluster
+            for (int cluster = 0; cluster < (N / STARS_PER_CLUSTER); cluster++) {
+                std::cout << "Cluster " << cluster << " N: " << N << std::endl;
+                int start_idx = cluster * STARS_PER_CLUSTER;
+                int end_idx = start_idx + STARS_PER_CLUSTER;
     
-            std::cout << "Centre of mass [pos]: " << centreOfMassPos.x << ", " << centreOfMassPos.y << ", " << centreOfMassPos.z << std::endl;
-            std::cout << "Scaling factor: " << scalingFactor << std::endl;
-            std::cout << "Gravitational energy: " << gravitationalEnergy << std::endl;
-            std::cout << "Kinetic energy (unscaled): " << kineticEnergy << std::endl;
-            std::cout << "Kinetic energy (scaled): " << kineticEnergyScaled << std::endl;
-            std::cout << "Virial Ratio (initial): " << virialRatio << std::endl;
-            std::cout << "Virial Ratio (should == 0.5?): " << verifyVirial << std::endl;
-            
+    
+                // Create a temporary vector to store positions and velocities of the cluster
+                // float4 cluster_pos(STARS_PER_CLUSTER);
+                float4 cluster_pos[STARS_PER_CLUSTER];
+                // std::vector<float4> cluster_vel(STARS_PER_CLUSTER);
+                float4 cluster_vel[STARS_PER_CLUSTER];
+                
+                // TODO: extract this into a function
+                // Fill the temporary vector with the positions and velocities of the stars in the cluster
+                for (int i = 0; i < STARS_PER_CLUSTER; i++) {
+                    cluster_pos[i] = pos[start_idx + i];
+                    cluster_vel[i] = vel[start_idx + i];
+                    std::cout << "StarCLUSTER " << i << " at: " << cluster_pos[i].x << ", " << cluster_pos[i].y << ", " << cluster_pos[i].z << std::endl;
+                }
+    
+                // Apply centre of mass correction for the cluster
+                float4 centreOfMassPos = calculateCentreOfMass(cluster_pos, STARS_PER_CLUSTER);
+                float4 centreOfMassVel = calculateCentreOfMass(cluster_vel, STARS_PER_CLUSTER);
+                for (int i = start_idx; i < end_idx; i++) {
+                    std::cout << "StarCOM " << i << " at: " << pos[i].x << ", " << pos[i].y << ", " << pos[i].z << std::endl;
+                    pos[i].x -= centreOfMassPos.x;
+                    pos[i].y -= centreOfMassPos.y;
+                    pos[i].z -= centreOfMassPos.z;
+                    vel[i].x -= centreOfMassVel.x;
+                    vel[i].y -= centreOfMassVel.y;
+                    vel[i].z -= centreOfMassVel.z;
+                    // std::cout << "Star " << i << " at: " << pos[i].x << ", " << pos[i].y << ", " << pos[i].z << std::endl;
+                    // pos[i].x += filament_offset.x * float(cluster);
+                    // pos[i].y += filament_offset.y * float(cluster);
+                    // pos[i].z += filament_offset.z * float(cluster);
+                    std::cout << "StarCOM " << i << " at: " << pos[i].x << ", " << pos[i].y << ", " << pos[i].z << std::endl;
+                }
+                
+                for (int i = 0; i < STARS_PER_CLUSTER; i++) {
+                    cluster_pos[i] = pos[start_idx + i];
+                    cluster_vel[i] = vel[start_idx + i];
+                }
+    
+                // Scale the velocities to the virial theorem
+                float gravitationalEnergy = -calculateGravitationalEnergy(cluster_pos, STARS_PER_CLUSTER); // W = -U
+                float kineticEnergy = calculateKineticEnergy(cluster_vel, STARS_PER_CLUSTER);               // K  E = K + W | VIR = W/2 = K
+    
+                // float scalingFactor = sqrtf(ALPHA_VIR * gravitationalEnergy / kineticEnergy) ;
+                float virialRatio = -kineticEnergy / gravitationalEnergy;
+                float scalingFactor = sqrtf(.5f / virialRatio);
+    
+                for (int i = start_idx; i < end_idx; i++) {
+                    vel[i].x *= scalingFactor;
+                    vel[i].y *= scalingFactor;
+                    vel[i].z *= scalingFactor;
+                }
+    
+                for (int i = 0; i < STARS_PER_CLUSTER; i++) {
+                    cluster_pos[i] = pos[start_idx + i];
+                    cluster_vel[i] = vel[start_idx + i];
+                }
+                
+                float kineticEnergyScaled = calculateKineticEnergy(cluster_vel, STARS_PER_CLUSTER);
+                float verifyVirial = -kineticEnergyScaled / gravitationalEnergy;
+    
+                // std::cout << "Centre of mass [pos]: " << centreOfMassPos.x << ", " << centreOfMassPos.y << ", "
+                //           << centreOfMassPos.z << std::endl;
+                // std::cout << "Scaling factor: " << scalingFactor << std::endl;
+                // std::cout << "Gravitational energy: " << gravitationalEnergy << std::endl;
+                // std::cout << "Kinetic energy (unscaled): " << kineticEnergy << std::endl;
+                // std::cout << "Kinetic energy (scaled): " << kineticEnergyScaled << std::endl;
+                // std::cout << "Virial Ratio (initial): " << virialRatio << std::endl;
+                // std::cout << "Virial Ratio (should == 0.5?): " << verifyVirial << std::endl;
+            }
         }
             break;
         case NORB_CONFIG_BASIC:
@@ -1010,7 +1060,7 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
 //---------------------------------------
 float4 calculateCentreOfMass(float4* body, int N)
 {
-    float4 centreOfMass = make_float4(.0f, 0.0f, 0.0f, 0.0f);
+    float4 centreOfMass = make_float4(0.0f, 0.0f, 0.0f, 0.0f);
     for (int i = 0; i < N; i++)
     {
         centreOfMass.x += body[i].x * body[i].w;
