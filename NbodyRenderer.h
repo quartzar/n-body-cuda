@@ -21,7 +21,7 @@ public:
         SPRITES
     };
     
-    void display(RenderMode mode, float zoom, float xRot, float yRot, float zRot,
+    void display(RenderMode mode, int nBodies, float zoom, float xRot, float yRot, float zRot,
                  float xTrans, float yTrans, float zTrans, bool trailMode, bool colourMode);
     
     
@@ -29,7 +29,7 @@ protected: // METHODS
     void _initGL();
     void _createTexture(int resolution);
     void _drawSprite(float r, float g, float b, float a);
-    void _drawOrbitals(bool color);
+    void _drawOrbitals(bool color, int N);
     
     // struct Colour { float r, g, b; };
     

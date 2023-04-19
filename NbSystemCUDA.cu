@@ -270,7 +270,7 @@ int main(int argc, char** argv)
             // Render
             renderer->setPositions(reinterpret_cast<float *>(m_hPos));
             renderer->setVelocities(reinterpret_cast<float *>(m_hVel));
-            renderer->display(renderMode, zoom, xRot, yRot, zRot, xTrans, yTrans, zTrans, trailMode, colourMode);
+            renderer->display(renderMode, N_bodies, zoom, xRot, yRot, zRot, xTrans, yTrans, zTrans, trailMode, colourMode);
     
             glfwSwapBuffers(window);
             // glutSwapBuffers();
@@ -460,28 +460,28 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
             //  Max radius of each cluster
             // float radius = 2062.f; //10e4; // AU // 0.01 pc
             float3 cluster_centre = {0.f, 0.f, 0.f};
-            float3 filament_offset = {2000.f, 0.f, 0.f};
+            float3 filament_offset = {R_CLUSTER * 2, 0.f, 0.f};
             uniform_real_distribution<float> r(-R_CLUSTER/2.f, R_CLUSTER/2.f);
             uniform_real_distribution<float> v(-1.f, 1.f); // -.1 to .1 before scaling
             
             for (int i = 0; i < N; i++)
             {
                 // How many clusters? How many stars/cluster?
-                if (i % STARS_PER_CLUSTER == 0 && i > 0) { // generate new cluster
-                    cluster_centre.x += filament_offset.x;
-                    cluster_centre.y += filament_offset.y;
-                    cluster_centre.z += filament_offset.z;
-                    std::cout << "New cluster at: " << cluster_centre.x << ", " << cluster_centre.y << ", " << cluster_centre.z << std::endl;
-                }
+                // if (i % STARS_PER_CLUSTER == 0 && i > 0) { // generate new cluster
+                //     cluster_centre.x += filament_offset.x;
+                //     cluster_centre.y += filament_offset.y;
+                //     cluster_centre.z += filament_offset.z;
+                //     std::cout << "New cluster at: " << cluster_centre.x << ", " << cluster_centre.y << ", " << cluster_centre.z << std::endl;
+                // }
                 
                 // Lognormal Initial Mass Function
                 float ln_mass = dist(rng);
                 float mass = std::log10(std::exp(ln_mass)); // convert back to base-10 log space
                 
                 // Randomised positions based on radius
-                float px = r(gen) + cluster_centre.x;
-                float py = r(gen) + cluster_centre.y;
-                float pz = r(gen) + cluster_centre.z;
+                float px = r(gen);
+                float py = r(gen);
+                float pz = r(gen);
                 
                 // std::cout << "Star " << i << " at: " << px << ", " << py << ", " << pz << std::endl;
                 
@@ -515,14 +515,14 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 for (int i = 0; i < STARS_PER_CLUSTER; i++) {
                     cluster_pos[i] = pos[start_idx + i];
                     cluster_vel[i] = vel[start_idx + i];
-                    std::cout << "StarCLUSTER " << i << " at: " << cluster_pos[i].x << ", " << cluster_pos[i].y << ", " << cluster_pos[i].z << std::endl;
+                    // std::cout << "StarCLUSTER " << i << " at: " << cluster_pos[i].x << ", " << cluster_pos[i].y << ", " << cluster_pos[i].z << std::endl;
                 }
     
                 // Apply centre of mass correction for the cluster
                 float4 centreOfMassPos = calculateCentreOfMass(cluster_pos, STARS_PER_CLUSTER);
                 float4 centreOfMassVel = calculateCentreOfMass(cluster_vel, STARS_PER_CLUSTER);
                 for (int i = start_idx; i < end_idx; i++) {
-                    std::cout << "StarCOM " << i << " at: " << pos[i].x << ", " << pos[i].y << ", " << pos[i].z << std::endl;
+                    // std::cout << "StarCOM " << i << " at: " << pos[i].x << ", " << pos[i].y << ", " << pos[i].z << std::endl;
                     pos[i].x -= centreOfMassPos.x;
                     pos[i].y -= centreOfMassPos.y;
                     pos[i].z -= centreOfMassPos.z;
@@ -530,10 +530,10 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                     vel[i].y -= centreOfMassVel.y;
                     vel[i].z -= centreOfMassVel.z;
                     // std::cout << "Star " << i << " at: " << pos[i].x << ", " << pos[i].y << ", " << pos[i].z << std::endl;
-                    // pos[i].x += filament_offset.x * float(cluster);
-                    // pos[i].y += filament_offset.y * float(cluster);
-                    // pos[i].z += filament_offset.z * float(cluster);
-                    std::cout << "StarCOM " << i << " at: " << pos[i].x << ", " << pos[i].y << ", " << pos[i].z << std::endl;
+                    pos[i].x += filament_offset.x * float(cluster);
+                    pos[i].y += filament_offset.y * float(cluster);
+                    pos[i].z += filament_offset.z * float(cluster);
+                    // std::cout << "StarCOM " << i << " at: " << pos[i].x << ", " << pos[i].y << ", " << pos[i].z << std::endl;
                 }
                 
                 for (int i = 0; i < STARS_PER_CLUSTER; i++) {

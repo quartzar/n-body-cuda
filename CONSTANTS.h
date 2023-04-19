@@ -13,7 +13,7 @@
 // Simulation parameters
 #define SNAPSHOT_INTERVAL 10000 // iterations between each snapshot
 #define SEED 5 // seed for IC generator
-#define N_B_MULTIPLIER 100 // for thread calculation -> 960/12 = 80 [SM's on RTX 3080ti]
+#define N_B_MULTIPLIER 1 // for thread calculation -> 960/12 = 80 [SM's on RTX 3080ti]
 #define N_BODIES (10 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
 #define TIME_STEP 1 // time between integration steps in days // 0.003472222222222223 is 5 minutes
 #define ITERATIONS 1000000 // iterations before finishing simulation
@@ -63,7 +63,7 @@
 // OpenGL parameters
 #define FOV 90 // 90 normal // 2 solar system
 #define V_FAR 500 // 50000 normal // 50 solar system
-#define INIT_ZOOM 500 // 5000 normal // 100 for solar system
+#define INIT_ZOOM 1000 // 5000 normal // 100 for solar system
 
 // Camera controls
 #define ZOOM_SCALE 0.01 // how fast to zoom
