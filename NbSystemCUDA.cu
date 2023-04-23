@@ -43,7 +43,7 @@ NBodyICConfig sysConfig = NORB_SMALLN_CLUSTER;//NORB_CONFIG_SOLAR;
 NbodyIntegrator integrator = LEAPFROG_VERLET;
 NbodyRenderer *renderer = nullptr;
 // booleans =>
-bool displayEnabled = true;
+bool displayEnabled = false;
 bool outputBinary = true;
 bool glxyCollision = false;
 bool colourMode = false;
@@ -219,8 +219,10 @@ int main(int argc, char** argv)
     // MAIN UPDATE LOOP
     while (current_time < time_end)
     {
-        if (iteration  % 10000 == 0)
+        if (iteration  % 10000 == 0) {
             std::cout << "\nSTEP =>> " << iteration << std::flush;
+            std::cout << "\nTime: " << current_time << " days || " << current_time/365.25f << " years" << std::flush;
+        }
     
         // Write a snapshot every snap_rate days
         if (outputBinary && time_since_snap >= snap_rate)
@@ -562,15 +564,22 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N)
                 
                 float kineticEnergyScaled = calculateKineticEnergy(cluster_vel, STARS_PER_CLUSTER);
                 float verifyVirial = -kineticEnergyScaled / gravitationalEnergy;
+                
+                // temp cold collapse
+                // for (int i = 0; i < N; i++) {
+                //     vel[i].x = 0.f;
+                //     vel[i].y = 0.f;
+                //     vel[i].z = 0.f;
+                // }
     
-                // std::cout << "Centre of mass [pos]: " << centreOfMassPos.x << ", " << centreOfMassPos.y << ", "
-                //           << centreOfMassPos.z << std::endl;
-                // std::cout << "Scaling factor: " << scalingFactor << std::endl;
-                // std::cout << "Gravitational energy: " << gravitationalEnergy << std::endl;
-                // std::cout << "Kinetic energy (unscaled): " << kineticEnergy << std::endl;
-                // std::cout << "Kinetic energy (scaled): " << kineticEnergyScaled << std::endl;
-                // std::cout << "Virial Ratio (initial): " << virialRatio << std::endl;
-                // std::cout << "Virial Ratio (should == 0.5?): " << verifyVirial << std::endl;
+                std::cout << "Centre of mass [pos]: " << centreOfMassPos.x << ", " << centreOfMassPos.y << ", "
+                          << centreOfMassPos.z << std::endl;
+                std::cout << "Scaling factor: " << scalingFactor << std::endl;
+                std::cout << "Gravitational energy: " << gravitationalEnergy << std::endl;
+                std::cout << "Kinetic energy (unscaled): " << kineticEnergy << std::endl;
+                std::cout << "Kinetic energy (scaled): " << kineticEnergyScaled << std::endl;
+                std::cout << "Virial Ratio (initial): " << virialRatio << std::endl;
+                std::cout << "Virial Ratio (should == 0.5?): " << verifyVirial << std::endl;
             }
         }
             break;

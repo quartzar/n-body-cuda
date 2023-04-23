@@ -22,17 +22,8 @@
   <component name="ChangeListManager">
     <list default="true" id="d43b48db-8551-480f-abfc-10ad2719c094" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.~abf73899b868ee71-ABF73899B868EE71!261360-150bbf.insyncdl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.~abf73899b868ee71-ABF73899B868EE71!261360-20e0c6.insyncdl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.~abf73899b868ee71-ABF73899B868EE71!261360-a8989d.insyncdl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.~abf73899b868ee71-ABF73899B868EE71!261360-bed9fa.insyncdl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CONSTANTS.h" beforeDir="false" afterPath="$PROJECT_DIR$/CONSTANTS.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cu" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbodyRenderer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/NbodyRenderer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbodyRenderer.h" beforeDir="false" afterPath="$PROJECT_DIR$/NbodyRenderer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PYnalaysis.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/PYnalaysis.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" afterDir="false" />
@@ -143,6 +134,10 @@
       <workItem from="1681722248692" duration="51000" />
       <workItem from="1681722308023" duration="3024000" />
       <workItem from="1681829313499" duration="2349000" />
+      <workItem from="1681916630442" duration="1462000" />
+      <workItem from="1682084257501" duration="637000" />
+      <workItem from="1682090486656" duration="1994000" />
+      <workItem from="1682263556106" duration="3151000" />
     </task>
     <servers />
   </component>
