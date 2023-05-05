@@ -107,9 +107,9 @@ int main(int argc, char** argv)
     zoom = 1;
     ////////////////////////////////
     std::string simulation_base;
-    uint mass_seed;
-    uint position_seed;
-    uint velocity_seed;
+    uint32_t mass_seed;
+    uint32_t position_seed;
+    uint32_t velocity_seed;
     int N_bodies;
     float softening;
     float time_start;
@@ -311,30 +311,34 @@ int main(int argc, char** argv)
 // Read in parameters from config file
 //---------------------------------------
 void readParameters(const std::string &filename, std::string &simulation_base,
-                    uint &mass_seed, uint &position_seed, uint &velocity_seed, int &N_bodies, float &softening,
+                    uint32_t &mass_seed, uint32_t &position_seed, uint32_t &velocity_seed, int &N_bodies, float &softening,
                     float &time_start, float &time_end, float &snap_rate, float &initial_dt,
                     bool &cross_time, float &ETA_cross, float &ETA_acc, float &ETA_vel)
 {
     std::ifstream file(filename);
     
+    // Random seeds for mass, position and velocity if not specified
+    std::random_device rd_mass;
+    std::random_device rd_pos;
+    std::random_device rd_vel;
+    
     if (file.is_open())
     {
         std::string line;
         
-        while (std::getline(file, line))
-        {
+        while (std::getline(file, line)) {
             std::string value;
             std::getline(file, value);
             
             if (line == "SIMULATION_BASE")
                 simulation_base = value;
             else if (line == "MASS_SEED")
-                mass_seed = std::stoi(value);
+                mass_seed = value.empty() ? rd_mass() : std::stoi(value);
             else if (line == "POSITION_SEED")
-                position_seed = std::stoi(value);
+                position_seed = value.empty() ? rd_pos() : std::stoi(value);
             else if (line == "VELOCITY_SEED")
-                velocity_seed = std::stoi(value);
-            else if (line == "N-BODIES")
+                velocity_seed = value.empty() ? rd_vel() : std::stoi(value);
+            if (line == "N-BODIES")
                 N_bodies = std::stoi(value);
             else if (line == "SOFTENING")
                 softening = std::stof(value);
@@ -346,16 +350,15 @@ void readParameters(const std::string &filename, std::string &simulation_base,
                 snap_rate = std::stof(value);
             else if (line == "INITIAL_DT")
                 initial_dt = std::stof(value);
-            else if (line == "CROSS_TIME")
-            {
+            else if (line == "CROSS_TIME") {
                 if (value == "true")
                     cross_time = true;
                 else if (value == "false")
                     cross_time = false;
                 else
-                    std::cerr << "Invalid value for CROSS_TIME: " << value << ". Use 'true' or 'false'." << std::endl;
-            }
-            else if (line == "ETA_CROSS")
+                    std::cerr << "Invalid value for CROSS_TIME: " << value << ". Use 'true' or 'false'."
+                              << std::endl;
+            } else if (line == "ETA_CROSS")
                 ETA_cross = std::stof(value);
             else if (line == "ETA_ACC")
                 ETA_acc = std::stof(value);
@@ -370,6 +373,21 @@ void readParameters(const std::string &filename, std::string &simulation_base,
     {
         std::cerr << "Error opening file: " << filename << std::endl;
     }
+    // print parameters to console
+    std::cout << "\nSIMULATION_BASE = " << simulation_base
+              << "\nMASS_SEED = " << mass_seed
+              << "\nPOSITION_SEED = " << position_seed
+              << "\nVELOCITY_SEED = " << velocity_seed
+              << "\nN-BODIES = " << N_bodies
+              << "\nSOFTENING = " << softening
+              << "\nTIME_START = " << time_start
+              << "\nTIME_END = " << time_end
+              << "\nSNAP_RATE = " << snap_rate
+              << "\nINITIAL_DT = " << initial_dt
+              << "\nCROSS_TIME = " << cross_time
+              << "\nETA_CROSS = " << ETA_cross
+              << "\nETA_ACC = " << ETA_acc
+              << "\nETA_VEL = " << ETA_vel << std::endl;
 }
 //---------------------------------------
 
@@ -462,12 +480,20 @@ std::string getCurrentTime()
 // IC generator
 //---------------------------------------
 void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N,
-                       uint mass_seed, uint position_seed, uint velocity_seed)
+                       uint32_t mass_seed, uint32_t position_seed, uint32_t velocity_seed)
 {
     using std::uniform_real_distribution;
-    std::default_random_engine rn_mass(mass_seed); // NOLINT(cert-msc51-cpp)
-    std::default_random_engine rn_pos(position_seed); // NOLINT(cert-msc51-cpp)
-    std::default_random_engine rn_vel(velocity_seed); // NOLINT(cert-msc51-cpp)
+    // std::default_random_engine rn_mass(mass_seed); // NOLINT(cert-msc51-cpp)
+    // std::default_random_engine rn_pos(position_seed); // NOLINT(cert-msc51-cpp)
+    // std::default_random_engine rn_vel(velocity_seed); // NOLINT(cert-msc51-cpp)
+    //
+    // std::random_device rd_mass;
+    // std::random_device rd_pos;
+    // std::random_device rd_vel;
+    std::mt19937_64 rng_mass(mass_seed); // mersenne-twister 19937 generator with 64-bit output
+    std::mt19937_64 rng_pos(position_seed);
+    std::mt19937_64 rng_vel(velocity_seed);
+    // std::cout << "seed: " << &rd_mass << "  " << &rd_pos << "  " << &rd_vel << std::endl;
     float totalMass = 0.0;
     
     switch(config) {
@@ -481,13 +507,9 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N,
             float ln_sigma = sigma * std::log(10.f);
     
             // Generate the lognormal distribution random masses in natural log space
-            // std::random_device rd;
-            // std::mt19937_64 rng(rd()); // mersenne-twister 19937 generator with 64-bit output
             std::lognormal_distribution<float> dist(ln_mu, ln_sigma);
     
             //  Max radius of each cluster
-            // float radius = 2062.f; //10e4; // AU // 0.01 pc
-            // float3 cluster_centre = {0.f, 0.f, 0.f};
             float3 filament_offset = {FILAMENT_OFFSET_X, FILAMENT_OFFSET_Y, FILAMENT_OFFSET_Z};
             uniform_real_distribution<float> r(-R_CLUSTER/2.f, R_CLUSTER/2.f);
             uniform_real_distribution<float> v(-1.f, 1.f); // -.1 to .1 before scaling
@@ -503,20 +525,20 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N,
                 // }
                 
                 // Lognormal Initial Mass Function
-                float ln_mass = dist(rn_mass);
+                float ln_mass = dist(rng_mass);
                 float mass = std::log10(std::exp(ln_mass)); // convert back to base-10 log space
                 
                 // Randomised positions based on radius
-                float px = r(rn_pos);
-                float py = r(rn_pos);
-                float pz = r(rn_pos);
+                float px = r(rng_pos);
+                float py = r(rng_pos);
+                float pz = r(rng_pos);
                 
                 // std::cout << "Star " << i << " at: " << px << ", " << py << ", " << pz << std::endl;
                 
                 // Randomised velocities
-                float vx = v(rn_vel);
-                float vy = v(rn_vel);
-                float vz = v(rn_vel);
+                float vx = v(rng_vel);
+                float vy = v(rng_vel);
+                float vz = v(rng_vel);
                 
                 // Assign pos, vel, mass
                 pos[i] = make_float4(px, py, pz, mass);
@@ -609,441 +631,6 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N,
             }
         }
             break;
-        // case NORB_CONFIG_BASIC:
-        // {
-        //     uniform_real_distribution<float> randXPos(-SYS_WIDTH / 2.0, SYS_WIDTH / 2.0);
-        //     uniform_real_distribution<float> randYPos(-SYS_HEIGHT / 2.0, SYS_HEIGHT / 2.0);
-        //     uniform_real_distribution<float> randVel(-INIT_VEL, INIT_VEL);
-        //     uniform_real_distribution<float> randHeight(-SYSTEM_THICKNESS, SYSTEM_THICKNESS);
-        //     uniform_real_distribution<float> randMass(INIT_M_LOWER, INIT_M_HIGHER);
-        //     // returns -1 to 3, so multiply by max mass/3 and clamp between min and max mass
-        //     std::normal_distribution<float> normalDistMass(1, 0.5);
-        //
-        //
-        //     // ASSIGNMENT LOOP
-        //     for (int i = 0; i < N_BODIES; i++)
-        //     {
-        //         // getting and clamping normal distribution of mass
-        //         const float mass = normalDistMass(gen) * ((float)INIT_M_HIGHER / 3.f);
-        //         float massClamped;
-        //         if (mass > 1.f * (float)INIT_M_HIGHER)
-        //         {
-        //             std::cout << "\nbig boi";
-        //             massClamped = 100000.f;
-        //         }
-        //         else
-        //             massClamped = std::clamp(mass, (float)INIT_M_LOWER, (float)INIT_M_HIGHER);
-        //
-        //         // random position assignment
-        //         pos[i].x = randXPos(gen);
-        //         pos[i].y = randYPos(gen);
-        //         pos[i].z = randHeight(gen);
-        //         pos[i].w = massClamped;
-        //
-        //         // random velocity assignment
-        //         float r = sqrtf(pos[i].x * pos[i].x + pos[i].y * pos[i].y + pos[i].z * pos[i].z);
-        //         vel[i].x = randVel(gen) * (r / pos[i].x);//0.001f;
-        //         vel[i].y = randVel(gen) * (r / pos[i].y);//0.001f;
-        //         vel[i].z = 0.0f;
-        //         vel[i].w = pos[i].w;
-        //
-        //         totalMass += pos[i].w;
-        //     }
-        // }
-        //     break;
-        // case NORB_CONFIG_BASIC_DISK:
-        // {
-        //     std::cout << "basic disk model to be implemented";
-        //     // also to be implemented
-        // }
-        //     break;
-        // case NORB_CONFIG_SHELL:
-        // {
-        //     uniform_real_distribution<float> randF(0.0f, (float) RAND_MAX);
-        //     uniform_real_distribution<float> randMass(INIT_M_LOWER, INIT_M_HIGHER);
-        //
-        //     float scale = SYSTEM_SIZE;
-        //     float vScale = scale * (float) VEL_SCALE / (float) KMS_TO_AUD;
-        //     float inner = 2.5f * scale;
-        //     float outer = 4.0f * scale;
-        //
-        //     pos[0].x = 0.0;
-        //     pos[0].y = 0.0;
-        //     pos[0].z = 0.0;
-        //     pos[0].w = CENTRE_STAR_M;
-        //
-        //     vel[0].x = 0.0;
-        //     vel[0].y = 0.0;
-        //     vel[0].z = 0.0;
-        //     vel[0].w = CENTRE_STAR_M;
-        //
-        //
-        //     int i = 1;
-        //     while (i < N_BODIES) {
-        //         float x, y, z;
-        //         x = randF(gen) / (float) RAND_MAX * 2.0f - 1.0f;
-        //         y = randF(gen) / (float) RAND_MAX * 2.0f - 1.0f;
-        //         z = randF(gen) / (float) RAND_MAX * 2.0f - 1.0f;
-        //
-        //         float3 point = {x, y, z};
-        //         float len = normalise(point);
-        //         if (len > 1)
-        //             continue;
-        //
-        //         pos[i].x = point.x * (inner + (outer - inner) * randF(gen) / (float) RAND_MAX);
-        //         pos[i].y = point.x * (inner + (outer - inner) * randF(gen) / (float) RAND_MAX);
-        //         pos[i].z = point.x * (inner + (outer - inner) * randF(gen) / (float) RAND_MAX);
-        //         pos[i].w = randMass(gen);
-        //
-        //
-        //         x = 0.0f;
-        //         y = 0.0f;
-        //         z = 1.0f;
-        //
-        //         float3 axis = {x, y, z};
-        //         normalise(axis);
-        //
-        //         if (1 - dot(point, axis) < 1e-6) {
-        //             axis.x = point.y;
-        //             axis.y = point.x;
-        //             normalise(axis);
-        //         }
-        //         float3 vv = {pos[i].x, pos[i].y, pos[i].z};
-        //         vv = cross(vv, axis);
-        //         vel[i].x = vv.x * vScale;
-        //         vel[i].y = vv.y * vScale;
-        //         vel[i].z = vv.z * vScale;
-        //         vel[i].w = pos[i].w;
-        //
-        //         i++;
-        //     }
-        // }
-        //     break;
-        // case NORB_CONFIG_EXPAND:
-        // {
-        //     uniform_real_distribution<float> randF(0.0f, (float) RAND_MAX);
-        //     uniform_real_distribution<float> randMass(INIT_M_LOWER, INIT_M_HIGHER);
-        //
-        //     float scale = SYSTEM_SIZE * std::max(1.0f, (float)N / (1024.f));
-        //     float vScale = scale * (float) VEL_SCALE / (float) KMS_TO_AUD;
-        //
-        //     for (int i = 0; i < N;)
-        //     {
-        //         float3 point;
-        //         point.x = randF(gen) / (float) RAND_MAX * 2.0f - 1.0f;
-        //         point.y = randF(gen) / (float) RAND_MAX * 2.0f - 1.0f;
-        //         point.z = randF(gen) / (float) RAND_MAX * 2.0f - 1.0f;
-        //
-        //         float lengthSq = dot(point, point);
-        //         if (lengthSq > 1)
-        //             continue;
-        //
-        //         pos[i].x = point.x * scale;
-        //         pos[i].y = point.y * scale;
-        //         pos[i].z = point.z * scale;
-        //         pos[i].w = randMass(gen);
-        //         vel[i].x = point.x * vScale; //* float(PI)/180 * lengthSq;
-        //         vel[i].y = point.y * vScale;
-        //         vel[i].z = point.z * vScale;
-        //         vel[i].w = pos[i].w;
-        //
-        //         i++;
-        //     }
-        //
-        // }
-        //     break;
-        // case NORB_CONFIG_ADV_DISK:
-        // {
-        //     // uniform_real_distribution<float> randF(0.0f, (float) RAND_MAX);
-        //     // uniform_real_distribution<float> randMass(0.0, 5);
-        //     uniform_real_distribution<float> randMassInner(ADVD_M_INNER_MIN, ADVD_M_INNER_MAX);
-        //     // uniform_real_distribution<float> randMassOuter(INIT_M_LOWER, INIT_M_HIGHER);
-        //
-        //     pos[0].x = 0.0;
-        //     pos[0].y = 0.0;
-        //     pos[0].z = 0.0;
-        //     pos[0].w = ADVD_CENTRE_M;
-        //
-        //     vel[0].x = 0.0;
-        //     vel[0].y = 0.0;
-        //     vel[0].z = 0.0;
-        //     vel[0].w = ADVD_CENTRE_M;
-        //
-        //     float c      = ADVD_C_INNER; // flatness
-        //     float mass   = randMassInner(gen);
-        //     // float mass = randMassInner(gen);
-        //     float radius = ADVD_R_INNER;
-        //
-        //     int start;
-        //     if (glxyCollision)
-        //     {
-        //         pos[1].x = 1000.0;
-        //         pos[1].y = 500.0;
-        //         pos[1].z = -10000.0;
-        //         pos[1].w = ADVD_G2_MASS;
-        //
-        //         vel[1].x = -0.1;
-        //         vel[1].y = 0.0;
-        //         vel[1].z = 1.0;
-        //         vel[1].w = ADVD_G2_MASS;
-        //         start = 2;
-        //     }
-        //     else
-        //         start = 1;
-        //     for (int i = start;i < N; i++)
-        //     {
-        //         if (i == N - ADVD_OUTER_N) {
-        //             c = ADVD_C_OUTER;
-        //             mass = ADVD_M_OUTER;
-        //             // mass = randMassOuter(gen) * 100.0f;
-        //             radius = ADVD_R_OUTER;
-        //         }
-        //
-        //         float3 position;
-        //         while (true)
-        //         {
-        //             position.x = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
-        //             position.y = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
-        //
-        //             if (position.y >= -1.0f * sqrtf(1.0f - powf(position.x, 2.0f))
-        //                 && position.y <= sqrtf(1.0f - powf(position.x, 2.0f)))
-        //                 break;
-        //         }
-        //
-        //         float zPosMax = sqrtf(c * (1.0f - powf(position.x, 2.0f)
-        //                 -powf(position.y, 2.0f)));
-        //         float zPosMin = -1.0f * zPosMax;
-        //         float zPosRand = rand() / (float) RAND_MAX;
-        //         position.z = (zPosMax - zPosMin) * zPosRand + zPosMin;
-        //
-        //         position.x *= radius;
-        //         position.y *= radius;
-        //         position.z *= radius;
-        //
-        //         float m = position.y / position.x;
-        //         m = -1.0f / m;
-        //         float b = position.y - position.x * m;
-        //
-        //         float3 velocity;
-        //         // float vel_m = sqrtf(((float)BIG_G * (1e6f + mass * 1.2e-6f)) /
-        //         //                     sqrtf(position.x*position.x + position.y*position.y + position.z*position.z));
-        //         float vel_m = sqrtf(((float)BIG_G * (ADVD_CENTRE_M + mass * 1.2e2f)) /
-        //                             sqrtf(position.x * position.x + position.y * position.y + position.z * position.z));
-        //
-        //         if (position.y > 0)
-        //         {
-        //             velocity = {-1.0f * (radius / 2.0f), (position.x - radius / 2.0f) * m + b - position.y, 0};
-        //             vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
-        //             velocity.x *= vel_m;
-        //             velocity.y *= vel_m;
-        //             velocity.z *= vel_m;
-        //
-        //         }
-        //         else
-        //         {
-        //             velocity = {(radius / 2.0f), (position.x + radius / 2.0f) * m + b - position.y, 0};
-        //             vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
-        //             velocity.x *= vel_m;
-        //             velocity.y *= vel_m;
-        //             velocity.z *= vel_m;
-        //         }
-        //
-        //         float pScale = 1.0f;
-        //         pos[i].x = position.x * pScale;
-        //         pos[i].y = position.y * pScale;
-        //         pos[i].z = position.z * pScale;
-        //         pos[i].w = mass;
-        //
-        //         vel[i].x = velocity.x;
-        //         vel[i].y = velocity.y;
-        //         vel[i].z = velocity.z;
-        //         vel[i].w = mass;
-        //
-        //         // std::cout << "\n " << velocity[i].x << " " << velocity[i].y << " " << velocity[i].z;
-        //
-        //     }
-        // }
-        //     break;
-        // case NORB_CONFIG_ADV_DISK_COLLSION:
-        // {
-        //     // hi
-        //     uniform_real_distribution<float> randMassInner(ADVD_M_INNER_MIN, ADVD_M_INNER_MAX);
-        //
-        //     pos[0].x = 0.0;
-        //     pos[0].y = 0.0;
-        //     pos[0].z = 0.0;
-        //     pos[0].w = ADVD_CENTRE_M;
-        //
-        //     vel[0].x = 0.0;
-        //     vel[0].y = 0.0;
-        //     vel[0].z = 0.0;
-        //     vel[0].w = ADVD_CENTRE_M;
-        //
-        //     pos[N / 2].x = ADVD_G2_X;
-        //     pos[N / 2].y = ADVD_G2_Y;
-        //     pos[N / 2].z = ADVD_G2_Z;
-        //     pos[N / 2].w = ADVD_CENTRE_M;
-        //
-        //     vel[N / 2].x = -1.f * ADVD_G2_VX;
-        //     vel[N / 2].y = -1.f * ADVD_G2_VY;
-        //     vel[N / 2].z = -1.f * ADVD_G2_VZ;
-        //     vel[N / 2].w = ADVD_CENTRE_M;
-        //
-        //     float c      = ADVD_C_INNER; // flatness
-        //     float mass;//   = randMassInner(gen);
-        //     // float mass = randMassInner(gen);
-        //     float radius = ADVD_R_INNER;
-        //
-        //     int start = 1;
-        //     for (int i = start;i < N/2; i++)
-        //     {
-        //         mass = randMassInner(gen);
-        //         if (i == N/2 - ADVD_OUTER_N) {
-        //             c = ADVD_C_OUTER;
-        //             mass = ADVD_M_OUTER;
-        //             // mass = randMassOuter(gen) * 100.0f;
-        //             radius = ADVD_R_OUTER;
-        //         }
-        //
-        //         float3 position;
-        //         while (true)
-        //         {
-        //             position.x = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
-        //             position.y = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
-        //
-        //             if (position.y >= -1.0f * sqrtf(1.0f - powf(position.x, 2.0f))
-        //                 && position.y <= sqrtf(1.0f - powf(position.x, 2.0f)))
-        //                 break;
-        //         }
-        //
-        //         float zPosMax = sqrtf(c * (1.0f - powf(position.x, 2.0f)
-        //                                    -powf(position.y, 2.0f)));
-        //         float zPosMin = -1.0f * zPosMax;
-        //         float zPosRand = rand() / (float) RAND_MAX;
-        //         position.z = (zPosMax - zPosMin) * zPosRand + zPosMin;
-        //
-        //         position.x *= radius;
-        //         position.y *= radius;
-        //         position.z *= radius;
-        //
-        //         float m = position.y / position.x;
-        //         m = -1.0f / m;
-        //         float b = position.y - position.x * m;
-        //
-        //         float3 velocity;
-        //         // float vel_m = sqrtf(((float)BIG_G * (1e6f + mass * 1.2e-6f)) /
-        //         //                     sqrtf(position.x*position.x + position.y*position.y + position.z*position.z));
-        //         float vel_m = sqrtf(((float)BIG_G * (ADVD_CENTRE_M + mass * 1.2e2f)) /
-        //                             sqrtf(position.x * position.x + position.y * position.y + position.z * position.z));
-        //
-        //         if (position.y > 0)
-        //         {
-        //             velocity = {-1.0f * (radius / 2.0f), (position.x - radius / 2.0f) * m + b - position.y, 0};
-        //             vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
-        //             velocity.x *= vel_m;
-        //             velocity.y *= vel_m;
-        //             velocity.z *= vel_m;
-        //
-        //         }
-        //         else
-        //         {
-        //             velocity = {(radius / 2.0f), (position.x + radius / 2.0f) * m + b - position.y, 0};
-        //             vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
-        //             velocity.x *= vel_m;
-        //             velocity.y *= vel_m;
-        //             velocity.z *= vel_m;
-        //         }
-        //
-        //         float pScale = 1.0f;
-        //         pos[i].x = position.x * pScale;
-        //         pos[i].y = position.y * pScale;
-        //         pos[i].z = position.z * pScale;
-        //         pos[i].w = mass;
-        //
-        //         vel[i].x = velocity.x;
-        //         vel[i].y = velocity.y;
-        //         vel[i].z = velocity.z;
-        //         vel[i].w = mass;
-        //         }
-        //
-        //     c      = ADVD_C_INNER; // flatness
-        //     mass   = randMassInner(gen);
-        //     // float mass = randMassInner(gen);
-        //     radius = ADVD_R_INNER;
-        //     start = N/2 + 1;
-        //     for (int i = start;i < N; i++)
-        //     {
-        //         mass = randMassInner(gen);
-        //         if (i == N - ADVD_OUTER_N) {
-        //             c = ADVD_C_OUTER;
-        //             mass = ADVD_M_OUTER;
-        //             // mass = randMassOuter(gen) * 100.0f;
-        //             radius = ADVD_R_OUTER;
-        //         }
-        //
-        //         float3 position;
-        //         while (true)
-        //         {
-        //             position.x = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
-        //             position.y = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
-        //
-        //             if (position.y >= -1.0f * sqrtf(1.0f - powf(position.x, 2.0f))
-        //                 && position.y <= sqrtf(1.0f - powf(position.x, 2.0f)))
-        //                 break;
-        //         }
-        //
-        //         float zPosMax = sqrtf(c * (1.0f - powf(position.x, 2.0f)
-        //                                    -powf(position.y, 2.0f)));
-        //         float zPosMin = -1.0f * zPosMax;
-        //         float zPosRand = rand() / (float) RAND_MAX;
-        //         position.z = (zPosMax - zPosMin) * zPosRand + zPosMin;
-        //
-        //         position.x *= radius;
-        //         position.y *= radius;
-        //         position.z *= radius;
-        //
-        //         float m = position.y / position.x;
-        //         m = -1.0f / m;
-        //         float b = position.y - position.x * m;
-        //
-        //         float3 velocity;
-        //         // float vel_m = sqrtf(((float)BIG_G * (1e6f + mass * 1.2e-6f)) /
-        //         //                     sqrtf(position.x*position.x + position.y*position.y + position.z*position.z));
-        //         float vel_m = sqrtf(((float)BIG_G * (ADVD_CENTRE_M + mass * 1.2e2f)) /
-        //                             sqrtf(position.x * position.x + position.y * position.y + position.z * position.z));
-        //
-        //         if (position.y > 0)
-        //         {
-        //             velocity = {-1.0f * (radius / 2.0f), (position.x - radius / 2.0f) * m + b - position.y, 0};
-        //             vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
-        //             velocity.x *= vel_m;
-        //             velocity.y *= vel_m;
-        //             velocity.z *= vel_m;
-        //
-        //         }
-        //         else
-        //         {
-        //             velocity = {(radius / 2.0f), (position.x + radius / 2.0f) * m + b - position.y, 0};
-        //             vel_m /= sqrtf(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
-        //             velocity.x *= vel_m;
-        //             velocity.y *= vel_m;
-        //             velocity.z *= vel_m;
-        //         }
-        //
-        //
-        //         pos[i].x = position.z + (float)ADVD_G2_X;
-        //         pos[i].y = position.y + (float)ADVD_G2_Y;
-        //         pos[i].z = position.x + (float)ADVD_G2_Z;
-        //         pos[i].w = mass;
-        //
-        //         vel[i].x = velocity.z - (float)ADVD_G2_VX;
-        //         vel[i].y = velocity.y - (float)ADVD_G2_VY;
-        //         vel[i].z = velocity.x - (float)ADVD_G2_VZ;
-        //         vel[i].w = mass;
-        //     }
-        //
-        // }
-        //     break;
         case NORB_CONFIG_SOLAR:
         {
             int i = 0;

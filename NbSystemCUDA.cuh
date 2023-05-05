@@ -54,7 +54,7 @@ void runTimer(std::chrono::system_clock::time_point start,
               int N_orbitals, bool init);
 GLFWwindow* initGL(GLFWwindow *window);
 void readParameters(const std::string &filename, std::string &simulation_base,
-                    uint &mass_seed, uint &position_seed, uint &velocity_seed, int &N_bodies, float &softening,
+                    uint32_t &mass_seed, uint32_t &position_seed, uint32_t &velocity_seed, int &N_bodies, float &softening,
                     float &time_start, float &time_end, float &snap_rate, float &initial_dt,
                     bool &cross_time, float &ETA_cross, float &ETA_acc, float &ETA_vel);
 void writeBinaryData(const std::string& filename, float current_time, float dT,
@@ -65,7 +65,7 @@ void writeBinaryData(const std::string& filename, float current_time, float dT,
 float calculateCrossingTime(const float4 *vel, int N);
 std::string getCurrentTime();
 void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N,
-                       uint mass_seed, uint position_seed, uint velocity_seed);
+                       uint32_t mass_seed, uint32_t position_seed, uint32_t velocity_seed);
 float4 calculateCentreOfMass(float4* body, int N);
 float calculateGravitationalEnergy(float4* pos, int N);
 float calculateKineticEnergy(float4* vel, int N);
