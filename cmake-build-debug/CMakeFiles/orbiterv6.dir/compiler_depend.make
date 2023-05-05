@@ -516,6 +516,9 @@ CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o: ../NbSystemCUDA.cu \
   /usr/include/c++/12/ext/aligned_buffer.h \
   /usr/include/c++/12/bits/fs_dir.h \
   /usr/include/c++/12/bits/fs_ops.h \
+  /usr/include/c++/12/thread \
+  /usr/include/c++/12/bits/std_thread.h \
+  /usr/include/c++/12/bits/this_thread_sleep.h \
   /usr/include/GL/glew.h \
   /usr/include/c++/12/cstddef \
   /usr/include/GL/glu.h \
@@ -1114,6 +1117,8 @@ CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o: ../NbodyRenderer.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/waitstatus.h:
 
+/usr/include/c++/12/thread:
+
 /usr/local/cuda/targets/x86_64-linux/include/builtin_types.h:
 
 /usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
@@ -1436,11 +1441,15 @@ CMakeFiles/orbiterv6.dir/NbodyRenderer.cpp.o: ../NbodyRenderer.cpp \
 
 /usr/local/cuda/targets/x86_64-linux/include/sm_30_intrinsics.hpp:
 
+/usr/include/c++/12/bits/std_thread.h:
+
 /usr/include/c++/12/ext/numeric_traits.h:
 
 /usr/include/c++/12/limits:
 
 /usr/local/cuda/targets/x86_64-linux/include/sm_35_intrinsics.h:
+
+/usr/include/c++/12/bits/this_thread_sleep.h:
 
 /usr/include/c++/12/cwctype:
 

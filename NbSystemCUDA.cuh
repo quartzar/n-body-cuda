@@ -53,10 +53,19 @@ enum NbodyIntegrator
 void runTimer(std::chrono::system_clock::time_point start,
               int N_orbitals, bool init);
 GLFWwindow* initGL(GLFWwindow *window);
+
+void runSingleSimulation(const std::string& simulation_base, uint32_t mass_seed, uint32_t position_seed, uint32_t velocity_seed,
+                         int N_bodies, float softening, float time_start, float time_end, float snap_rate, float delta_time,
+                         bool cross_time, float eta_cross, float eta_accel, float eta_veloc);
+
+void runMultipleSimulations(const std::string& simulation_base, int parallel_runs, uint32_t mass_seed, uint32_t position_seed,
+                            uint32_t velocity_seed, int N_bodies, float softening, float time_start, float time_end,
+                            float snap_rate, float delta_time, bool cross_time, float eta_cross, float eta_accel, float eta_veloc);
+
 void readParameters(const std::string &filename, std::string &simulation_base,
                     uint32_t &mass_seed, uint32_t &position_seed, uint32_t &velocity_seed, int &N_bodies, float &softening,
                     float &time_start, float &time_end, float &snap_rate, float &initial_dt,
-                    bool &cross_time, float &ETA_cross, float &ETA_acc, float &ETA_vel);
+                    bool &cross_time, float &ETA_cross, float &ETA_acc, float &ETA_vel, int &parallel_runs);
 void writeBinaryData(const std::string& filename, float current_time, float dT,
                      float softening_factor, int N, float4* pos, float4* vel, float4* force,
                      uint mass_seed, uint position_seed, uint velocity_seed);

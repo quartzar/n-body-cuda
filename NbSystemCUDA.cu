@@ -11,6 +11,10 @@
 #include <fstream>
 #include <cstdio>
 #include <filesystem>
+#include <thread>
+#include <vector>
+#include <string>
+#include <sstream>
 
 #include <GL/glew.h> // glut
 #include <GLFW/glfw3.h>
@@ -120,10 +124,11 @@ int main(int argc, char** argv)
     float time_since_snap = 0.f;
     bool cross_time = false;
     float eta_cross;
+    int parallel_runs;
     ////////////////////////////////
     // Read in parameters from file
     readParameters("../parameters.dat", simulation_base, mass_seed, position_seed, velocity_seed, N_bodies, softening, time_start,
-                   time_end, snap_rate, delta_time, cross_time, eta_cross, eta_acc, eta_vel);
+                   time_end, snap_rate, delta_time, cross_time, eta_cross, eta_acc, eta_vel, parallel_runs);
     std::cout << "---------------------------------" << std::endl;
     std::cout << "Simulation base: " << simulation_base << std::endl;
     std::cout << "N_bodies: " << N_bodies << std::endl;
@@ -138,6 +143,241 @@ int main(int argc, char** argv)
     std::cout << "Eta vel: " << eta_vel << std::endl;
     std::cout << "---------------------------------" << std::endl;
     ////////////////////////////////
+    // //---------------------------------------
+    // // INITIALISE ARRAYS & ALLOCATE DEVICE STORAGE
+    // //---------------------------------------
+    //
+    // // OLD / HOST
+    // m_hPos = new float4[N_bodies]; // x, y, z, mass
+    // m_hVel = new float4[N_bodies]; // vx,vy,vz, empty
+    // m_hForce = new float4[N_bodies]; // fx, fy, fz, empty
+    // // m_hDeltaTime = new float; // dt
+    // m_hDeltaTime = delta_time;
+    // // m_hDeltaTime = reinterpret_cast<float *>(TIME_STEP);
+    // // NEW / DEVICE
+    // m_dPos[0] = m_dPos[1] = nullptr;
+    // m_dVel[0] = m_dVel[1] = nullptr;
+    // m_dForce[0] = m_dForce[1] = nullptr;
+    // m_dDeltaTime[0] = m_dDeltaTime[1] = nullptr;
+    // // set memory for host arrays
+    // memset(m_hPos, 0, N_bodies*sizeof(float4));
+    // memset(m_hVel, 0, N_bodies*sizeof(float4));
+    // memset(m_hForce, 0, N_bodies*sizeof(float4));
+    // // memset(&m_hDeltaTime, 0, sizeof(float));
+    // getCUDAError();
+    // // set memory for device arrays
+    // allocateNOrbitalArrays(m_dPos,m_dVel, m_dForce, m_dDeltaTime, N_bodies);
+    // getCUDAError();
+    // // set device constants
+    // setDeviceSoftening(softening * softening);
+    // setDeviceBigG(1.0f * BIG_G);
+    // setDeviceEtaAcc(ETA_ACC);
+    // setDeviceEtaVel(ETA_VEL);
+    // getCUDAError();
+    //
+    // //---------------------------------------
+    // /////////////////////////////////////////
+    // //---------------------------------------
+    //
+    //
+    // // BEGIN TIMER
+    // runTimer(start, N_bodies, true);
+    //
+    //
+    //
+    // // INITIALISE OPENGL
+    // if (displayEnabled)
+    // {
+    //     // glutInit(&argc, argv);
+    //     // glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
+    //     window = initGL(window);
+    // }
+    //
+    // // Create new directory for output
+    // if (outputBinary) {
+    //     // output_directory = "../out/" + getCurrentTime();
+    //     output_directory = "../out/" + simulation_base;
+    //     std::filesystem::create_directory(output_directory);
+    //     if (std::filesystem::exists(output_directory)) {
+    //         deleteFilesInDirectory(output_directory);
+    //     } else {
+    //         std::filesystem::create_directory(output_directory);
+    //     }
+    // }
+    // // Set initial timestep
+    // // m_hDeltaTime = TIME_STEP;
+    // // Randomise Orbitals
+    // randomiseOrbitals(sysConfig, m_hPos, m_hVel, N_bodies, mass_seed, position_seed, velocity_seed);
+    //
+    // // Set Initial Forces [only run for solar system, HUGE performance hit]
+    // // if (sysConfig == NORB_CONFIG_SOLAR)
+    // initialiseForces(m_hPos, m_hForce, N_bodies);
+    //
+    // // Calculate and set the crossing time if needed
+    // if (cross_time)
+    // {
+    //     float t_crossing = calculateCrossingTime(m_hVel, N_bodies);
+    //     time_end = eta_cross * t_crossing;
+    //     std::cout << "\n---------------------------------" << std::endl;
+    //     std::cout << "Crossing time: " << t_crossing / 365.25 << " years" << std::endl;
+    //     std::cout << "Time end: " << time_end / 365.25 << " years [ETA_CROSS = " << eta_cross << "]" << std::endl;
+    //     std::cout << "---------------------------------" << std::endl;
+    // }
+    //
+    // //---------------------------------------
+    // // MAIN UPDATE LOOP
+    // while (current_time < time_end)
+    // {
+    //     if (iteration  % 10000 == 0) {
+    //         std::cout << "\nSTEP =>> " << iteration << " || TIMESTEP ==> " << m_hDeltaTime << std::flush;
+    //         std::cout << "\nTime: " << current_time << " days || " << current_time/365.25f << " years" << std::flush;
+    //     }
+    //
+    //     // Write a snapshot every snap_rate days
+    //     if (outputBinary && time_since_snap >= snap_rate)
+    //     {
+    //         std::stringstream snapshot_filename_ss;
+    //         snapshot_filename_ss << output_directory << "/snapshot_"
+    //                              << std::setfill('0') << std::setw(6) << std::to_string(snapshot_counter) << ".bin";
+    //
+    //         snapshot_filename = snapshot_filename_ss.str();
+    //         snapshot_counter++;
+    //
+    //         writeBinaryData(snapshot_filename, current_time, m_hDeltaTime,
+    //                         softening_factor, N_bodies, m_hPos, m_hVel, m_hForce,
+    //                         mass_seed, position_seed, velocity_seed);
+    //         time_since_snap = 0.f;
+    //     }
+    //
+    //     simulate(m_hPos, m_dPos,
+    //              m_hVel, m_dVel,
+    //              m_hForce, m_dForce,
+    //              m_currentRead, m_currentWrite,
+    //              m_hDeltaTime, m_dDeltaTime, N_bodies, m_p, m_q);
+    //     // std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
+    //
+    //     if (iteration % TIME_STEP_INTERVAL == 0)
+    //     {
+    //         m_hDeltaTime = calculateTimeStep(m_hPos, m_hVel, m_hForce, m_hDeltaTime, N_bodies);
+    //         // std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
+    //     }
+    //
+    //     if (displayEnabled && iteration%RENDER_INTERVAL == 0)
+    //     {
+    //         // CHECK FOR INPUT FIRST
+    //         processInput(window);
+    //
+    //         // CLOSE WINDOW IF ESC PRESSED
+    //         if (glfwWindowShouldClose(window))
+    //         {
+    //             std::cout << "\nPROGRAM TERMINATED BY USER\nEXITING AT STEP " << iteration;
+    //             runTimer(start,  N_bodies,false);
+    //             finalise(m_hPos, m_dPos,
+    //                      m_hVel, m_dVel,
+    //                      m_hForce, m_dForce, m_dDeltaTime);
+    //             glfwTerminate();
+    //             exit(EXIT_SUCCESS);
+    //         }
+    //
+    //         // Render
+    //         renderer->setPositions(reinterpret_cast<float *>(m_hPos));
+    //         renderer->setVelocities(reinterpret_cast<float *>(m_hVel));
+    //         renderer->display(renderMode, N_bodies, zoom, xRot, yRot, zRot, xTrans, yTrans, zTrans, trailMode, colourMode);
+    //
+    //         glfwSwapBuffers(window);
+    //         // glutSwapBuffers();
+    //         glfwPollEvents();
+    //
+    //         // Set window title to current timestep
+    //         std::string s = std::to_string(m_hDeltaTime);//iteration);
+    //         const char* cstr = s.c_str();
+    //         glfwSetWindowTitle(window, cstr);
+    //     }
+    //     time_since_snap += m_hDeltaTime;
+    //     current_time += m_hDeltaTime;
+    //     iteration++;
+    // }
+    // //---------------------------------------
+    //
+    // // END TIMER
+    // runTimer(start,  N_bodies,false);
+    //
+    // // DELETE ARRAYS
+    // finalise(m_hPos, m_dPos,
+    //          m_hVel, m_dVel,
+    //          m_hForce, m_dForce, m_dDeltaTime);
+    
+    
+    if (parallel_runs > 1)
+    {
+        runMultipleSimulations(simulation_base, parallel_runs, mass_seed, position_seed, velocity_seed, N_bodies, softening, time_start, time_end, snap_rate, delta_time, cross_time, eta_cross, eta_acc, eta_vel);
+    }
+    else
+    {
+        runSingleSimulation(simulation_base, mass_seed, position_seed, velocity_seed, N_bodies, softening, time_start, time_end, snap_rate, delta_time, cross_time, eta_cross, eta_acc, eta_vel);
+    }
+    
+    // TERMINATE SUCCESSFULLY
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
+}
+//---------------------------------------
+
+// Run single simulation
+//---------------------------------------
+void runSingleSimulation(const std::string& simulation_base, uint32_t mass_seed, uint32_t position_seed, uint32_t velocity_seed,
+                         int N_bodies, float softening, float time_start, float time_end, float snap_rate, float delta_time,
+                         bool cross_time, float eta_cross, float eta_accel, float eta_veloc)
+{
+    //-------------------------
+    // CPU data =>
+    float4 *m_hPos, *m_hVel, *m_hForce;
+    float m_hDeltaTime;
+    //-------------------------
+    // memory transfers =>
+    uint m_currentRead, m_currentWrite;
+    //-------------------------
+    // GPU data =>
+    float4 *m_dPos[2], *m_dVel[2], *m_dForce[2];
+    float *m_dDeltaTime[2];
+    //-------------------------
+    // OpenGL =>
+    GLFWwindow *window = nullptr;
+    //-------------------------
+    // Timers & benchmarking =>
+    auto start = std::chrono::system_clock::now();
+    // std::chrono::system_clock::time_point end;
+    //-------------------------
+    // File output =>
+    std::string outputFName = "outputCSV.csv";
+    /* Binary file output */
+    // std::ofstream snapshot_file;
+    std::string snapshot_filename;
+    std::string output_directory;
+    
+    
+    //-------------------------
+    // Simulation =>
+    int iteration;
+    int total_iterations;
+    // int N_bodies;
+    int snapshot_interval;
+    float softening_factor;
+    int snapshot_counter = 1;
+    uint m_p;
+    uint m_q;
+    // N_orbitals = N_BODIES;
+    iteration = 0;
+    total_iterations = ITERATIONS;
+    snapshot_interval = SNAPSHOT_INTERVAL;
+    softening_factor = SOFTENING;
+    // timestep = TIME_STEP;
+    // float deltaTime = TIME_STEP;
+    m_currentRead = 0;
+    m_currentWrite = 1;
+    m_p = P;
+    m_q = Q;
+    zoom = 1;
     //---------------------------------------
     // INITIALISE ARRAYS & ALLOCATE DEVICE STORAGE
     //---------------------------------------
@@ -170,6 +410,9 @@ int main(int argc, char** argv)
     setDeviceEtaVel(ETA_VEL);
     getCUDAError();
     
+    float current_time = time_start;
+    float time_since_snap = 0.f;
+    
     //---------------------------------------
     /////////////////////////////////////////
     //---------------------------------------
@@ -177,8 +420,6 @@ int main(int argc, char** argv)
     
     // BEGIN TIMER
     runTimer(start, N_bodies, true);
-    
-    
     
     // INITIALISE OPENGL
     if (displayEnabled)
@@ -227,17 +468,17 @@ int main(int argc, char** argv)
             std::cout << "\nSTEP =>> " << iteration << " || TIMESTEP ==> " << m_hDeltaTime << std::flush;
             std::cout << "\nTime: " << current_time << " days || " << current_time/365.25f << " years" << std::flush;
         }
-    
+        
         // Write a snapshot every snap_rate days
         if (outputBinary && time_since_snap >= snap_rate)
         {
             std::stringstream snapshot_filename_ss;
             snapshot_filename_ss << output_directory << "/snapshot_"
                                  << std::setfill('0') << std::setw(6) << std::to_string(snapshot_counter) << ".bin";
-        
+            
             snapshot_filename = snapshot_filename_ss.str();
             snapshot_counter++;
-        
+            
             writeBinaryData(snapshot_filename, current_time, m_hDeltaTime,
                             softening_factor, N_bodies, m_hPos, m_hVel, m_hForce,
                             mass_seed, position_seed, velocity_seed);
@@ -261,7 +502,7 @@ int main(int argc, char** argv)
         {
             // CHECK FOR INPUT FIRST
             processInput(window);
-    
+            
             // CLOSE WINDOW IF ESC PRESSED
             if (glfwWindowShouldClose(window))
             {
@@ -278,11 +519,11 @@ int main(int argc, char** argv)
             renderer->setPositions(reinterpret_cast<float *>(m_hPos));
             renderer->setVelocities(reinterpret_cast<float *>(m_hVel));
             renderer->display(renderMode, N_bodies, zoom, xRot, yRot, zRot, xTrans, yTrans, zTrans, trailMode, colourMode);
-    
+            
             glfwSwapBuffers(window);
             // glutSwapBuffers();
             glfwPollEvents();
-    
+            
             // Set window title to current timestep
             std::string s = std::to_string(m_hDeltaTime);//iteration);
             const char* cstr = s.c_str();
@@ -301,26 +542,41 @@ int main(int argc, char** argv)
     finalise(m_hPos, m_dPos,
              m_hVel, m_dVel,
              m_hForce, m_dForce, m_dDeltaTime);
-    
-    // TERMINATE SUCCESSFULLY
-    glfwTerminate();
-    exit(EXIT_SUCCESS);
 }
 //---------------------------------------
+
+// Run multiple simulations
+//---------------------------------------
+void runMultipleSimulations(const std::string& simulation_base, int parallel_runs, uint32_t mass_seed, uint32_t position_seed,
+                              uint32_t velocity_seed, int N_bodies, float softening, float time_start, float time_end,
+                              float snap_rate, float delta_time, bool cross_time, float eta_cross, float eta_accel, float eta_veloc)
+{
+    std::vector<std::thread> threads;
+    for (int i = 0; i < parallel_runs; ++i)
+    {
+        std::string sim_base_i = simulation_base + "-" + std::to_string(i + 1);
+        threads.emplace_back(std::thread(runSingleSimulation, sim_base_i, mass_seed, position_seed, velocity_seed, N_bodies, softening, time_start, time_end, snap_rate, delta_time, cross_time, eta_cross, eta_acc, eta_vel));
+    }
+    for (auto& t : threads)
+    {
+        t.join();
+    }
+}
+
 
 // Read in parameters from config file
 //---------------------------------------
 void readParameters(const std::string &filename, std::string &simulation_base,
                     uint32_t &mass_seed, uint32_t &position_seed, uint32_t &velocity_seed, int &N_bodies, float &softening,
                     float &time_start, float &time_end, float &snap_rate, float &initial_dt,
-                    bool &cross_time, float &ETA_cross, float &ETA_acc, float &ETA_vel)
+                    bool &cross_time, float &ETA_cross, float &ETA_acc, float &ETA_vel, int &parallel_runs)
 {
     std::ifstream file(filename);
     
-    // Random seeds for mass, position and velocity if not specified
-    std::random_device rd_mass;
-    std::random_device rd_pos;
-    std::random_device rd_vel;
+    // // Random seeds for mass, position and velocity if not specified
+    // std::random_device rd_mass;
+    // std::random_device rd_pos;
+    // std::random_device rd_vel;
     
     if (file.is_open())
     {
@@ -333,11 +589,11 @@ void readParameters(const std::string &filename, std::string &simulation_base,
             if (line == "SIMULATION_BASE")
                 simulation_base = value;
             else if (line == "MASS_SEED")
-                mass_seed = value.empty() ? rd_mass() : std::stoi(value);
+                mass_seed = value.empty() ? 0 : std::stoi(value);
             else if (line == "POSITION_SEED")
-                position_seed = value.empty() ? rd_pos() : std::stoi(value);
+                position_seed = value.empty() ? 0 : std::stoi(value);
             else if (line == "VELOCITY_SEED")
-                velocity_seed = value.empty() ? rd_vel() : std::stoi(value);
+                velocity_seed = value.empty() ? 0 : std::stoi(value);
             if (line == "N-BODIES")
                 N_bodies = std::stoi(value);
             else if (line == "SOFTENING")
@@ -364,6 +620,8 @@ void readParameters(const std::string &filename, std::string &simulation_base,
                 ETA_acc = std::stof(value);
             else if (line == "ETA_VEL")
                 ETA_vel = std::stof(value);
+            else if (line == "PARALLEL_RUNS")
+                parallel_runs = std::stoi(value);
             else
                 std::cerr << "Unknown parameter: " << line << std::endl;
         }
@@ -490,6 +748,11 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N,
     // std::random_device rd_mass;
     // std::random_device rd_pos;
     // std::random_device rd_vel;
+    
+    mass_seed     = (mass_seed == 0)     ? std::random_device()() : mass_seed;
+    position_seed = (position_seed == 0) ? std::random_device()() : position_seed;
+    velocity_seed = (velocity_seed == 0) ? std::random_device()() : velocity_seed;
+    
     std::mt19937_64 rng_mass(mass_seed); // mersenne-twister 19937 generator with 64-bit output
     std::mt19937_64 rng_pos(position_seed);
     std::mt19937_64 rng_vel(velocity_seed);

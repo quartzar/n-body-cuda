@@ -329,6 +329,9 @@ CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o : /home/quartzar/Documents/repos/n-bo
     /usr/include/c++/12/ext/aligned_buffer.h \
     /usr/include/c++/12/bits/fs_dir.h \
     /usr/include/c++/12/bits/fs_ops.h \
+    /usr/include/c++/12/thread \
+    /usr/include/c++/12/bits/std_thread.h \
+    /usr/include/c++/12/bits/this_thread_sleep.h \
     /usr/include/GL/glew.h \
     /usr/include/c++/12/cstddef \
     /usr/include/GL/glu.h \
