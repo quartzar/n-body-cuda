@@ -79,7 +79,7 @@ float4 calculateCentreOfMass(float4* body, int N);
 float calculateGravitationalEnergy(float4* pos, int N);
 float calculateKineticEnergy(float4* vel, int N);
 void initialiseForces(float4* pos, float4* force, int N);
-float calculateTimeStep(float4* pos, float4* vel, float4* force, float curDT, int N);
+float calculateTimeStep(float4 *pos, float4 *vel, float4 *force, float curDT, int N, float eta_v, float eta_a);
 void simulate(float4* m_hPos, float4* m_dPos[2],
               float4* m_hVel, float4* m_dVel[2],
               float4* m_hForce, float4* m_dForce[2],

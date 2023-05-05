@@ -143,170 +143,6 @@ int main(int argc, char** argv)
     std::cout << "Eta vel: " << eta_vel << std::endl;
     std::cout << "---------------------------------" << std::endl;
     ////////////////////////////////
-    // //---------------------------------------
-    // // INITIALISE ARRAYS & ALLOCATE DEVICE STORAGE
-    // //---------------------------------------
-    //
-    // // OLD / HOST
-    // m_hPos = new float4[N_bodies]; // x, y, z, mass
-    // m_hVel = new float4[N_bodies]; // vx,vy,vz, empty
-    // m_hForce = new float4[N_bodies]; // fx, fy, fz, empty
-    // // m_hDeltaTime = new float; // dt
-    // m_hDeltaTime = delta_time;
-    // // m_hDeltaTime = reinterpret_cast<float *>(TIME_STEP);
-    // // NEW / DEVICE
-    // m_dPos[0] = m_dPos[1] = nullptr;
-    // m_dVel[0] = m_dVel[1] = nullptr;
-    // m_dForce[0] = m_dForce[1] = nullptr;
-    // m_dDeltaTime[0] = m_dDeltaTime[1] = nullptr;
-    // // set memory for host arrays
-    // memset(m_hPos, 0, N_bodies*sizeof(float4));
-    // memset(m_hVel, 0, N_bodies*sizeof(float4));
-    // memset(m_hForce, 0, N_bodies*sizeof(float4));
-    // // memset(&m_hDeltaTime, 0, sizeof(float));
-    // getCUDAError();
-    // // set memory for device arrays
-    // allocateNOrbitalArrays(m_dPos,m_dVel, m_dForce, m_dDeltaTime, N_bodies);
-    // getCUDAError();
-    // // set device constants
-    // setDeviceSoftening(softening * softening);
-    // setDeviceBigG(1.0f * BIG_G);
-    // setDeviceEtaAcc(ETA_ACC);
-    // setDeviceEtaVel(ETA_VEL);
-    // getCUDAError();
-    //
-    // //---------------------------------------
-    // /////////////////////////////////////////
-    // //---------------------------------------
-    //
-    //
-    // // BEGIN TIMER
-    // runTimer(start, N_bodies, true);
-    //
-    //
-    //
-    // // INITIALISE OPENGL
-    // if (displayEnabled)
-    // {
-    //     // glutInit(&argc, argv);
-    //     // glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-    //     window = initGL(window);
-    // }
-    //
-    // // Create new directory for output
-    // if (outputBinary) {
-    //     // output_directory = "../out/" + getCurrentTime();
-    //     output_directory = "../out/" + simulation_base;
-    //     std::filesystem::create_directory(output_directory);
-    //     if (std::filesystem::exists(output_directory)) {
-    //         deleteFilesInDirectory(output_directory);
-    //     } else {
-    //         std::filesystem::create_directory(output_directory);
-    //     }
-    // }
-    // // Set initial timestep
-    // // m_hDeltaTime = TIME_STEP;
-    // // Randomise Orbitals
-    // randomiseOrbitals(sysConfig, m_hPos, m_hVel, N_bodies, mass_seed, position_seed, velocity_seed);
-    //
-    // // Set Initial Forces [only run for solar system, HUGE performance hit]
-    // // if (sysConfig == NORB_CONFIG_SOLAR)
-    // initialiseForces(m_hPos, m_hForce, N_bodies);
-    //
-    // // Calculate and set the crossing time if needed
-    // if (cross_time)
-    // {
-    //     float t_crossing = calculateCrossingTime(m_hVel, N_bodies);
-    //     time_end = eta_cross * t_crossing;
-    //     std::cout << "\n---------------------------------" << std::endl;
-    //     std::cout << "Crossing time: " << t_crossing / 365.25 << " years" << std::endl;
-    //     std::cout << "Time end: " << time_end / 365.25 << " years [ETA_CROSS = " << eta_cross << "]" << std::endl;
-    //     std::cout << "---------------------------------" << std::endl;
-    // }
-    //
-    // //---------------------------------------
-    // // MAIN UPDATE LOOP
-    // while (current_time < time_end)
-    // {
-    //     if (iteration  % 10000 == 0) {
-    //         std::cout << "\nSTEP =>> " << iteration << " || TIMESTEP ==> " << m_hDeltaTime << std::flush;
-    //         std::cout << "\nTime: " << current_time << " days || " << current_time/365.25f << " years" << std::flush;
-    //     }
-    //
-    //     // Write a snapshot every snap_rate days
-    //     if (outputBinary && time_since_snap >= snap_rate)
-    //     {
-    //         std::stringstream snapshot_filename_ss;
-    //         snapshot_filename_ss << output_directory << "/snapshot_"
-    //                              << std::setfill('0') << std::setw(6) << std::to_string(snapshot_counter) << ".bin";
-    //
-    //         snapshot_filename = snapshot_filename_ss.str();
-    //         snapshot_counter++;
-    //
-    //         writeBinaryData(snapshot_filename, current_time, m_hDeltaTime,
-    //                         softening_factor, N_bodies, m_hPos, m_hVel, m_hForce,
-    //                         mass_seed, position_seed, velocity_seed);
-    //         time_since_snap = 0.f;
-    //     }
-    //
-    //     simulate(m_hPos, m_dPos,
-    //              m_hVel, m_dVel,
-    //              m_hForce, m_dForce,
-    //              m_currentRead, m_currentWrite,
-    //              m_hDeltaTime, m_dDeltaTime, N_bodies, m_p, m_q);
-    //     // std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
-    //
-    //     if (iteration % TIME_STEP_INTERVAL == 0)
-    //     {
-    //         m_hDeltaTime = calculateTimeStep(m_hPos, m_hVel, m_hForce, m_hDeltaTime, N_bodies);
-    //         // std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
-    //     }
-    //
-    //     if (displayEnabled && iteration%RENDER_INTERVAL == 0)
-    //     {
-    //         // CHECK FOR INPUT FIRST
-    //         processInput(window);
-    //
-    //         // CLOSE WINDOW IF ESC PRESSED
-    //         if (glfwWindowShouldClose(window))
-    //         {
-    //             std::cout << "\nPROGRAM TERMINATED BY USER\nEXITING AT STEP " << iteration;
-    //             runTimer(start,  N_bodies,false);
-    //             finalise(m_hPos, m_dPos,
-    //                      m_hVel, m_dVel,
-    //                      m_hForce, m_dForce, m_dDeltaTime);
-    //             glfwTerminate();
-    //             exit(EXIT_SUCCESS);
-    //         }
-    //
-    //         // Render
-    //         renderer->setPositions(reinterpret_cast<float *>(m_hPos));
-    //         renderer->setVelocities(reinterpret_cast<float *>(m_hVel));
-    //         renderer->display(renderMode, N_bodies, zoom, xRot, yRot, zRot, xTrans, yTrans, zTrans, trailMode, colourMode);
-    //
-    //         glfwSwapBuffers(window);
-    //         // glutSwapBuffers();
-    //         glfwPollEvents();
-    //
-    //         // Set window title to current timestep
-    //         std::string s = std::to_string(m_hDeltaTime);//iteration);
-    //         const char* cstr = s.c_str();
-    //         glfwSetWindowTitle(window, cstr);
-    //     }
-    //     time_since_snap += m_hDeltaTime;
-    //     current_time += m_hDeltaTime;
-    //     iteration++;
-    // }
-    // //---------------------------------------
-    //
-    // // END TIMER
-    // runTimer(start,  N_bodies,false);
-    //
-    // // DELETE ARRAYS
-    // finalise(m_hPos, m_dPos,
-    //          m_hVel, m_dVel,
-    //          m_hForce, m_dForce, m_dDeltaTime);
-    
     
     if (parallel_runs > 1)
     {
@@ -494,7 +330,7 @@ void runSingleSimulation(const std::string& simulation_base, uint32_t mass_seed,
         
         if (iteration % TIME_STEP_INTERVAL == 0)
         {
-            m_hDeltaTime = calculateTimeStep(m_hPos, m_hVel, m_hForce, m_hDeltaTime, N_bodies);
+            m_hDeltaTime = calculateTimeStep(m_hPos, m_hVel, m_hForce, m_hDeltaTime, N_bodies, eta_acc, eta_vel);
             // std::cout << "\n m_hDeltaTime = " << m_hDeltaTime << std::flush;
         }
         
@@ -1047,7 +883,7 @@ void initialiseForces(float4* pos, float4* force, int N)
 
 // Calculate variable time-step
 //---------------------------------------
-float calculateTimeStep(float4* pos, float4* vel, float4* force, float curDT, int N)
+float calculateTimeStep(float4 *pos, float4 *vel, float4 *force, float curDT, int N, float eta_v, float eta_a)
 {
     auto* acc_dot = new float3[N];
     for (int i = 0; i < N; i++)
@@ -1109,7 +945,8 @@ float calculateTimeStep(float4* pos, float4* vel, float4* force, float curDT, in
         max_a = (a > max_a) ? a : max_a;
         max_v = (v > max_v) ? v : max_v;
     }
-    float dt = ETA_ACC * max_aa_dot + ETA_VEL * (max_v / max_a);
+    float dt = eta_a * max_aa_dot + eta_v * (max_v / max_a);
+    // std::cout << "dt: " << dt << std::endl;
     return fminf(dt, MAX_DELTA_TIME);
 }
 
