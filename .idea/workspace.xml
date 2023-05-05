@@ -21,19 +21,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d43b48db-8551-480f-abfc-10ad2719c094" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.~abf73899b868ee71-ABF73899B868EE71!261360-af707b.insyncdl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CONSTANTS.h" beforeDir="false" afterPath="$PROJECT_DIR$/CONSTANTS.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cu" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cuh" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cuh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbKernel_N2.cu.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/orbiterv6 1" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/orbiterv6 1" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nbody_notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/nbody_notebook.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parameters.dat" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.dat" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -150,6 +139,7 @@
       <workItem from="1682524905960" duration="1308000" />
       <workItem from="1682526222282" duration="2069000" />
       <workItem from="1682581803958" duration="10955000" />
+      <workItem from="1683294155031" duration="742000" />
     </task>
     <servers />
   </component>
