@@ -12,12 +12,12 @@
 enum NBodyICConfig
 {
     NORB_SMALLN_CLUSTER,
-    NORB_CONFIG_BASIC,
-    NORB_CONFIG_BASIC_DISK,
-    NORB_CONFIG_SHELL,
-    NORB_CONFIG_EXPAND,
-    NORB_CONFIG_ADV_DISK,
-    NORB_CONFIG_ADV_DISK_COLLSION,
+    // NORB_CONFIG_BASIC,
+    // NORB_CONFIG_BASIC_DISK,
+    // NORB_CONFIG_SHELL,
+    // NORB_CONFIG_EXPAND,
+    // NORB_CONFIG_ADV_DISK,
+    // NORB_CONFIG_ADV_DISK_COLLSION,
     NORB_CONFIG_SOLAR
 };
 
@@ -53,10 +53,19 @@ enum NbodyIntegrator
 void runTimer(std::chrono::system_clock::time_point start,
               int N_orbitals, bool init);
 GLFWwindow* initGL(GLFWwindow *window);
-void writeBinaryData(const std::string& filename, int snapshot_interval, int iteration, int total_iterations, float deltaTime,
-                     float softening_factor, int N, float4* pos, float4* vel, float4* force);
+void readParameters(const std::string &filename, std::string &simulation_base,
+                    uint &mass_seed, uint &position_seed, uint &velocity_seed, int &N_bodies, float &softening,
+                    float &time_start, float &time_end, float &snap_rate, float &initial_dt,
+                    bool &cross_time, float &ETA_cross, float &ETA_acc, float &ETA_vel);
+void writeBinaryData(const std::string& filename, float current_time, float dT,
+                     float softening_factor, int N, float4* pos, float4* vel, float4* force,
+                     uint mass_seed, uint position_seed, uint velocity_seed);
+// void writeBinaryData(const std::string& filename, int snapshot_interval, int iteration, int total_iterations, float deltaTime,
+//                      float softening_factor, int N, float4* pos, float4* vel, float4* force);
+float calculateCrossingTime(const float4 *vel, int N);
 std::string getCurrentTime();
-void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N);
+void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N,
+                       uint mass_seed, uint position_seed, uint velocity_seed);
 float4 calculateCentreOfMass(float4* body, int N);
 float calculateGravitationalEnergy(float4* pos, int N);
 float calculateKineticEnergy(float4* vel, int N);
@@ -72,6 +81,7 @@ void finalise(float4* m_hPos, float4* m_dPos[2],
               float4* m_hVel, float4* m_dVel[2],
               float4* m_hForce, float4* m_dForce[2],
               float* m_dDeltaTime[2]);
+void deleteFilesInDirectory(const std::string& directory_path);
 float normalise(float3& vector);
 float3 cross(float3 v0, float3 v1);
 float dot(float3 v0, float3 v1);

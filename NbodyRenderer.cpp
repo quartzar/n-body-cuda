@@ -42,7 +42,7 @@ void NbodyRenderer::setVelocities(float *vel)
     m_vel = vel;
 }
 
-void NbodyRenderer::display(RenderMode mode, float zoom, float xRot,
+void NbodyRenderer::display(RenderMode mode, int nBodies, float zoom, float xRot,
                             float yRot, float zRot, float xTrans, float yTrans, float zTrans,
                             bool trailMode, bool colourMode)
 {
@@ -87,7 +87,7 @@ void NbodyRenderer::display(RenderMode mode, float zoom, float xRot,
     
             glColor3f(1, 1, 1);
             glPointSize(ORB_SIZE);
-            _drawOrbitals(colourMode);
+            _drawOrbitals(colourMode, nBodies);
         }
             break;
     }
@@ -123,7 +123,7 @@ void NbodyRenderer::_drawSprite(float r, float g, float b, float a)
     }
 }
 
-void NbodyRenderer::_drawOrbitals(bool colour)
+void NbodyRenderer::_drawOrbitals(bool colour, int N)
 {
     if (!m_pbo)
     {
@@ -132,7 +132,7 @@ void NbodyRenderer::_drawOrbitals(bool colour)
         glBlendFunc( GL_SRC_ALPHA, GL_DST_ALPHA);
         glBegin(GL_POINTS);
         {
-            for (int i = 0; i < N_BODIES; i++) {
+            for (int i = 0; i < N; i++) {
                 // glPushMatrix(); // SAVES THE CURRENT VIEW MATRIX
                 GLfloat *v[3] = {&m_pos[4 * i], &m_pos[4 * i + 1], &m_pos[4 * i + 2]};
                 

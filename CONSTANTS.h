@@ -12,7 +12,7 @@
 
 // Simulation parameters
 #define SNAPSHOT_INTERVAL 10000 // iterations between each snapshot
-#define SEED 5 // seed for IC generator
+#define SEED 6 // seed for IC generator
 #define N_B_MULTIPLIER 1 // for thread calculation -> 960/12 = 80 [SM's on RTX 3080ti]
 #define N_BODIES (10 * N_B_MULTIPLIER) // number of bodies [*N_B_MULTIPLIER]
 #define TIME_STEP 1 // time between integration steps in days // 0.003472222222222223 is 5 minutes
@@ -23,7 +23,7 @@
 #define TIME_STEP_INTERVAL 100 // iterations between each timestep change
 #define MAX_DELTA_TIME 500 // maximum timestep in days
 #define Q 1 // rows of ->  [[threads per body]] != REMOVED !=
-#define P 10 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
+#define P 20 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
 // Q=8 threads p/b & P = 80 ->> PxQ==640 (50*NB_M /640)==80
 // At N=10*NB_M, P=128 & Q=8 give enormous performance boosts
 // solar system=>1 | cluster => 64? | fogr N=50*multi, P=640 means all 80 SMP's used
@@ -39,6 +39,10 @@
 // IC for proper small-N simulations
 #define NUM_CLUSTERS 1 // number of clusters
 #define STARS_PER_CLUSTER 10 // number of stars per cluster
+#define R_CLUSTER 2062.f //10e4; // AU // 0.01 pc
+#define FILAMENT_OFFSET_X 6186.f
+#define FILAMENT_OFFSET_Y 0.f
+#define FILAMENT_OFFSET_Z 0.f
 
 // Initial Conditions
 #define INIT_POS (500) // initial radius from centre in AU
@@ -55,21 +59,21 @@
 
 
 // Window & render parameters
-#define WIDTH 2800 // 1700 PC // 2800 LT
-#define HEIGHT 1550 // 910 PC // 1550 LT
+#define WIDTH 1700 // 1700 PC // 2800 LT
+#define HEIGHT 910 // 910 PC // 1550 LT
 #define RENDER_INTERVAL 100 // timesteps between each frame
 
 // OpenGL parameters
 #define FOV 90 // 90 normal // 2 solar system
 #define V_FAR 500 // 50000 normal // 50 solar system
-#define INIT_ZOOM 500 // 5000 normal // 100 for solar system
+#define INIT_ZOOM 1000 // 5000 normal // 100 for solar system
 
 // Camera controls
 #define ZOOM_SCALE 0.01 // how fast to zoom
 #define SHIFT_FACTOR 10 // how much faster all movement is with shift held
 #define CTRL_FACTOR 0.1 // how much slower all movement is with ctrl held
 #define MOVE_SPEED 1 // how fast to move [AU/frame] // 1 for solar system
-#define ORB_SIZE 5 // 2-3 LT // 0.5 PC // range of pixels to display dot
+#define ORB_SIZE 1 // 2-3 LT // 0.5 PC // range of pixels to display dot
 
 // Proto-cluster options
 
