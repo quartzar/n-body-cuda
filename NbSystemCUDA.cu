@@ -165,6 +165,7 @@ void runSingleSimulation(const std::string& simulation_base, uint32_t mass_seed,
                          int N_bodies, float softening, float time_start, float time_end, float snap_rate, float delta_time,
                          bool cross_time, float eta_cross, float eta_accel, float eta_veloc)
 {
+    // Initialise simulation
     //-------------------------
     // CPU data =>
     float4 *m_hPos, *m_hVel, *m_hForce;
@@ -605,7 +606,7 @@ std::string getCurrentTime()
 // IC generator
 //---------------------------------------
 void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N,
-                       uint32_t mass_seed, uint32_t position_seed, uint32_t velocity_seed)
+                       uint32_t &mass_seed, uint32_t &position_seed, uint32_t &velocity_seed)
 {
     using std::uniform_real_distribution;
     // std::default_random_engine rn_mass(mass_seed); // NOLINT(cert-msc51-cpp)

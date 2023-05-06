@@ -22,7 +22,7 @@
 #define ETA_VEL 0.0002 // velocity variable timestep coefficient
 #define TIME_STEP_INTERVAL 100 // iterations between each timestep change
 #define MAX_DELTA_TIME 500 // maximum timestep in days
-#define MIN_DELTA_TIME 0.05
+#define MIN_DELTA_TIME 0.1 // minimum timestep in days
 #define Q 1 // rows of ->  [[threads per body]] != REMOVED !=
 #define P 10 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
 // Q=8 threads p/b & P = 80 ->> PxQ==640 (50*NB_M /640)==80

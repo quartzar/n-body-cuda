@@ -74,7 +74,7 @@ void writeBinaryData(const std::string& filename, float current_time, float dT,
 float calculateCrossingTime(const float4 *vel, int N);
 std::string getCurrentTime();
 void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N,
-                       uint32_t mass_seed, uint32_t position_seed, uint32_t velocity_seed);
+                       uint32_t &mass_seed, uint32_t &position_seed, uint32_t &velocity_seed);
 float4 calculateCentreOfMass(float4* body, int N);
 float calculateGravitationalEnergy(float4* pos, int N);
 float calculateKineticEnergy(float4* vel, int N);
