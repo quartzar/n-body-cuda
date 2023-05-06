@@ -22,8 +22,9 @@
 #define ETA_VEL 0.0002 // velocity variable timestep coefficient
 #define TIME_STEP_INTERVAL 100 // iterations between each timestep change
 #define MAX_DELTA_TIME 500 // maximum timestep in days
+#define MIN_DELTA_TIME 0.05
 #define Q 1 // rows of ->  [[threads per body]] != REMOVED !=
-#define P 20 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
+#define P 10 // P <= 640 || N/80 to calculate // MAX PxQ = 1024
 // Q=8 threads p/b & P = 80 ->> PxQ==640 (50*NB_M /640)==80
 // At N=10*NB_M, P=128 & Q=8 give enormous performance boosts
 // solar system=>1 | cluster => 64? | fogr N=50*multi, P=640 means all 80 SMP's used

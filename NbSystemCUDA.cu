@@ -387,12 +387,43 @@ void runMultipleSimulations(const std::string& simulation_base, int parallel_run
                               uint32_t velocity_seed, int N_bodies, float softening, float time_start, float time_end,
                               float snap_rate, float delta_time, bool cross_time, float eta_cross, float eta_accel, float eta_veloc)
 {
-    std::vector<std::thread> threads;
-    for (int i = 0; i < parallel_runs; ++i)
+    // Find the highest existing index
+    int highest_existing_index = 0;
+    std::string prefix = simulation_base + "-";
+    for (const auto &entry : std::filesystem::directory_iterator("../out/"))
     {
-        std::string sim_base_i = simulation_base + "-" + std::to_string(i + 1);
+        if (entry.is_directory())
+        {
+            std::string dir_name = entry.path().filename().string();
+            if (dir_name.find(prefix) == 0)
+            {
+                int dir_index = std::stoi(dir_name.substr(prefix.size()));
+                if (dir_index > highest_existing_index)
+                {
+                    highest_existing_index = dir_index;
+                }
+            }
+        }
+    }
+    std::vector<std::thread> threads;
+    // Run new simulations starting from the next index
+    for (int i = highest_existing_index + 1; i <= highest_existing_index + parallel_runs; i++)
+    {
+        std::stringstream sim_base_ss;
+        sim_base_ss << simulation_base << "-" << std::setfill('0') << std::setw(3) << i;
+        std::string sim_base_i = sim_base_ss.str();
         threads.emplace_back(std::thread(runSingleSimulation, sim_base_i, mass_seed, position_seed, velocity_seed, N_bodies, softening, time_start, time_end, snap_rate, delta_time, cross_time, eta_cross, eta_acc, eta_vel));
     }
+    
+    // for (int i = 0; i < parallel_runs; ++i)
+    // {
+    //     // std::string sim_base_i = simulation_base + "-" + std::to_string(i + 1);
+    //     // threads.emplace_back(std::thread(runSingleSimulation, sim_base_i, mass_seed, position_seed, velocity_seed, N_bodies, softening, time_start, time_end, snap_rate, delta_time, cross_time, eta_cross, eta_acc, eta_vel));
+    //     std::stringstream sim_base_ss;
+    //     sim_base_ss << simulation_base << "-" << std::setfill('0') << std::setw(3) << (i + 1);
+    //     std::string sim_base_i = sim_base_ss.str();
+    //     threads.emplace_back(std::thread(runSingleSimulation, sim_base_i, mass_seed, position_seed, velocity_seed, N_bodies, softening, time_start, time_end, snap_rate, delta_time, cross_time, eta_cross, eta_acc, eta_vel));
+    // }
     for (auto& t : threads)
     {
         t.join();
@@ -947,7 +978,7 @@ float calculateTimeStep(float4 *pos, float4 *vel, float4 *force, float curDT, in
     }
     float dt = eta_a * max_aa_dot + eta_v * (max_v / max_a);
     // std::cout << "dt: " << dt << std::endl;
-    return fminf(dt, MAX_DELTA_TIME);
+    return fmaxf(fminf(dt, MAX_DELTA_TIME), MIN_DELTA_TIME);
 }
 
 //---------------------------------------
