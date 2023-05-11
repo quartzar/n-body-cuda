@@ -1,2 +1,8 @@
 /out
 /cmake-build-debug
+*.pkl
+n-10-fil-parallel-eject_mass.csv
+n-10-fil-parallel-eject_ts.csv
+n-50-fil-parallel-eject_mass.csv
+n-50-fil-parallel-eject_ts.csv
+binary_counts_data.txt
