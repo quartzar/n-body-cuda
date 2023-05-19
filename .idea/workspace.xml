@@ -22,10 +22,14 @@
   <component name="ChangeListManager">
     <list default="true" id="d43b48db-8551-480f-abfc-10ad2719c094" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NbSystemCUDA.cu" beforeDir="false" afterPath="$PROJECT_DIR$/NbSystemCUDA.cu" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/NbSystemCUDA.cu.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/orbiterv6.dir/cmake_device_link.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/graphs/PYnalaysis.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/orbiterv6" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nbody_binary.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/nbody_binary.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nbody_notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/nbody_notebook.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parameters.dat" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.dat" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,6 +156,9 @@
       <workItem from="1683725366983" duration="97000" />
       <workItem from="1683725749404" duration="122000" />
       <workItem from="1683733770488" duration="30000" />
+      <workItem from="1683831899962" duration="4122000" />
+      <workItem from="1684406633358" duration="30000" />
+      <workItem from="1684497765154" duration="318000" />
     </task>
     <servers />
   </component>

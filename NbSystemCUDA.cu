@@ -678,6 +678,9 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N,
                 totalMass += mass;
             }
             
+            pos[0].w = 10.f;
+            vel[0].w = 10.f;
+            
             // Loop through each cluster
             for (int cluster = 0; cluster < (N / STARS_PER_CLUSTER); cluster++) {
                 std::cout << "Cluster " << cluster << " N: " << N << std::endl;
@@ -717,6 +720,7 @@ void randomiseOrbitals(NBodyICConfig config, float4* pos, float4* vel, int N,
                     // std::cout << "StarCOM " << i << " at: " << pos[i].x << ", " << pos[i].y << ", " << pos[i].z << std::endl;
                 }
                 
+                ////////////////////////
                 for (int i = 0; i < STARS_PER_CLUSTER; i++) {
                     cluster_pos[i] = pos[start_idx + i];
                     cluster_vel[i] = vel[start_idx + i];
